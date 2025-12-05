@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.0 (CORRECTED) --- */
+    /* --- DESIGN SYSTEM V5.1 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -263,12 +263,10 @@
   
   <script>
     // --- FORCE UPDATE / CACHE BUSTER ---
-    // Ce script supprime de force les anciens Service Workers pour s'assurer que vous voyez la dernière version
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
           registration.unregister();
-          console.log('Ancien Service Worker supprimé pour forcer la mise à jour.');
         }
       });
     }
@@ -426,8 +424,11 @@
       return gradient.join(', ');
     };
 
+    // --- CORRECTION CLIQUE GLOBAL (v5.1) ---
+    // On ne rafraîchit la page que si un filtre personnalisé est ouvert et qu'on clique ailleurs.
+    // On ignore le rafraichissement si on interagit avec la barre d'action.
     window.addEventListener('click', (e) => {
-        if (!e.target.closest('.ms-container')) {
+        if (openDropdown && !e.target.closest('.ms-container')) {
             openDropdown = null;
             render();
         }
