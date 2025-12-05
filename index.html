@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BELLECOUR">
+  <meta name="apple-mobile-web-app-title" content="CLIENT - PROJET">
   <title>PROGRAMMATION</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -324,7 +324,7 @@
           <div class="header-left">
             <div class="logo">B</div>
             <div>
-              <div id="page-title" class="title " contenteditable="true" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">PROJET</div>
+              <div id="page-title" class="title " contenteditable="true" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">CLIENT - PROJET</div>
               <div class="subtitle">Programmation</div>
             </div>
           </div>
@@ -717,12 +717,12 @@
 // __DATA_END__
 
     // State - UTILISE safeGetItem
-    let pageTitle = safeGetItem('prog-title') || "PROJET"; // Titre réinitialisé
-    let data = JSON.parse(safeGetItem('prog-data')) || JSON.parse(JSON.stringify(initialData)); // Nouvelle clé
-    let types = JSON.parse(safeGetItem('prog-types')) || JSON.parse(JSON.stringify(initialTypes)); // Nouvelle clé
+    let pageTitle = "CLIENT - PROJET";
+    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));
+    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));
     
     // LOCKED MODE STATE
-    let isLocked = safeGetItem('prog-locked') === 'true'; // Nouvelle clé
+    let isLocked = safeGetItem('coffim-locked') === 'true';
 
     let filters = { programme: [], search: '', niveau: [], fonction: [] };
     let currentView = 'liste';
@@ -737,25 +737,25 @@
     let openDropdown = null; 
     
     // Theme Management
-    let isLightMode = safeGetItem('prog-theme') === 'light';
+    let isLightMode = safeGetItem('coffim-theme') === 'light';
     if (isLightMode) document.documentElement.classList.add('light');
 
     function toggleTheme() {
       isLightMode = !isLightMode;
       if (isLightMode) document.documentElement.classList.add('light');
       else document.documentElement.classList.remove('light');
-      localStorage.setItem('prog-theme', isLightMode ? 'light' : 'dark');
+      localStorage.setItem('coffim-theme', isLightMode ? 'light' : 'dark');
       render(); 
     }
     
     function toggleLock() {
         isLocked = !isLocked;
-        try { localStorage.setItem('prog-locked', isLocked); } catch(e) {} // Safe save
+        try { localStorage.setItem('coffim-locked', isLocked); } catch(e) {} // Safe save
         render();
     }
 
-    const saveData = () => { try { localStorage.setItem('prog-data', JSON.stringify(data)); } catch(e) {} };
-    const saveTypes = () => { try { localStorage.setItem('prog-types', JSON.stringify(types)); } catch(e) {} };
+    const saveData = () => { try { localStorage.setItem('coffim-alve-data', JSON.stringify(data)); } catch(e) {} };
+    const saveTypes = () => { try { localStorage.setItem('coffim-alve-types', JSON.stringify(types)); } catch(e) {} };
     
     const safe = (str) => {
       if (!str) return '';
@@ -1292,7 +1292,7 @@
     window.updateTitle = (text) => {
       const t = (text || '').trim() || 'PROJET';
       pageTitle = t;
-      try { localStorage.setItem('prog-title', pageTitle); } catch(e) {}
+      try { localStorage.setItem('coffim-page-title', pageTitle); } catch(e) {}
     };
     window.setView = (v) => { currentView = v; render(); };
     window.setSearch = (s) => { filters.search = s; render(); };
@@ -1471,11 +1471,7 @@
     window.exportData = (format) => {
       if (format === 'csv') {
         const headers = ['ID', 'Programme', 'Niveau', 'Fonction', 'Local', 'Surface Unitaire', 'Extérieur', 'Nombre', 'Surface Utile Int.', 'Surface Utile Ext.', 'Détails', 'Statut', 'Priorité', 'Action'];
-        // AJOUTER LE TITRE DU PROJET EN TÊTE DU CSV
-        const projectTitleRow = `Titre du Projet;"${String(pageTitle || 'PROJET').replace(/"/g, '""')}"\n`; // Nouvelle ligne d'en-tête
-        
         const csvContent = [
-          projectTitleRow, // Ajout de la ligne du titre
           headers.join(';'),
           ...data.map(d => [
             d.id, d.programme, d.niveau, d.fonction, '"' + String(d.local || '').replace(/"/g, '""') + '"',
@@ -1487,8 +1483,7 @@
         const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('csv'); a.click();
       } else {
-        // ASSURER QUE LE JSON INCLUT LE TITRE
-        const blob = new Blob([JSON.stringify({ author: "BELLECOUR architectes", title: pageTitle, data, types }, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify({ author: "BELLECOUR architectes", data, types }, null, 2)], { type: 'application/json' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('json'); a.click();
       }
     };
@@ -1544,24 +1539,12 @@
             const text = reader.result;
             const isJson = file.name.toLowerCase().endsWith('.json') || text.trim().startsWith('{');
             let newData = null;
-            let newTitle = null; // Variable pour stocker le nouveau titre
-            
             if (isJson) {
                 const json = JSON.parse(text);
-                if (json.data) { 
-                    newData = json.data; 
-                    types = json.types || types; 
-                    newTitle = json.title; // Récupération du titre du JSON
-                }
+                if (json.data) { newData = json.data; types = json.types || types; }
             } else {
                 const rows = parseCsv(text);
                 if (rows.length > 1) {
-                    // Vérification de la première ligne pour le titre CSV
-                    if (rows[0][0] && rows[0][0].toLowerCase() === 'titre du projet' && rows[0].length > 1) {
-                        newTitle = rows[0][1]; // Le titre est dans la deuxième colonne de la première ligne
-                        rows.splice(0, 1); // Suppression de la ligne de titre des données à traiter
-                    }
-                    
                     newData = rows.slice(1).map(cols => ({
                         id: parseInt(cols[0]) || 0,
                         programme: cols[1], niveau: cols[2], fonction: cols[3], local: cols[4],
@@ -1575,19 +1558,7 @@
                 }
             }
             if(newData) { 
-                if(confirm('Remplacer les données ?')) { 
-                    data = newData; 
-                    saveData(); 
-                    saveTypes(); 
-                    
-                    // MISE À JOUR DU TITRE
-                    if (newTitle) {
-                        pageTitle = newTitle.replace(/"/g, '').trim(); // Nettoyer les guillemets du CSV
-                        try { localStorage.setItem('prog-title', pageTitle); } catch(e) {}
-                    }
-                    
-                    render(); 
-                }
+                if(confirm('Remplacer les données ?')) { data = newData; saveData(); saveTypes(); render(); }
             } else { alert('Format non reconnu'); }
           } catch(e) { console.error(e); alert('Erreur Import'); }
         };
@@ -1608,25 +1579,7 @@
         let out = html;
         out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`);
         out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`);
-        
-        // Remplacement du bloc de variables d'état (mis à jour dans la réponse précédente)
-        const oldStateStart = '    // State - UTILISE safeGetItem';
-        const oldStateEnd = '    let isLocked = safeGetItem(\'prog-locked\') === \'true\';';
-        const newStateContent = `    // State - UTILISE safeGetItem\n    let pageTitle = safeGetItem('prog-title') || "PROJET"; // Titre réinitialisé\n    let data = JSON.parse(safeGetItem('prog-data')) || JSON.parse(JSON.stringify(initialData)); // Nouvelle clé\n    let types = JSON.parse(safeGetItem('prog-types')) || JSON.parse(JSON.stringify(initialTypes)); // Nouvelle clé\n    \n    // LOCKED MODE STATE\n    let isLocked = safeGetItem('prog-locked') === 'true'; // Nouvelle clé`;
-        
-        const s = out.indexOf(oldStateStart);
-        const e = out.indexOf(oldStateEnd);
-        if (s > -1 && e > -1) {
-             // L'ancien bloc se termine à la fin de la déclaration isLocked
-            const regex = new RegExp(`(let isLocked = safeGetItem\\('${'prog-locked'}'\\) === 'true';)`, 's');
-            const endMatch = out.match(regex);
-            
-            if (endMatch) {
-                const endPos = out.indexOf(endMatch[1], s) + endMatch[1].length;
-                out = out.slice(0, s) + newStateContent + out.slice(endPos);
-            }
-        }
-        
+        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "COFFIM-ALVE";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
         const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click();
     };
@@ -1635,5 +1588,6 @@
 
     render();
   </script>
+
 
 </body></html>
