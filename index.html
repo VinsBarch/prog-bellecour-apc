@@ -319,229 +319,7 @@
   </script>
 </head>
 <body>
-  <div id="app">
-        <div class="header">
-          <div class="header-left">
-            <div class="logo">B</div>
-            <div>
-              <div id="page-title" class="title " contenteditable="true" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">CLIENT - PROJET</div>
-              <div class="subtitle">Programmation</div>
-            </div>
-          </div>
-          <div class="header-right">
-              <div class="firm-name">BELLECOUR architectes</div>
-              <button class="theme-btn" onclick="toggleTheme()" title="Changer le thème">
-                ☼
-              </button>
-          </div>
-        </div>
-
-        <div class="global-tools">
-          <button class="btn btn-lock " onclick="toggleLock()" title="Verrouiller en lecture seule">
-            🔓
-          </button>
-        
-          <button class="btn btn-primary" onclick="saveHtml()">💾 Sauvegarder</button>
-
-          <div class="btn-separator"></div>
-
-          <button class="btn btn-export" onclick="exportData('csv')">CSV</button>
-          <button class="btn btn-export" onclick="exportData('json')">JSON</button>
-          <button class="btn btn-export" onclick="exportPdf()">PDF</button>
-          
-          <div class="btn-separator"></div>
-
-          <button class="btn btn-secondary" onclick="importData()">Import</button>
-          <div class="spacer"></div>
-          <button class="btn btn-danger" onclick="openClearModal()">Effacer</button>
-        </div>
-
-        <div class="stats-grid">
-          <div class="card stat-main-card">
-            <div class="stat-label">SURFACE PROGRAMME INTERIEUR</div>
-            <div style="margin: auto 0;">
-              <span class="stat-value text-blue">0</span>
-              <span class="stat-unit">m²</span>
-            </div>
-          </div>
-          <div class="card stat-main-card">
-            <div class="stat-label">SURFACE PROGRAMME EXTERIEUR</div>
-            <div style="margin: auto 0;">
-              <span class="stat-value text-green">0</span>
-              <span class="stat-unit">m²</span>
-            </div>
-          </div>
-          
-          
-          <div class="card chart-card">
-            <div class="stat-label">REPARTITION PROGRAMME PAR ENTITE</div>
-            <div class="chart-content">
-              <div class="donut-container">
-                <div class="donut" style="background: conic-gradient(var(--bg-hover) 0% 100%)"></div>
-                <div class="donut-hole"></div>
-              </div>
-              <div class="legend-list">
-                <div class="empty-state" style="padding:0;text-align:left;font-size:12px;border:none;background:transparent;">Aucune donnée</div>
-              </div>
-            </div>
-          </div>
-        
-          
-          <div class="card chart-card">
-            <div class="stat-label">REPARTITION PROGRAMME PAR NIVEAU</div>
-            <div class="chart-content">
-              <div class="donut-container">
-                <div class="donut" style="background: conic-gradient(var(--bg-hover) 0% 100%)"></div>
-                <div class="donut-hole"></div>
-              </div>
-              <div class="legend-list">
-                <div class="empty-state" style="padding:0;text-align:left;font-size:12px;border:none;background:transparent;">Aucune donnée</div>
-              </div>
-            </div>
-          </div>
-        
-        </div>
-
-        <div class="filter-section">
-          <div class="filter-container">
-             <div class="search-row">
-                <input type="search" id="main-search" class="search-box" placeholder="Rechercher un local..." value="" oninput="setSearch(this.value)">
-                
-            <div class="ms-container" onclick="toggleDropdown(event, 'niveau')">
-                <div class="ms-btn">Niveaux (Tous) <span class="ms-arrow">▼</span></div>
-                <div class="ms-dropdown " onclick="event.stopPropagation()">
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'RDC')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>RDC</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'R+1')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>R+1</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'R+2')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>R+2</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'R+3')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>R+3</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'S-SOL')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>S-SOL</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('niveau', 'Extérieur')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>Extérieur</span>
-                        </div>
-                    
-                </div>
-            </div>
-          
-                
-            <div class="ms-container" onclick="toggleDropdown(event, 'fonction')">
-                <div class="ms-btn">Fonctions (Tous) <span class="ms-arrow">▼</span></div>
-                <div class="ms-dropdown " onclick="event.stopPropagation()">
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'HÉBERGEMENT')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>HÉBERGEMENT</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'VIE COLLECTIVE')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>VIE COLLECTIVE</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'RESTAURATION')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>RESTAURATION</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'LINGERIE')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>LINGERIE</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'ADMINISTRATION')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>ADMINISTRATION</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'TECHNIQUE')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>TECHNIQUE</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'PERSONNEL')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>PERSONNEL</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'CIRCULATIONS')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>CIRCULATIONS</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'ESPACES COMMUNS')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>ESPACES COMMUNS</span>
-                        </div>
-                    
-                        <div class="ms-option" onclick="toggleFilterVal('fonction', 'STATIONNEMENT')">
-                            <input type="checkbox" class="ms-checkbox" readonly="">
-                            <span>STATIONNEMENT</span>
-                        </div>
-                    
-                </div>
-            </div>
-          
-             </div>
-             <div class="chips-container">
-              
-                <button class="filter-chip inactive" onclick="toggleProgramme('FOYER')">FOYER</button>
-              
-                <button class="filter-chip inactive" onclick="toggleProgramme('RÉSIDENCE')">RÉSIDENCE</button>
-              
-                <button class="filter-chip inactive" onclick="toggleProgramme('COMMUN')">COMMUN</button>
-              
-              
-            </div>
-          </div>
-          
-           <div class="action-bar" style="margin:0; align-self:stretch; display:flex; flex-direction:column; gap:10px;">
-              <button class="btn btn-add" style="flex:1" onclick="openModal('add')">➕ Ajouter local</button>
-              <button class="btn btn-secondary" style="flex:1" onclick="openSettings()">🎨 Gérer Types</button>
-           </div>
-        </div>
-        
-        <div class="tabs">
-          <button class="tab active" onclick="setView('liste')">📋 Liste complète</button>
-          <button class="tab inactive" onclick="setView('actions')">⚠️ Actions requises (0)</button>
-        </div>
-
-        <div class="" style="width: 100%;">
-          <div class="empty-state">Aucun résultat ne correspond à votre recherche.</div>
-        </div>
-
-        <div class="hidden" style="width: 100%;">
-          <div class="empty-state">Aucune action requise</div>
-        </div>
-
-        <div class="footer-legal">
-            Cet outil est la propriété exclusive de BELLECOUR architectes et ne peut être utilisé que dans le cadre des projets développés par le studio
-        </div>
-
-        
-        
-        
-      </div>
+  <div id="app"></div>
 
   <script>
     // New function to safely access localStorage, preventing crashes on file:// protocol
@@ -555,169 +333,34 @@
         }
     }
 
-    // Initial Types
+    // Initial Types (VIDES)
     // __TYPES_START__
     const initialTypes = {
-  "programmes": [
-    {
-      "id": 1,
-      "nom": "FOYER",
-      "couleur": "#3B82F6"
-    },
-    {
-      "id": 2,
-      "nom": "RÉSIDENCE",
-      "couleur": "#06B6D4"
-    },
-    {
-      "id": 3,
-      "nom": "COMMUN",
-      "couleur": "#8B5CF6"
-    }
-  ],
-  "statuts": [
-    {
-      "id": 1,
-      "nom": "À CONFIRMER",
-      "couleur": "#F59E0B",
-      "bgColor": "#FFFBEB",
-      "textColor": "#B45309"
-    },
-    {
-      "id": 2,
-      "nom": "MANQUANT",
-      "couleur": "#EF4444",
-      "bgColor": "#FEF2F2",
-      "textColor": "#B91C1C"
-    },
-    {
-      "id": 3,
-      "nom": "MODIFIÉ",
-      "couleur": "#3B82F6",
-      "bgColor": "#EFF6FF",
-      "textColor": "#1D4ED8"
-    },
-    {
-      "id": 4,
-      "nom": "VALIDÉ",
-      "couleur": "#10B981",
-      "bgColor": "#ECFDF5",
-      "textColor": "#047857"
-    }
-  ],
-  "priorites": [
-    {
-      "id": 1,
-      "nom": "HAUTE",
-      "couleur": "#DC2626",
-      "bgColor": "#FEF2F2",
-      "textColor": "#DC2626"
-    },
-    {
-      "id": 2,
-      "nom": "MOYENNE",
-      "couleur": "#D97706",
-      "bgColor": "#FFFBEB",
-      "textColor": "#D97706"
-    },
-    {
-      "id": 3,
-      "nom": "BASSE",
-      "couleur": "#16A34A",
-      "bgColor": "#ECFDF5",
-      "textColor": "#16A34A"
-    }
-  ],
-  "fonctions": [
-    {
-      "id": 1,
-      "nom": "HÉBERGEMENT"
-    },
-    {
-      "id": 2,
-      "nom": "VIE COLLECTIVE"
-    },
-    {
-      "id": 3,
-      "nom": "RESTAURATION"
-    },
-    {
-      "id": 4,
-      "nom": "LINGERIE"
-    },
-    {
-      "id": 5,
-      "nom": "ADMINISTRATION"
-    },
-    {
-      "id": 6,
-      "nom": "TECHNIQUE"
-    },
-    {
-      "id": 7,
-      "nom": "PERSONNEL"
-    },
-    {
-      "id": 8,
-      "nom": "CIRCULATIONS"
-    },
-    {
-      "id": 9,
-      "nom": "ESPACES COMMUNS"
-    },
-    {
-      "id": 10,
-      "nom": "STATIONNEMENT"
-    }
-  ],
-  "niveaux": [
-    {
-      "id": 1,
-      "nom": "RDC",
-      "bgColor": "#F1F5F9",
-      "textColor": "#334155"
-    },
-    {
-      "id": 2,
-      "nom": "R+1",
-      "bgColor": "#E2E8F0",
-      "textColor": "#1E293B"
-    },
-    {
-      "id": 3,
-      "nom": "R+2",
-      "bgColor": "#CBD5E1",
-      "textColor": "#0F172A"
-    },
-    {
-      "id": 4,
-      "nom": "R+3",
-      "bgColor": "#94A3B8",
-      "textColor": "#FFFFFF"
-    },
-    {
-      "id": 5,
-      "nom": "S-SOL",
-      "bgColor": "#475569",
-      "textColor": "#FFFFFF"
-    },
-    {
-      "id": 6,
-      "nom": "Extérieur",
-      "bgColor": "#ECFDF5",
-      "textColor": "#065F46"
-    }
-  ]
-};
-// __TYPES_END__
+      "programmes": [], // VIDE pour forcer l'import
+      "statuts": [ // On garde les statuts standards pour que l'UI fonctionne
+        { "id": 1, "nom": "À CONFIRMER", "couleur": "#F59E0B", "bgColor": "#FFFBEB", "textColor": "#B45309" },
+        { "id": 2, "nom": "MANQUANT", "couleur": "#EF4444", "bgColor": "#FEF2F2", "textColor": "#B91C1C" },
+        { "id": 3, "nom": "MODIFIÉ", "couleur": "#3B82F6", "bgColor": "#EFF6FF", "textColor": "#1D4ED8" },
+        { "id": 4, "nom": "VALIDÉ", "couleur": "#10B981", "bgColor": "#ECFDF5", "textColor": "#047857" }
+      ],
+      "priorites": [ // On garde les priorités standards
+        { "id": 1, "nom": "HAUTE", "couleur": "#DC2626", "bgColor": "#FEF2F2", "textColor": "#DC2626" },
+        { "id": 2, "nom": "MOYENNE", "couleur": "#D97706", "bgColor": "#FFFBEB", "textColor": "#D97706" },
+        { "id": 3, "nom": "BASSE", "couleur": "#16A34A", "bgColor": "#ECFDF5", "textColor": "#16A34A" }
+      ],
+      "fonctions": [], // VIDE
+      "niveaux": []    // VIDE
+    };
+    // __TYPES_END__
 
-    // Initial Data
+    // Initial Data (VIDES)
     // __DATA_START__
     const initialData = [];
-// __DATA_END__
+    // __DATA_END__
 
     // State - UTILISE safeGetItem
-    let pageTitle = "CLIENT - PROJET";
+    // Titre par défaut "PROJET (Importer données)"
+    let pageTitle = safeGetItem('coffim-page-title') || "PROJET (Importer données)";
     let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));
     let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));
     
@@ -1527,6 +1170,55 @@
       return rows;
     };
 
+    // --- NOUVELLES FONCTIONS D'IMPORT INTELLIGENT ---
+
+    // Fonction utilitaire pour générer des couleurs aléatoires lisibles
+    const getRandomColor = () => {
+        const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#06B6D4', '#EC4899', '#6366F1', '#64748B', '#d946ef', '#f97316'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
+
+    // Synchronise les types (Programmes, Niveaux, Fonctions) avec les données importées
+    const syncTypesWithData = (incomingData) => {
+        const foundProgs = new Set();
+        const foundNiveaux = new Set();
+        const foundFonctions = new Set();
+
+        incomingData.forEach(item => {
+            if(item.programme) foundProgs.add(item.programme);
+            if(item.niveau) foundNiveaux.add(item.niveau);
+            if(item.fonction) foundFonctions.add(item.fonction);
+        });
+
+        // Mise à jour des Programmes
+        foundProgs.forEach(nom => {
+            if (!types.programmes.find(p => p.nom === nom)) {
+                types.programmes.push({ id: getNextId(types.programmes), nom: nom, couleur: getRandomColor() });
+            }
+        });
+
+        // Mise à jour des Niveaux
+        foundNiveaux.forEach(nom => {
+            if (!types.niveaux.find(n => n.nom === nom)) {
+                types.niveaux.push({ 
+                    id: getNextId(types.niveaux), 
+                    nom: nom, 
+                    bgColor: '#F1F5F9', // Gris clair par défaut
+                    textColor: '#334155'
+                });
+            }
+        });
+
+        // Mise à jour des Fonctions
+        foundFonctions.forEach(nom => {
+            if (!types.fonctions.find(f => f.nom === nom)) {
+                types.fonctions.push({ id: getNextId(types.fonctions), nom: nom });
+            }
+        });
+        
+        saveTypes(); // Sauvegarde immédiate des nouvelles structures
+    };
+
     window.importData = () => {
       const input = document.createElement('input'); 
       input.type = 'file'; input.accept = '.json,.csv';
@@ -1539,15 +1231,25 @@
             const text = reader.result;
             const isJson = file.name.toLowerCase().endsWith('.json') || text.trim().startsWith('{');
             let newData = null;
+            
             if (isJson) {
                 const json = JSON.parse(text);
-                if (json.data) { newData = json.data; types = json.types || types; }
+                // Si c'est un JSON complet (avec types), on prend tout
+                if (json.data) { 
+                    newData = json.data; 
+                    // Si le JSON contient des types, on les utilise, sinon on garde les actuels (qui seront enrichis)
+                    if (json.types) types = json.types; 
+                }
             } else {
+                // Import CSV
                 const rows = parseCsv(text);
                 if (rows.length > 1) {
                     newData = rows.slice(1).map(cols => ({
                         id: parseInt(cols[0]) || 0,
-                        programme: cols[1], niveau: cols[2], fonction: cols[3], local: cols[4],
+                        programme: cols[1]?.trim() || "INCONNU",
+                        niveau: cols[2]?.trim() || "INCONNU",
+                        fonction: cols[3]?.trim() || "INCONNU",
+                        local: cols[4],
                         surfUnite: cols[5] ? parseFloat(cols[5].replace(',', '.')) : null,
                         isExt: cols[6] === '1' || cols[6] === 'true',
                         nombre: parseFloat(cols[7]) || 1,
@@ -1557,10 +1259,25 @@
                     })).filter(d => d.local);
                 }
             }
+
             if(newData) { 
-                if(confirm('Remplacer les données ?')) { data = newData; saveData(); saveTypes(); render(); }
-            } else { alert('Format non reconnu'); }
-          } catch(e) { console.error(e); alert('Erreur Import'); }
+                if(confirm('Remplacer les données actuelles par ce fichier ?')) { 
+                    data = newData; 
+                    
+                    // On scanne les nouvelles données pour créer les types manquants
+                    syncTypesWithData(data);
+                    
+                    // Mise à jour du titre basée sur le nom du fichier
+                    const fileName = file.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ").toUpperCase();
+                    if(fileName.includes("PROGRAMMATION")) {
+                        updateTitle(fileName.replace("PROGRAMMATION ", ""));
+                    }
+
+                    saveData(); 
+                    render(); // Tout se met à jour
+                }
+            } else { alert('Format non reconnu ou fichier vide'); }
+          } catch(e) { console.error(e); alert('Erreur lors de l\'importation : ' + e.message); }
         };
         reader.readAsText(file);
       };
@@ -1579,7 +1296,7 @@
         let out = html;
         out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`);
         out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`);
-        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "COFFIM-ALVE";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
+        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "PROJET (Importer données)";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
         const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click();
     };
@@ -1588,6 +1305,4 @@
 
     render();
   </script>
-
-
 </body></html>
