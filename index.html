@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="COFFIM-ALVÉ">
+  <title>PROGRAMMATION</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    /* --- DESIGN SYSTEM V33 --- */
+    :root {
+      /* Palette Dark (Défaut) */
+      --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
+      --bg-hover: #334155; --border-color: #334155;
+      --text-main: #F1F5F9; --text-muted: #94A3B8; --text-inv: #0F172A;
+      
+      --primary: #3B82F6; --primary-hover: #2563EB;
+      --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
+      
+      --radius: 10px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    :root.light {
+      /* Palette Light */
+      --bg-body: #F8FAFC; --bg-card: #FFFFFF; --bg-input: #F1F5F9;
+      --bg-hover: #E2E8F0; --border-color: #CBD5E1;
+      --text-main: #0F172A; --text-muted: #64748B; --text-inv: #FFFFFF;
+      --primary: #2563EB; --primary-hover: #1D4ED8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    html, body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+      background: var(--bg-body); color: var(--text-main); 
+      min-height: 100vh; font-size: 14px; line-height: 1.5; 
+      transition: background-color 0.3s ease, color 0.3s ease; 
+    }
+    body { padding: 20px; padding-bottom: 80px; max-width: 1400px; margin: 0 auto; }
+    
+    /* HEADER */
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    
+    .logo { 
+      width: 48px; height: 48px; 
+      background: linear-gradient(135deg, var(--primary), #8B5CF6); 
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; 
+      font-size: 24px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); color: white; 
+    }
+    
+    .title { font-size: 24px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; cursor: text; border: 1px dashed transparent; border-radius: 6px; padding: 0 6px; transition: all 0.2s; margin-left: -6px; }
+    .title:hover { border-color: var(--border-color); background: var(--bg-hover); }
+    .title:focus { outline: none; border-color: var(--primary); background: var(--bg-input); }
+    .title.locked { cursor: default; border: none; pointer-events: none; }
+    
+    .subtitle { font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+    .firm-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--text-muted); letter-spacing: -0.3px; user-select: none; border-right: 1px solid var(--border-color); padding-right: 16px; }
+    
+    .theme-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 18px; transition: all 0.2s; display:flex; align-items:center; justify-content:center; }
+    .theme-btn:hover { background: var(--bg-hover); transform: translateY(-1px); }
+    
+    .global-tools { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; align-items: center; }
+    
+    /* BUTTONS */
+    .btn { height: 40px; padding: 0 18px; border-radius: var(--radius); font-size: 13px; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; box-shadow: var(--shadow-sm); white-space: nowrap; }
+    .btn:active { transform: translateY(1px); }
+    .btn-add { background: var(--success); color: white; }
+    .btn-add:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+    .btn-secondary { background: var(--bg-card); color: var(--text-main); border-color: var(--border-color); }
+    .btn-secondary:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+    .btn-export { background: #8B5CF6; color: white; }
+    .btn-export:hover { background: #7C3AED; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+    .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-lock { background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border-color); width: 40px; padding: 0; }
+    .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .btn-separator { width: 1px; height: 24px; background: var(--border-color); margin: 0 2px; }
+    .spacer { flex: 1; }
+
+    /* STATS GRID LAYOUT */
+    .stats-grid { 
+        display: grid; 
+        grid-template-columns: 0.7fr 0.7fr 1.3fr 1.3fr; 
+        gap: 20px; 
+        margin-bottom: 32px; 
+    }
+    
+    .card { 
+        background: var(--bg-card); 
+        border: 1px solid var(--border-color); 
+        border-radius: 16px; 
+        padding: 24px; 
+        position: relative; 
+        overflow: hidden; 
+        box-shadow: var(--shadow-md); 
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex; 
+        flex-direction: column; 
+    }
+    .card:hover { box-shadow: var(--shadow-lg); }
+    
+    .stat-main-card { grid-column: span 1; min-height: 120px; }
+    
+    .stat-label { 
+        font-size: 11px; 
+        color: var(--text-muted); 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        margin-bottom: 16px; 
+        display: block;
+        width: 100%;
+    }
+    
+    .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-top: auto; margin-bottom: auto;}
+    .stat-unit { font-size: 16px; color: var(--text-muted); font-weight: 500; margin-left: 4px; }
+    
+    .chart-card { grid-column: span 1; min-height: 160px; }
+    
+    @media (max-width: 1100px) { 
+        .stats-grid { grid-template-columns: repeat(2, 1fr); } 
+    }
+    @media (max-width: 600px) { 
+        .stats-grid { grid-template-columns: 1fr; } 
+        .header-right { width: 100%; justify-content: space-between; } 
+        .firm-name { border: none; } 
+    }
+
+    .chart-content { display: flex; align-items: center; gap: 20px; margin-top: auto; }
+    .donut-container { position: relative; width: 70px; height: 70px; flex-shrink: 0; }
+    .donut { width: 100%; height: 100%; border-radius: 50%; }
+    .donut-hole { position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; background: var(--bg-card); border-radius: 50%; }
+    .legend-list { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+    .legend-info { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+    .legend-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .legend-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: var(--text-muted); }
+    .legend-value { color: var(--text-main); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* FILTERS & SEARCH - RESPONSIVE MODIFICATIONS (v38) */
+    .filter-section { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; }
+    
+    .filter-container { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 12px; 
+        background: var(--bg-card); 
+        padding: 16px; 
+        border-radius: 16px; 
+        border: 1px solid var(--border-color); 
+        box-shadow: var(--shadow-sm); 
+        min-width: 0; 
+    }
+    
+    .search-row { 
+        display: grid;
+        gap: 10px;
+        /* Desktop: Recherche (1fr) / Sélecteur 1 (1.5fr) / Sélecteur 2 (1.5fr) */
+        grid-template-columns: 1fr 1.5fr 1.5fr; 
+    }
+
+    /* Mobile override: stacked layout */
+    @media (max-width: 600px) {
+        .search-row {
+            grid-template-columns: 1fr; /* Force stacking on narrow screens */
+            gap: 12px;
+        }
+    }
+    
+    .search-box { 
+        width: 100%; padding: 10px 14px; border-radius: var(--radius); 
+        border: 1px solid var(--border-color); background: var(--bg-input); 
+        color: var(--text-main); font-size: 14px; transition: border-color 0.2s; 
+        height: 40px; 
+    }
+    .search-box:focus { outline: none; border-color: var(--primary); }
+    .chips-container { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; padding-top: 4px; }
+    .filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; background: var(--bg-card); color: var(--text-muted); }
+    .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .tabs { display: inline-flex; gap: 4px; margin-bottom: 20px; padding: 4px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px; }
+    .tab { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow-sm); }
+    .tab.inactive { background: transparent; color: var(--text-muted); }
+    .tab.inactive:hover { color: var(--text-main); }
+
+    .ms-container { flex: 1; position: relative; }
+    .ms-btn { width: 100%; height: 40px; padding: 0 14px; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 250px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: var(--shadow-lg); display: none; }
+    .ms-dropdown.show { display: block; }
+    .ms-option { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.1s; }
+    .ms-option:hover { background: var(--bg-hover); }
+
+    .text-blue { color: #60A5FA; } .text-green { color: var(--success); }
+    :root.light .text-blue { color: var(--primary); } 
+    
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; font-size: 13px; box-shadow: var(--shadow-md); }
+    .data-table thead { background: var(--bg-input); }
+    .data-table th { padding: 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); cursor: pointer; user-select: none; }
+    .data-table th:hover { color: var(--text-main); background: var(--bg-hover); }
+    .data-table td { padding: 16px; vertical-align: middle; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    .data-table tbody tr { transition: background 0.1s; cursor: pointer; }
+    .data-table tbody tr:hover { background: var(--bg-hover); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .col-num { font-weight: 600; font-variant-numeric: tabular-nums; }
+    
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; letter-spacing: 0.3px; display: inline-block; border: 1px solid transparent; }
+    .badge-local { background: var(--bg-input); color: var(--text-main); border-color: var(--border-color); }
+    
+    .data-row-mobile { display: none; }
+    .data-row { background: var(--bg-card); border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border-color); cursor: pointer; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .data-row-inner { padding: 20px; border-left: 4px solid transparent; }
+    
+    @media (max-width: 899px) { .data-table { display: none; } .data-row-mobile { display: block; } }
+    
+    .btn-clear { width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border-color); font-size: 14px; cursor: pointer;}
+    .btn-clear:hover { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
+    
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+    .modal { background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+    .modal-close { font-size: 24px; color: var(--text-muted); background: none; border: none; cursor: pointer; transition: color 0.2s; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .modal-close:hover { background: var(--bg-hover); color: var(--text-main); }
+    .modal-body { padding: 24px; overflow-y: auto; }
+    
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .form-col-span-2 { grid-column: span 2; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-col-span-2 { grid-column: span 1; } }
+    
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; transition: all 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .form-input:disabled, .form-select:disabled, .form-textarea:disabled { opacity: 0.6; cursor: not-allowed; background: var(--bg-hover); }
+    
+    .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color); }
+    
+    .settings-list { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: var(--bg-input); }
+    .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); }
+    .settings-item:last-child { border-bottom: none; }
+    .settings-item-text { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+    
+    /* Boutons de gestion des types dans la modale */
+    .settings-item-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .btn-action-sm {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        background: var(--bg-input);
+        color: var(--text-muted);
+    }
+    .btn-action-sm:hover {
+        background: var(--bg-hover);
+        color: var(--text-main);
+    }
+    .btn-action-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-action-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+    }
+    
+    .checkbox-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+    .checkbox-input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; border-radius: 4px; }
+    .color-input { width: 100%; height: 40px; cursor: pointer; padding: 0; border: none; border-radius: var(--radius); }
+    
+    .footer-legal { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px; opacity: 0.8; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    
+    .hidden { display: none !important; }
+    
+    .empty-state { 
+        text-align: center; 
+        padding: 80px 20px; 
+        color: var(--text-muted); 
+        font-size: 15px; 
+        background: var(--bg-card); 
+        border-radius: 20px; 
+        border: 1px dashed var(--border-color); 
+        max-width: 100%; 
+    }
+    .sort-icon { display: inline-block; margin-left: 4px; font-size: 10px; opacity: 0.7; }
+  </style>
+<link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('Service Worker enregistré:', reg.scope))
+          .catch(err => console.log('Erreur Service Worker:', err));
+      });
+    }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // New function to safely access localStorage, preventing crashes on file:// protocol
+    function safeGetItem(key) {
+        try {
+            // This can throw a SecurityError in environments like file://
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn(`Erreur d'accès à localStorage pour la clé '${key}'. Utilisation des données intégrées.`);
+            return null; // Force fallback to embedded data
+        }
+    }
+
+    // Initial Types
+    // __TYPES_START__
+    const initialTypes = {
+  "programmes": [
+    { "id": 1, "nom": "FOYER", "couleur": "#3B82F6" }, 
+    { "id": 2, "nom": "RÉSIDENCE", "couleur": "#06B6D4" }, 
+    { "id": 3, "nom": "COMMUN", "couleur": "#8B5CF6" }
+  ],
+  "statuts": [
+    { "id": 1, "nom": "À CONFIRMER", "couleur": "#F59E0B", "bgColor": "#FFFBEB", "textColor": "#B45309" }, 
+    { "id": 2, "nom": "MANQUANT", "couleur": "#EF4444", "bgColor": "#FEF2F2", "textColor": "#B91C1C" }, 
+    { "id": 3, "nom": "MODIFIÉ", "couleur": "#3B82F6", "bgColor": "#EFF6FF", "textColor": "#1D4ED8" }, 
+    { "id": 4, "nom": "VALIDÉ", "couleur": "#10B981", "bgColor": "#ECFDF5", "textColor": "#047857" }
+  ],
+  "priorites": [
+    { "id": 1, "nom": "HAUTE", "couleur": "#DC2626", "bgColor": "#FEF2F2", "textColor": "#DC2626" }, 
+    { "id": 2, "nom": "MOYENNE", "couleur": "#D97706", "bgColor": "#FFFBEB", "textColor": "#D97706" }, 
+    { "id": 3, "nom": "BASSE", "couleur": "#16A34A", "bgColor": "#ECFDF5", "textColor": "#16A34A" }
+  ],
+  "fonctions": [
+    { "id": 1, "nom": "HÉBERGEMENT" }, { "id": 2, "nom": "VIE COLLECTIVE" }, { "id": 3, "nom": "RESTAURATION" }, 
+    { "id": 4, "nom": "LINGERIE" }, { "id": 5, "nom": "ADMINISTRATION" }, { "id": 6, "nom": "TECHNIQUE" }, 
+    { "id": 7, "nom": "PERSONNEL" }, { "id": 8, "nom": "CIRCULATIONS" }, { "id": 9, "nom": "ESPACES COMMUNS" }, 
+    { "id": 10, "nom": "STATIONNEMENT" }
+  ],
+  "niveaux": [
+      { "id": 1, "nom": "RDC", "bgColor": "#F1F5F9", "textColor": "#334155" },
+      { "id": 2, "nom": "R+1", "bgColor": "#E2E8F0", "textColor": "#1E293B" },
+      { "id": 3, "nom": "R+2", "bgColor": "#CBD5E1", "textColor": "#0F172A" },
+      { "id": 4, "nom": "R+3", "bgColor": "#94A3B8", "textColor": "#FFFFFF" },
+      { "id": 5, "nom": "S-SOL", "bgColor": "#475569", "textColor": "#FFFFFF" },
+      { "id": 6, "nom": "Extérieur", "bgColor": "#ECFDF5", "textColor": "#065F46" }
+  ]
+};
+    // __TYPES_END__
+
+    // Initial Data
+    // __DATA_START__
+    const initialData = [
+  { "id": 1, "programme": "FOYER", "niveau": "RDC", "fonction": "HÉBERGEMENT", "local": "22 chambres PMR", "surfUnite": null, "isExt": false, "sueInt": 428, "sueExt": null, "details": "24 m²/chambre + SDE PMR + placards", "statut": null, "priorite": null, "action": null },
+  { "id": 2, "programme": "FOYER", "niveau": "RDC", "fonction": "HÉBERGEMENT", "local": "Balcons privatifs", "surfUnite": null, "isExt": true, "sueInt": null, "sueExt": 88, "details": "4 m²/chambre - hors SDP", "statut": null, "priorite": null, "action": null }
+];
+    // __DATA_END__
+
+    // State - UTILISE safeGetItem
+    let pageTitle = safeGetItem('coffim-page-title') || "COFFIM-ALVE";
+    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));
+    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));
+    
+    // LOCKED MODE STATE
+    let isLocked = safeGetItem('coffim-locked') === 'true';
+
+    let filters = { programme: [], search: '', niveau: [], fonction: [] };
+    let currentView = 'liste';
+    let modalItem = null;
+    let modalType = null;
+    let settingsModal = false;
+    let clearModal = false;
+    let editingType = null;
+    let editingTypeItem = null;
+    let sortCol = null;
+    let sortAsc = true;
+    let openDropdown = null; 
+    
+    // Theme Management
+    let isLightMode = safeGetItem('coffim-theme') === 'light';
+    if (isLightMode) document.documentElement.classList.add('light');
+
+    function toggleTheme() {
+      isLightMode = !isLightMode;
+      if (isLightMode) document.documentElement.classList.add('light');
+      else document.documentElement.classList.remove('light');
+      localStorage.setItem('coffim-theme', isLightMode ? 'light' : 'dark');
+      render(); 
+    }
+    
+    function toggleLock() {
+        isLocked = !isLocked;
+        try { localStorage.setItem('coffim-locked', isLocked); } catch(e) {} // Safe save
+        render();
+    }
+
+    const saveData = () => { try { localStorage.setItem('coffim-alve-data', JSON.stringify(data)); } catch(e) {} };
+    const saveTypes = () => { try { localStorage.setItem('coffim-alve-types', JSON.stringify(types)); } catch(e) {} };
+    
+    const safe = (str) => {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    };
+
+    // HARMONIZED CHART PALETTE (Bellecour)
+    const chartPalette = [
+        '#3B82F6', // Blue
+        '#10B981', // Emerald
+        '#8B5CF6', // Violet
+        '#F59E0B', // Amber
+        '#06B6D4', // Cyan
+        '#6366F1', // Indigo
+        '#EC4899', // Pink
+        '#64748B', // Slate
+    ];
+
+    // Colors for Badges (Fallback)
+    const niceColors = [
+        {bg:'#DBEAFE', txt:'#1E40AF'}, {bg:'#D1FAE5', txt:'#065F46'},
+        {bg:'#FEE2E2', txt:'#991B1B'}, {bg:'#FEF3C7', txt:'#92400E'},
+        {bg:'#E0E7FF', txt:'#3730A3'}, {bg:'#FAE8FF', txt:'#86198F'},
+    ];
+    const getAutoBadgeStyle = (str) => {
+        if(!str) return {bg:'var(--bg-input)', txt:'var(--text-muted)'};
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        const idx = Math.abs(hash) % niceColors.length;
+        return niceColors[idx];
+    };
+
+    const getProgrammeColor = (nom) => {
+      const p = types.programmes.find(p => p.nom === nom);
+      return p ? p.couleur : '#64748B';
+    };
+    
+    const getStatutStyle = (nom) => {
+      const s = types.statuts.find(s => s.nom === nom);
+      return s ? { bg: s.bgColor, text: s.textColor } : { bg: '#475569', text: '#E2E8F0' };
+    };
+    
+    const getNiveauStyle = (nom) => {
+        const n = types.niveaux.find(x => x.nom === nom);
+        if (n && n.bgColor) return { bg: n.bgColor, txt: n.textColor };
+        return getAutoBadgeStyle(nom);
+    };
+    
+    const getPrioriteStyle = (nom) => {
+      const p = types.priorites.find(p => p.nom === nom);
+      return p ? { bg: p.bgColor, text: p.textColor } : { bg: '#475569', text: '#E2E8F0' };
+    };
+    
+    const priorityOrder = types.priorites.map(p => p.nom); // ['HAUTE', 'MOYENNE', 'BASSE']
+    const getPriorityValue = (item) => item.priorite ? priorityOrder.indexOf(item.priorite) : 999; // Index determines sort order
+
+    const getStats = (items) => {
+      const totalSueInt = items.reduce((a, d) => a + (d.sueInt || 0), 0);
+      const totalSueExt = items.reduce((a, d) => a + (d.sueExt || 0), 0);
+      const actionsRequises = items.filter(d => d.statut).length;
+      
+      const byProgrammeInt = items.reduce((a, d) => { if(d.sueInt > 0) a[d.programme] = (a[d.programme] || 0) + d.sueInt; return a; }, {});
+      const byProgrammeExt = items.reduce((a, d) => { if(d.sueExt > 0) a[d.programme] = (a[d.programme] || 0) + d.sueExt; return a; }, {});
+      
+      const byNiveauInt = items.reduce((a, d) => { if(d.sueInt > 0) a[d.niveau] = (a[d.niveau] || 0) + d.sueInt; return a; }, {});
+      const byNiveauExt = items.reduce((a, d) => { if(d.sueExt > 0) a[d.niveau] = (a[d.niveau] || 0) + d.sueExt; return a; }, {});
+      
+      return { totalSueInt, totalSueExt, actionsRequises, byProgrammeInt, byProgrammeExt, byNiveauInt, byNiveauExt };
+    };
+
+    const getFiltered = () => data.filter(d => {
+      if (filters.programme.length && !filters.programme.includes(d.programme)) return false;
+      if (filters.niveau.length && !filters.niveau.includes(d.niveau)) return false;
+      if (filters.fonction.length && !filters.fonction.includes(d.fonction)) return false;
+      if (filters.search && !d.local.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      return true;
+    });
+    
+    const getSorted = (items) => {
+      if (!sortCol) return items;
+      return [...items].sort((a, b) => {
+        let valA = a[sortCol]; let valB = b[sortCol];
+        if (valA === valB) return 0;
+        if (valA == null) return 1; if (valB == null) return -1;
+        if (typeof valA === 'string' && typeof valB === 'string') return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(a);
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+      });
+    };
+
+    const getNextId = (arr) => Math.max(...arr.map(i => i.id), 0) + 1;
+
+    const getConicGradient = (entries, total, colorCallback, isDefaultPalette) => {
+      if (!total || total === 0) return 'var(--bg-input) 0% 100%';
+      let gradient = []; let currentDeg = 0;
+      entries.forEach(([key, value], idx) => {
+        const percent = (value / total) * 100;
+        const color = isDefaultPalette ? chartPalette[idx % chartPalette.length] : colorCallback(key);
+        gradient.push(`${color} ${currentDeg}% ${currentDeg + percent}%`);
+        currentDeg += percent;
+      });
+      return gradient.join(', ');
+    };
+
+    window.addEventListener('click', (e) => {
+        if (!e.target.closest('.ms-container')) {
+            openDropdown = null;
+            render();
+        }
+    });
+
+    function render() {
+      const activeEl = document.activeElement;
+      const focusedId = activeEl ? activeEl.id : null;
+      const selectionStart = activeEl ? activeEl.selectionStart : null;
+      const selectionEnd = activeEl ? activeEl.selectionEnd : null;
+
+      const filtered = getFiltered();
+      const sorted = getSorted(filtered);
+      const stats = getStats(filtered);
+      
+      // Updated Sorting Logic for Actions (Priority first)
+      const actions = filtered.filter(d => d.statut).sort((a, b) => {
+          const prioA = getPriorityValue(a);
+          const prioB = getPriorityValue(b);
+          return prioA - prioB;
+      });
+      
+      const getSortIcon = (col) => sortCol === col ? (sortAsc ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
+      
+      const renderChartCard = (title, dataObj, total, colorCallback, sortTypesArray = null, usePalette = false) => {
+        const hasData = total > 0;
+        let entries = Object.entries(dataObj);
+        if (sortTypesArray) {
+            entries.sort((a, b) => {
+                const ia = sortTypesArray.findIndex(t => t.nom === a[0]);
+                const ib = sortTypesArray.findIndex(t => t.nom === b[0]);
+                return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+            });
+        }
+        
+        const gradient = hasData ? getConicGradient(entries, total, colorCallback, usePalette) : 'var(--bg-hover) 0% 100%';
+        
+        const listHtml = entries.map(([key, val], idx) => {
+          const pct = Math.round((val/total)*100);
+          const color = usePalette ? chartPalette[idx % chartPalette.length] : colorCallback(key);
+          return `
+            <div class="legend-item">
+              <div class="legend-info">
+                <div class="legend-color" style="background:${color}"></div>
+                <div class="legend-name">${safe(key)}</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <div class="legend-value">${val.toLocaleString('fr-FR')} m²</div>
+                <div class="legend-percent">${pct}%</div>
+              </div>
+            </div>`;
+        }).join('');
+
+        return `
+          <div class="card chart-card">
+            <div class="stat-label">${safe(title)}</div>
+            <div class="chart-content">
+              <div class="donut-container">
+                <div class="donut" style="background: conic-gradient(${gradient})"></div>
+                <div class="donut-hole"></div>
+              </div>
+              <div class="legend-list">
+                ${hasData ? listHtml : '<div class="empty-state" style="padding:0;text-align:left;font-size:12px;border:none;background:transparent;">Aucune donnée</div>'}
+              </div>
+            </div>
+          </div>
+        `;
+      };
+      
+      const renderMultiSelect = (key, label, items) => {
+          const selected = filters[key] || [];
+          const isOpen = openDropdown === key;
+          let btnText = `${label} (Tous)`;
+          if (selected.length === 1) btnText = selected[0];
+          else if (selected.length > 1) btnText = `${label} (${selected.length})`;
+          
+          return `
+            <div class="ms-container" onclick="toggleDropdown(event, '${key}')">
+                <div class="ms-btn">${safe(btnText)} <span class="ms-arrow">▼</span></div>
+                <div class="ms-dropdown ${isOpen ? 'show' : ''}" onclick="event.stopPropagation()">
+                    ${items.map(i => `
+                        <div class="ms-option" onclick="toggleFilterVal('${key}', '${safe(i.nom)}')">
+                            <input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly>
+                            <span>${safe(i.nom)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+          `;
+      };
+
+      document.getElementById('app').innerHTML = `
+        <div class="header">
+          <div class="header-left">
+            <div class="logo">B</div>
+            <div>
+              <div id="page-title" class="title ${isLocked ? 'locked' : ''}" contenteditable="${!isLocked}" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">${safe(pageTitle)}</div>
+              <div class="subtitle">Programmation</div>
+            </div>
+          </div>
+          <div class="header-right">
+              <div class="firm-name">BELLECOUR architectes</div>
+              <button class="theme-btn" onclick="toggleTheme()" title="Changer le thème">
+                ${isLightMode ? '☾' : '☼'}
+              </button>
+          </div>
+        </div>
+
+        <div class="global-tools">
+          <button class="btn btn-lock ${isLocked ? 'locked' : ''}" onclick="toggleLock()" title="${isLocked ? 'Déverrouiller pour éditer' : 'Verrouiller en lecture seule'}">
+            ${isLocked ? '🔒' : '🔓'}
+          </button>
+        
+          <button class="btn btn-primary" onclick="saveHtml()">💾 Sauvegarder</button>
+
+          <div class="btn-separator"></div>
+
+          <button class="btn btn-export" onclick="exportData('csv')">CSV</button>
+          <button class="btn btn-export" onclick="exportData('json')">JSON</button>
+          <button class="btn btn-export" onclick="exportPdf()">PDF</button>
+          
+          <div class="btn-separator"></div>
+
+          ${!isLocked ? `<button class="btn btn-secondary" onclick="importData()">Import</button>` : ''}
+          <div class="spacer"></div>
+          ${!isLocked ? `<button class="btn btn-danger" onclick="openClearModal()">Effacer</button>` : ''}
+        </div>
+
+        <div class="stats-grid">
+          <div class="card stat-main-card">
+            <div class="stat-label">SURFACE PROGRAMME INTERIEUR</div>
+            <div style="margin: auto 0;">
+              <span class="stat-value text-blue">${stats.totalSueInt.toLocaleString('fr-FR')}</span>
+              <span class="stat-unit">m²</span>
+            </div>
+          </div>
+          <div class="card stat-main-card">
+            <div class="stat-label">SURFACE PROGRAMME EXTERIEUR</div>
+            <div style="margin: auto 0;">
+              <span class="stat-value text-green">${stats.totalSueExt.toLocaleString('fr-FR')}</span>
+              <span class="stat-unit">m²</span>
+            </div>
+          </div>
+          
+          ${renderChartCard('REPARTITION PROGRAMME PAR ENTITE', stats.byProgrammeInt, stats.totalSueInt, (k) => getProgrammeColor(k), types.programmes, false)}
+          ${renderChartCard('REPARTITION PROGRAMME PAR NIVEAU', stats.byNiveauInt, stats.totalSueInt, (k) => getNiveauStyle(k).bg, types.niveaux, true)}
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-container">
+             <div class="search-row">
+                <input type="search" id="main-search" class="search-box" placeholder="Rechercher un local..." value="${safe(filters.search)}" oninput="setSearch(this.value)">
+                ${renderMultiSelect('niveau', 'Niveaux', types.niveaux)}
+                ${renderMultiSelect('fonction', 'Fonctions', types.fonctions)}
+             </div>
+             <div class="chips-container">
+              ${types.programmes.map(p => `
+                <button class="filter-chip ${filters.programme.includes(p.nom) ? 'active' : 'inactive'}" 
+                        onclick="toggleProgramme('${safe(p.nom)}')">${safe(p.nom)}</button>
+              `).join('')}
+              ${(filters.programme.length || filters.niveau.length || filters.fonction.length || filters.search) ? `<button class="btn btn-clear" onclick="clearFilters()">✕</button>` : ''}
+            </div>
+          </div>
+          
+           <div class="action-bar" style="margin:0; align-self:stretch; display:flex; flex-direction:column; gap:10px;">
+              ${!isLocked ? `<button class="btn btn-add" style="flex:1" onclick="openModal('add')">➕ Ajouter local</button>` : ''}
+              ${!isLocked ? `<button class="btn btn-secondary" style="flex:1" onclick="openSettings()">🎨 Gérer Types</button>` : ''}
+           </div>
+        </div>
+        
+        <div class="tabs">
+          <button class="tab ${currentView === 'liste' ? 'active' : 'inactive'}" onclick="setView('liste')">📋 Liste complète</button>
+          <button class="tab ${currentView === 'actions' ? 'active' : 'inactive'}" onclick="setView('actions')">⚠️ Actions requises (${stats.actionsRequises})</button>
+        </div>
+
+        <div class="${currentView !== 'liste' ? 'hidden' : ''}" style="width: 100%;">
+          ${sorted.length === 0 ? '<div class="empty-state">Aucun résultat ne correspond à votre recherche.</div>' : `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th onclick="toggleSort('programme')">Programme ${getSortIcon('programme')}</th>
+                <th onclick="toggleSort('niveau')">Niveau ${getSortIcon('niveau')}</th>
+                <th onclick="toggleSort('fonction')">Fonction ${getSortIcon('fonction')}</th>
+                <th onclick="toggleSort('local')">Local ${getSortIcon('local')}</th>
+                <th onclick="toggleSort('surfUnite')" style="text-align:right">S.U. Unit. ${getSortIcon('surfUnite')}</th>
+                <th onclick="toggleSort('isExt')" style="text-align:center">Ext. ${getSortIcon('isExt')}</th>
+                <th onclick="toggleSort('nombre')" style="text-align:center">Nbr ${getSortIcon('nombre')}</th>
+                <th onclick="toggleSort('sueInt')" style="text-align:right">Total Int. ${getSortIcon('sueInt')}</th>
+                <th onclick="toggleSort('sueExt')" style="text-align:right">Total Ext. ${getSortIcon('sueExt')}</th>
+                <th onclick="toggleSort('statut')">Statut ${getSortIcon('statut')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sorted.map(item => {
+                const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
+                const niveauStyle = getNiveauStyle(item.niveau);
+                const fonctionStyle = getAutoBadgeStyle(item.fonction);
+                return `
+                <tr onclick="openModal('edit', ${item.id})">
+                  <td style="color:${getProgrammeColor(item.programme)};font-weight:600">${safe(item.programme)}</td>
+                  <td><span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}">${safe(item.niveau)}</span></td>
+                  <td><span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}">${safe(item.fonction)}</span></td>
+                  <td><span class="badge badge-local">${safe(item.local)}</span></td>
+                  <td style="text-align:right" class="col-num">${item.surfUnite ? item.surfUnite : '–'}</td>
+                  <td style="text-align:center"><span style="font-size:16px; color: var(--text-muted)">${item.isExt ? '●' : ''}</span></td>
+                  <td style="text-align:center">${item.nombre || 1}</td>
+                  <td style="text-align:right;color:${item.sueInt?'var(--primary)':'inherit'};font-weight:${item.sueInt?'600':'400'}" class="col-num">${item.sueInt ? item.sueInt : '–'}</td>
+                  <td style="text-align:right;color:${item.sueExt?'var(--success)':'inherit'};font-weight:${item.sueExt?'600':'400'}" class="col-num">${item.sueExt ? item.sueExt : '–'}</td>
+                  <td>${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}</td>
+                </tr>
+              `}).join('')}
+            </tbody>
+          </table>
+          
+          <div class="data-row-mobile">
+            ${sorted.map(item => {
+              const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
+              const niveauStyle = getNiveauStyle(item.niveau);
+              const fonctionStyle = getAutoBadgeStyle(item.fonction);
+              return `
+              <div class="data-row" onclick="openModal('edit', ${item.id})">
+                <div class="data-row-inner" style="border-left-color:${getProgrammeColor(item.programme)}">
+                  <div class="data-row-header">
+                    <span class="data-row-title">${safe(item.local)} ${(item.nombre && item.nombre > 1) ? `<span style="color:var(--text-muted);font-weight:400">×${item.nombre}</span>` : ''}</span>
+                    <div style="text-align:right">
+                      ${item.sueInt ? `<div style="color:var(--primary);font-weight:700">${item.sueInt} m²</div>` : ''}
+                      ${item.sueExt ? `<div style="color:var(--success);font-weight:700">${item.sueExt} m² (Ext)</div>` : ''}
+                    </div>
+                  </div>
+                  <div class="data-row-meta">
+                    <span class="chip" style="color:${getProgrammeColor(item.programme)};font-weight:700;border-color:transparent">${safe(item.programme)}</span>
+                    <span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}">${safe(item.niveau)}</span>
+                    <span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}">${safe(item.fonction)}</span>
+                    ${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `}).join('')}
+          </div>
+          `}
+        </div>
+
+        <div class="${currentView !== 'actions' ? 'hidden' : ''}" style="width: 100%;">
+          ${actions.length === 0 ? '<div class="empty-state">Aucune action requise</div>' : `
+          <div style="display:flex; flex-direction:column; gap:10px">
+            ${actions.map(item => {
+              const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
+              const prioStyle = item.priorite ? getPrioriteStyle(item.priorite) : null;
+              const niveauStyle = getNiveauStyle(item.niveau);
+              const fonctionStyle = getAutoBadgeStyle(item.fonction);
+              
+              return `
+              <div class="data-row" onclick="openModal('edit', ${item.id})">
+                <div class="data-row-inner" style="border-left-color:${getProgrammeColor(item.programme)}">
+                  
+                  <div class="data-row-header" style="justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+                    <span class="data-row-title">${safe(item.local)}</span>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}; font-weight: 500;">${safe(item.niveau)}</span>
+                        <span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}; font-weight: 500;">${safe(item.fonction)}</span>
+                    </div>
+                  </div>
+                  
+                  ${item.priorite || item.action ? 
+                    // Action box: Priority (badge) & Action (text)
+                    `<div style="font-size:13px; color:var(--text-main); background:var(--bg-input); padding:10px; border-radius:6px; border: 1px solid var(--border-color);">
+                        <div style="display:flex; align-items: center; margin-bottom: 8px; gap: 10px; flex-wrap: wrap;">
+                            <span style="color: var(--primary); font-weight: 600; text-transform: uppercase;">Action Requise :</span>
+                            ${item.priorite ? `<span class="badge" style="background:${prioStyle.bg};color:${prioStyle.text}; font-size:12px;">${safe(item.priorite)}</span>` : ''}
+                        </div>
+                        <div style="font-weight: 500; padding-left: 10px; color: var(--text-muted);">${safe(item.action || 'Aucune action détaillée.')}</div>
+                    </div>` 
+                    : ''}
+                  
+                  <div class="data-row-meta" style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                    <span class="chip" style="color:${getProgrammeColor(item.programme)};font-weight:700;border-color:transparent">${safe(item.programme)}</span>
+                    ${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `}).join('')}
+          </div>
+          `}
+        </div>
+
+        <div class="footer-legal">
+            Cet outil est la propriété exclusive de BELLECOUR architectes et ne peut être utilisé que dans le cadre des projets développés par le studio
+        </div>
+
+        ${modalType ? renderItemModal() : ''}
+        ${settingsModal ? renderSettingsModal() : ''}
+        ${clearModal ? renderClearModal() : ''}
+      `;
+
+      if (focusedId) {
+        const el = document.getElementById(focusedId);
+        if (el) {
+          el.focus();
+          if (selectionStart !== null) { el.setSelectionRange(selectionStart, selectionEnd); }
+        }
+      }
+    }
+
+    // Modal Functions (Same logic, updated HTML structure/Classes)
+    function renderItemModal() {
+      const item = modalItem || { programme: types.programmes[0]?.nom || '', niveau: types.niveaux[0]?.nom || '', fonction: '', local: '', surfUnite: '', isExt: false, sueInt: '', sueExt: '', details: '', statut: '', action: '', priorite: '' };
+      const isEdit = modalType === 'edit';
+      const dis = isLocked ? 'disabled' : '';
+      
+      return `
+        <div class="modal-overlay" onclick="closeModal()">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <span class="modal-title">${isEdit ? (isLocked ? 'Détails du local' : 'Modifier le local') : 'Nouveau local'}</span>
+              <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+              <div class="form-grid">
+                <div><label class="form-label">Programme</label><select ${dis} class="form-select" id="f-programme">${types.programmes.map(p => `<option ${item.programme === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select></div>
+                <div><label class="form-label">Niveau</label><select ${dis} class="form-select" id="f-niveau">${types.niveaux.map(n => `<option ${item.niveau === n.nom ? 'selected' : ''}>${safe(n.nom)}</option>`).join('')}</select></div>
+                <div class="form-col-span-2"><label class="form-label">Fonction</label><select ${dis} class="form-select" id="f-fonction">${types.fonctions.map(f => `<option ${item.fonction === f.nom ? 'selected' : ''}>${safe(f.nom)}</option>`).join('')}</select></div>
+                <div class="form-col-span-2"><label class="form-label">Nom du Local *</label><input ${dis} class="form-input" id="f-local" value="${safe(item.local || '')}" required placeholder="Ex: Bureau direction"></div>
+                <div class="form-col-span-2 checkbox-row"><input ${dis} type="checkbox" class="checkbox-input" id="f-isExt" ${item.isExt ? 'checked' : ''} onchange="calculateAuto()"><label for="f-isExt" style="font-size:13px;cursor:pointer;color:var(--text-main)">Surface extérieure (Terrasse, Parking...)</label></div>
+                
+                <div style="grid-column: span 2; display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+                    <div><label class="form-label">S.U. (m²)</label><input ${dis} type="number" class="form-input" id="f-surfUnite" value="${item.surfUnite || ''}" oninput="calculateAuto()"></div>
+                    <div><label class="form-label">Qté</label><input ${dis} type="number" class="form-input" id="f-nombre" value="${item.nombre || 1}" min="1" oninput="calculateAuto()"></div>
+                    <div><label class="form-label">Total</label><input ${dis} type="number" class="form-input" id="f-totalCalc" value="${item.isExt ? (item.sueExt||0) : (item.sueInt||0)}" readonly style="background:var(--bg-hover);color:var(--text-muted);border-color:transparent"><input type="hidden" id="f-sueInt" value="${item.sueInt || ''}"><input type="hidden" id="f-sueExt" value="${item.sueExt || ''}"></div>
+                </div>
+                
+                <div class="form-col-span-2"><label class="form-label">Détails / Finitions</label><textarea ${dis} class="form-textarea" id="f-details" rows="2">${safe(item.details || '')}</textarea></div>
+                
+                <div><label class="form-label">Statut</label><select ${dis} class="form-select" id="f-statut"><option value="">—</option>${types.statuts.map(s => `<option ${item.statut === s.nom ? 'selected' : ''}>${safe(s.nom)}</option>`).join('')}</select></div>
+                <div><label class="form-label">Priorité</label><select ${dis} class="form-select" id="f-priorite"><option value="">—</option>${types.priorites.map(p => `<option ${item.priorite === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select></div>
+                
+                <div class="form-col-span-2"><label class="form-label">Action / Remarque</label><textarea ${dis} class="form-textarea" id="f-action" rows="1">${safe(item.action || '')}</textarea></div>
+              </div>
+              
+              <div class="form-actions">
+                ${!isLocked && isEdit ? `<button class="btn btn-danger" onclick="deleteItem(${item.id})">Supprimer</button>` : ''}
+                ${!isLocked && isEdit ? `<button class="btn btn-secondary" onclick="duplicateItem(${item.id})">Dupliquer</button>` : ''}
+                <div style="flex:1"></div>
+                <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+                ${!isLocked ? `<button class="btn btn-primary" onclick="saveItem(${isEdit ? item.id : 'null'})">Enregistrer</button>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Settings Modal
+    function renderSettingsModal() {
+      const typeConfigs = [
+        { key: 'programmes', title: 'Programmes', hasColor: true, colorType: 'single' },
+        { key: 'statuts', title: 'Statuts', hasColor: true, colorType: 'badge' },
+        { key: 'priorites', title: 'Priorités', hasColor: true, colorType: 'badge' },
+        { key: 'niveaux', title: 'Niveaux', hasColor: true, colorType: 'badge' },
+        { key: 'fonctions', title: 'Fonctions', hasColor: false }
+      ];
+      return `
+        <div class="modal-overlay" onclick="closeSettings()">
+          <div class="modal" style="max-width: 600px;" onclick="event.stopPropagation()">
+            <div class="modal-header"><span class="modal-title">Configuration</span><button class="modal-close" onclick="closeSettings()">×</button></div>
+            <div class="modal-body">
+              ${typeConfigs.map(cfg => `
+                <div class="settings-section" style="margin-bottom:24px">
+                  <div class="settings-title" style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;letter-spacing:1px">${cfg.title}</div>
+                  <div class="settings-list">
+                    ${types[cfg.key].map(item => `
+                      <div class="settings-item">
+                        <span class="settings-item-text">${cfg.hasColor ? `<span class="legend-color" style="margin-right:10px; width:12px; height:12px; background:${item.couleur || item.bgColor}"></span>` : ''}${safe(item.nom)}</span>
+                        <div class="settings-item-actions">
+                            <button class="btn-action-sm" onclick="moveTypeItem('${cfg.key}', ${item.id}, -1)" title="Monter">▲</button>
+                            <button class="btn-action-sm" onclick="moveTypeItem('${cfg.key}', ${item.id}, 1)" title="Descendre">▼</button>
+                            <button class="btn-action-sm" onclick="editTypeItem('${cfg.key}', ${item.id})" title="Modifier">✎ Éditer</button>
+                            <button class="btn-action-sm btn-action-danger" onclick="deleteTypeItem('${cfg.key}', ${item.id})" title="Supprimer">✕</button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                  <button class="btn btn-primary" style="width:100%; margin-top:8px; font-size:12px; height:32px" onclick="addTypeItem('${cfg.key}')">➕ Ajouter</button>
+                </div>
+              `).join('')}
+              <div class="form-actions"><button class="btn btn-secondary" onclick="resetTypes()">Rétablir défaut</button><button class="btn btn-primary" onclick="closeSettings()">OK</button></div>
+            </div>
+          </div>
+        </div>
+        ${editingType ? renderTypeEditModal() : ''}
+      `;
+    }
+
+    function renderTypeEditModal() {
+      const cfg = { programmes: { hasColor: true, colorType: 'single' }, statuts: { hasColor: true, colorType: 'badge' }, priorites: { hasColor: true, colorType: 'badge' }, fonctions: { hasColor: false }, niveaux: { hasColor: true, colorType: 'badge' } }[editingType];
+      const item = editingTypeItem || { nom: '', couleur: '#3B82F6', bgColor: '#DBEAFE', textColor: '#1E40AF' };
+      const isNew = !editingTypeItem;
+      return `
+        <div class="modal-overlay" onclick="closeTypeEdit()">
+          <div class="modal" style="max-width: 400px;" onclick="event.stopPropagation()">
+            <div class="modal-header"><span class="modal-title">${isNew ? 'Ajouter' : 'Modifier'}</span><button class="modal-close" onclick="closeTypeEdit()">×</button></div>
+            <div class="modal-body">
+              <div class="form-group" style="margin-bottom:16px"><label class="form-label">Intitulé</label><input class="form-input" id="type-nom" value="${safe(item.nom)}"></div>
+              ${cfg.hasColor && cfg.colorType === 'single' ? `<div class="form-group"><label class="form-label">Couleur</label><input type="color" class="color-input" id="type-couleur" value="${item.couleur || '#3B82F6'}" style="width:100%;height:40px;cursor:pointer"></div>` : ''}
+              ${cfg.hasColor && cfg.colorType === 'badge' ? `<div class="form-row" style="display:flex;gap:16px"><div class="form-group" style="flex:1"><label class="form-label">Fond</label><input type="color" class="color-input" id="type-bgColor" value="${item.bgColor || '#DBEAFE'}" style="width:100%;height:40px;cursor:pointer"></div><div class="form-group" style="flex:1"><label class="form-label">Texte</label><input type="color" class="color-input" id="type-textColor" value="${item.textColor || '#1E40AF'}" style="width:100%;height:40px;cursor:pointer"></div></div>` : ''}
+              <div class="form-actions"><button class="btn btn-secondary" onclick="closeTypeEdit()">Annuler</button><button class="btn btn-primary" onclick="saveTypeItem()">Valider</button></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderClearModal() {
+        return `
+        <div class="modal-overlay" onclick="closeClearModal()">
+          <div class="modal" style="max-width: 450px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="border-bottom:none; padding-bottom:0"><span class="modal-title" style="color:var(--danger)">⚠️ Zone de danger</span><button class="modal-close" onclick="closeClearModal()">×</button></div>
+            <div class="modal-body" style="text-align:center; padding-top:10px">
+              <div style="font-size:40px; margin-bottom:16px">🗑️</div><h3 style="color:var(--text-main); margin-bottom:8px">Supprimer toutes les données ?</h3><p style="color:var(--text-muted); font-size:14px; margin-bottom:24px">Cette action est irréversible. Toutes les données locales de ce projet seront perdues.</p>
+              <div class="form-actions" style="justify-content:center; border-top:none; padding-top:0"><button class="btn btn-secondary" onclick="closeClearModal()">Annuler</button><button class="btn btn-danger" onclick="confirmClear()">Confirmer suppression</button></div>
+            </div>
+          </div>
+        </div>
+        `;
+    }
+
+    // Logic Functions
+    window.updateTitle = (text) => {
+      const t = (text || '').trim() || 'PROJET';
+      pageTitle = t;
+      try { localStorage.setItem('coffim-page-title', pageTitle); } catch(e) {}
+    };
+    window.setView = (v) => { currentView = v; render(); };
+    window.setSearch = (s) => { filters.search = s; render(); };
+    
+    window.toggleDropdown = (e, key) => {
+        e.stopPropagation();
+        openDropdown = openDropdown === key ? null : key;
+        render();
+    };
+    window.toggleFilterVal = (key, val) => {
+        const arr = filters[key];
+        const idx = arr.indexOf(val);
+        if (idx >= 0) arr.splice(idx, 1);
+        else arr.push(val);
+        render();
+    };
+    
+    window.moveTypeItem = (key, id, dir) => {
+       const arr = types[key];
+       const idx = arr.findIndex(i => i.id === id);
+       if (idx < 0) return;
+       const newIdx = idx + dir;
+       if (newIdx < 0 || newIdx >= arr.length) return;
+       [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+       saveTypes();
+       render();
+    };
+
+    window.toggleProgramme = (p) => {
+      const i = filters.programme.indexOf(p);
+      if (i >= 0) filters.programme.splice(i, 1);
+      else filters.programme.push(p);
+      render();
+    };
+    window.clearFilters = () => { filters = { programme: [], search: '', niveau: [], fonction: [] }; render(); };
+    window.toggleSort = (col) => {
+      if (sortCol === col) { sortAsc = !sortAsc; } 
+      else { sortCol = col; sortAsc = true; }
+      render();
+    };
+
+    window.openModal = (type, id) => {
+      modalType = type;
+      modalItem = id ? data.find(d => d.id === id) : null;
+      render();
+    };
+    window.closeModal = () => { modalType = null; modalItem = null; render(); };
+    
+    window.openClearModal = () => { clearModal = true; render(); };
+    window.closeClearModal = () => { clearModal = false; render(); };
+    window.confirmClear = () => { data = []; saveData(); clearModal = false; render(); };
+    
+    window.calculateAuto = () => {
+      const nb = parseFloat(document.getElementById('f-nombre').value) || 0;
+      const unit = parseFloat(document.getElementById('f-surfUnite').value) || 0;
+      const isExt = document.getElementById('f-isExt').checked;
+      const total = Math.round(nb * unit * 100) / 100;
+      document.getElementById('f-totalCalc').value = unit > 0 ? total : 0;
+      if (unit > 0) {
+        if (isExt) { document.getElementById('f-sueExt').value = total; document.getElementById('f-sueInt').value = 0; } 
+        else { document.getElementById('f-sueInt').value = total; document.getElementById('f-sueExt').value = 0; }
+      }
+    };
+
+    window.duplicateItem = (id) => {
+      const original = data.find(d => d.id === id);
+      if (!original) return;
+      const newItem = JSON.parse(JSON.stringify(original));
+      newItem.id = getNextId(data);
+      newItem.local = newItem.local + " (Copie)"; 
+      data.push(newItem);
+      saveData();
+      closeModal();
+    };
+    
+    window.saveItem = (id) => {
+      const local = document.getElementById('f-local').value.trim();
+      if (!local) { alert('Nom requis'); return; }
+      
+      const nb = parseFloat(document.getElementById('f-nombre').value) || 1;
+      const unit = parseFloat(document.getElementById('f-surfUnite').value) || 0;
+      const isExt = document.getElementById('f-isExt').checked;
+      let sInt = parseFloat(document.getElementById('f-sueInt').value) || 0;
+      let sExt = parseFloat(document.getElementById('f-sueExt').value) || 0;
+
+      if (unit > 0) {
+        const total = Math.round(nb * unit * 100) / 100;
+        if (isExt) { sExt = total; sInt = 0; } else { sInt = total; sExt = 0; }
+      }
+
+      const item = {
+        programme: document.getElementById('f-programme').value,
+        niveau: document.getElementById('f-niveau').value,
+        fonction: document.getElementById('f-fonction').value,
+        local,
+        nombre: nb,
+        surfUnite: unit || null,
+        isExt: isExt,
+        sueInt: sInt || null,
+        sueExt: sExt || null,
+        details: document.getElementById('f-details').value || null,
+        statut: document.getElementById('f-statut').value || null,
+        priorite: document.getElementById('f-priorite').value || null,
+        action: document.getElementById('f-action').value || null
+      };
+      
+      if (id) { const idx = data.findIndex(d => d.id === id); data[idx] = { ...data[idx], ...item }; } 
+      else { item.id = getNextId(data); data.push(item); }
+      saveData();
+      closeModal();
+    };
+    
+    window.deleteItem = (id) => {
+      if (confirm('Confirmer suppression ?')) { data = data.filter(d => d.id !== id); saveData(); closeModal(); }
+    };
+
+    window.openSettings = () => { settingsModal = true; render(); };
+    window.closeSettings = () => { settingsModal = false; editingType = null; editingTypeItem = null; render(); };
+    window.addTypeItem = (typeKey) => { editingType = typeKey; editingTypeItem = null; render(); };
+    window.editTypeItem = (typeKey, id) => { editingType = typeKey; editingTypeItem = types[typeKey].find(i => i.id === id); render(); };
+    window.deleteTypeItem = (typeKey, id) => {
+      const item = types[typeKey].find(i => i.id === id);
+      if (data.some(d => d[typeKey.slice(0, -1)] === item.nom)) { alert('Type utilisé, impossible de supprimer.'); return; }
+      if (confirm('Supprimer ?')) { types[typeKey] = types[typeKey].filter(i => i.id !== id); saveTypes(); render(); }
+    };
+    window.closeTypeEdit = () => { editingType = null; editingTypeItem = null; render(); };
+    
+    window.saveTypeItem = () => {
+      const nom = document.getElementById('type-nom').value.trim();
+      if (!nom) return;
+      const cfg = editingType === 'programmes' ? 'c' : (['statuts','priorites','niveaux'].includes(editingType) ? 'b' : 'n');
+      
+      let newItem = { nom };
+      if (cfg === 'c') newItem.couleur = document.getElementById('type-couleur').value;
+      if (cfg === 'b') { 
+          newItem.bgColor = document.getElementById('type-bgColor').value; 
+          newItem.textColor = document.getElementById('type-textColor').value; 
+          newItem.couleur = newItem.bgColor; 
+      }
+      
+      if (editingTypeItem) { 
+          const oldName = editingTypeItem.nom;
+          const idx = types[editingType].findIndex(i => i.id === editingTypeItem.id); 
+          types[editingType][idx] = { ...types[editingType][idx], ...newItem }; 
+          
+          if (oldName !== nom) {
+             const dataKey = editingType.slice(0, -1); 
+             let updateCount = 0;
+             data.forEach(d => {
+                 if (d[dataKey] === oldName) { d[dataKey] = nom; updateCount++; }
+             });
+             if(updateCount > 0) saveData();
+          }
+      } 
+      else { 
+          newItem.id = getNextId(types[editingType]); 
+          types[editingType].push(newItem); 
+      }
+      saveTypes();
+      closeTypeEdit();
+    };
+
+    window.resetTypes = () => { if(confirm('Rétablir les types par défaut ?')) { types = JSON.parse(JSON.stringify(initialTypes)); saveTypes(); render(); } };
+
+    const getFileName = (extension) => {
+      const now = new Date();
+      const year = now.getFullYear().toString().slice(-2);
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const hour = now.getHours().toString().padStart(2, '0');
+      const minute = now.getMinutes().toString().padStart(2, '0');
+      const cleanTitle = (pageTitle || 'PROJET').trim().replace(/[^a-z0-9àâçéèêëîïôûùüÿñæœ]/gi, '-');
+      return `PROGRAMMATION-${cleanTitle}-BELLECOUR-architectes-${year}${month}${day}-${hour}${minute}.${extension}`;
+    };
+
+    window.exportData = (format) => {
+      if (format === 'csv') {
+        const headers = ['ID', 'Programme', 'Niveau', 'Fonction', 'Local', 'Surface Unitaire', 'Extérieur', 'Nombre', 'Surface Utile Int.', 'Surface Utile Ext.', 'Détails', 'Statut', 'Priorité', 'Action'];
+        const csvContent = [
+          headers.join(';'),
+          ...data.map(d => [
+            d.id, d.programme, d.niveau, d.fonction, '"' + String(d.local || '').replace(/"/g, '""') + '"',
+            d.surfUnite, d.isExt ? '1' : '0', d.nombre, d.sueInt, d.sueExt,
+            '"' + String(d.details || '').replace(/"/g, '""') + '"', d.statut, d.priorite,
+            '"' + String(d.action || '').replace(/"/g, '""') + '"'
+          ].join(';'))
+        ].join('\n');
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('csv'); a.click();
+      } else {
+        const blob = new Blob([JSON.stringify({ author: "BELLECOUR architectes", data, types }, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('json'); a.click();
+      }
+    };
+
+    window.exportPdf = () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        doc.setFontSize(14);
+        doc.text(`PROGRAMMATION: ${pageTitle}`, 14, 15);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text("BELLECOUR architectes", 297 - 14, 15, { align: 'right' }); 
+        doc.setTextColor(0); 
+        
+        const headers = [['Prog.', 'Niveau', 'Fonction', 'Local', 'S.U.', 'Nb', 'Total Int', 'Total Ext', 'Statut']];
+        const rows = data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite || '-', d.nombre, d.sueInt || '-', d.sueExt || '-', d.statut || '']);
+        doc.autoTable({ head: headers, body: rows, startY: 20, styles: { fontSize: 8 }, headStyles: { fillColor: [59, 130, 246] }, alternateRowStyles: { fillColor: [240, 240, 240] } });
+        doc.save(getFileName('pdf'));
+    };
+
+    const parseCsv = (text) => {
+      const rows = [];
+      let row = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQuotes) {
+          if (c === '"') {
+            if (text[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = false; }
+          } else cur += c;
+        } else {
+          if (c === '"') inQuotes = true;
+          else if (c === ';') { row.push(cur); cur = ''; }
+          else if (c === '\r') continue;
+          else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+          else cur += c;
+        }
+      }
+      if (cur.length || row.length) { row.push(cur); rows.push(row); }
+      return rows;
+    };
+
+    window.importData = () => {
+      const input = document.createElement('input'); 
+      input.type = 'file'; input.accept = '.json,.csv';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const text = reader.result;
+            const isJson = file.name.toLowerCase().endsWith('.json') || text.trim().startsWith('{');
+            let newData = null;
+            if (isJson) {
+                const json = JSON.parse(text);
+                if (json.data) { newData = json.data; types = json.types || types; }
+            } else {
+                const rows = parseCsv(text);
+                if (rows.length > 1) {
+                    newData = rows.slice(1).map(cols => ({
+                        id: parseInt(cols[0]) || 0,
+                        programme: cols[1], niveau: cols[2], fonction: cols[3], local: cols[4],
+                        surfUnite: cols[5] ? parseFloat(cols[5].replace(',', '.')) : null,
+                        isExt: cols[6] === '1' || cols[6] === 'true',
+                        nombre: parseFloat(cols[7]) || 1,
+                        sueInt: cols[8] ? parseFloat(cols[8].replace(',', '.')) : null,
+                        sueExt: cols[9] ? parseFloat(cols[9].replace(',', '.')) : null,
+                        details: cols[10], statut: cols[11], priorite: cols[12], action: cols[13]
+                    })).filter(d => d.local);
+                }
+            }
+            if(newData) { 
+                if(confirm('Remplacer les données ?')) { data = newData; saveData(); saveTypes(); render(); }
+            } else { alert('Format non reconnu'); }
+          } catch(e) { console.error(e); alert('Erreur Import'); }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    };
+    
+    window.saveHtml = () => {
+        const html = document.documentElement.outerHTML;
+        const typesJson = JSON.stringify(types, null, 2);
+        const dataJson = JSON.stringify(data, null, 2);
+        const titleJson = JSON.stringify(pageTitle);
+        const r = (src, start, end, newContent) => {
+            const s = src.indexOf(start); const e = src.indexOf(end);
+            return (s > -1 && e > -1) ? src.slice(0, s) + newContent + src.slice(e + end.length) : src;
+        };
+        let out = html;
+        out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`);
+        out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`);
+        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "COFFIM-ALVE";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
+        const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click();
+    };
+
+    window.resetData = () => { if(confirm('Réinitialiser toutes les données ?')) { data = JSON.parse(JSON.stringify(initialData)); saveData(); render(); } };
+
+    render();
+  </script>
+</body></html>
