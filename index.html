@@ -359,10 +359,15 @@
     // __DATA_END__
 
     // State - UTILISE safeGetItem
+    // Changement des clés de stockage pour forcer le reset (ajout de '-v2')
     // Titre par défaut "PROJET (Importer données)"
-    let pageTitle = safeGetItem('coffim-page-title') || "PROJET (Importer données)";
-    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));
-    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));
+    let pageTitle = safeGetItem('coffim-page-title-v2') || "PROJET (Importer données)";
+    
+    // On change 'coffim-alve-data' en 'coffim-alve-data-v2'
+    let data = JSON.parse(safeGetItem('coffim-alve-data-v2')) || JSON.parse(JSON.stringify(initialData));
+    
+    // On change 'coffim-alve-types' en 'coffim-alve-types-v2'
+    let types = JSON.parse(safeGetItem('coffim-alve-types-v2')) || JSON.parse(JSON.stringify(initialTypes));
     
     // LOCKED MODE STATE
     let isLocked = safeGetItem('coffim-locked') === 'true';
@@ -397,8 +402,9 @@
         render();
     }
 
-    const saveData = () => { try { localStorage.setItem('coffim-alve-data', JSON.stringify(data)); } catch(e) {} };
-    const saveTypes = () => { try { localStorage.setItem('coffim-alve-types', JSON.stringify(types)); } catch(e) {} };
+    // Mise à jour des fonctions de sauvegarde avec les nouvelles clés v2
+    const saveData = () => { try { localStorage.setItem('coffim-alve-data-v2', JSON.stringify(data)); } catch(e) {} };
+    const saveTypes = () => { try { localStorage.setItem('coffim-alve-types-v2', JSON.stringify(types)); } catch(e) {} };
     
     const safe = (str) => {
       if (!str) return '';
@@ -935,7 +941,7 @@
     window.updateTitle = (text) => {
       const t = (text || '').trim() || 'PROJET';
       pageTitle = t;
-      try { localStorage.setItem('coffim-page-title', pageTitle); } catch(e) {}
+      try { localStorage.setItem('coffim-page-title-v2', pageTitle); } catch(e) {}
     };
     window.setView = (v) => { currentView = v; render(); };
     window.setSearch = (s) => { filters.search = s; render(); };
@@ -1296,7 +1302,7 @@
         let out = html;
         out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`);
         out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`);
-        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "PROJET (Importer données)";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
+        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title-v2\') || "PROJET (Importer données)";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types-v2\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data-v2')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types-v2')) || JSON.parse(JSON.stringify(initialTypes));`);
         const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click();
     };
