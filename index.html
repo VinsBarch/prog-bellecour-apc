@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CLIENT - PROJET">
+  <meta name="apple-mobile-web-app-title" content="BELLECOUR">
   <title>PROGRAMMATION</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -324,7 +324,7 @@
           <div class="header-left">
             <div class="logo">B</div>
             <div>
-              <div id="page-title" class="title " contenteditable="true" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">CLIENT - PROJET</div>
+              <div id="page-title" class="title " contenteditable="true" onblur="updateTitle(this.innerText)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">PROJET</div>
               <div class="subtitle">Programmation</div>
             </div>
           </div>
@@ -717,12 +717,12 @@
 // __DATA_END__
 
     // State - UTILISE safeGetItem
-    let pageTitle = "CLIENT - PROJET";
-    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));
-    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));
+    let pageTitle = safeGetItem('prog-title') || "PROJET"; // Titre réinitialisé
+    let data = JSON.parse(safeGetItem('prog-data')) || JSON.parse(JSON.stringify(initialData)); // Nouvelle clé
+    let types = JSON.parse(safeGetItem('prog-types')) || JSON.parse(JSON.stringify(initialTypes)); // Nouvelle clé
     
     // LOCKED MODE STATE
-    let isLocked = safeGetItem('coffim-locked') === 'true';
+    let isLocked = safeGetItem('prog-locked') === 'true'; // Nouvelle clé
 
     let filters = { programme: [], search: '', niveau: [], fonction: [] };
     let currentView = 'liste';
@@ -737,25 +737,25 @@
     let openDropdown = null; 
     
     // Theme Management
-    let isLightMode = safeGetItem('coffim-theme') === 'light';
+    let isLightMode = safeGetItem('prog-theme') === 'light';
     if (isLightMode) document.documentElement.classList.add('light');
 
     function toggleTheme() {
       isLightMode = !isLightMode;
       if (isLightMode) document.documentElement.classList.add('light');
       else document.documentElement.classList.remove('light');
-      localStorage.setItem('coffim-theme', isLightMode ? 'light' : 'dark');
+      localStorage.setItem('prog-theme', isLightMode ? 'light' : 'dark');
       render(); 
     }
     
     function toggleLock() {
         isLocked = !isLocked;
-        try { localStorage.setItem('coffim-locked', isLocked); } catch(e) {} // Safe save
+        try { localStorage.setItem('prog-locked', isLocked); } catch(e) {} // Safe save
         render();
     }
 
-    const saveData = () => { try { localStorage.setItem('coffim-alve-data', JSON.stringify(data)); } catch(e) {} };
-    const saveTypes = () => { try { localStorage.setItem('coffim-alve-types', JSON.stringify(types)); } catch(e) {} };
+    const saveData = () => { try { localStorage.setItem('prog-data', JSON.stringify(data)); } catch(e) {} };
+    const saveTypes = () => { try { localStorage.setItem('prog-types', JSON.stringify(types)); } catch(e) {} };
     
     const safe = (str) => {
       if (!str) return '';
@@ -1292,7 +1292,7 @@
     window.updateTitle = (text) => {
       const t = (text || '').trim() || 'PROJET';
       pageTitle = t;
-      try { localStorage.setItem('coffim-page-title', pageTitle); } catch(e) {}
+      try { localStorage.setItem('prog-title', pageTitle); } catch(e) {}
     };
     window.setView = (v) => { currentView = v; render(); };
     window.setSearch = (s) => { filters.search = s; render(); };
@@ -1579,7 +1579,25 @@
         let out = html;
         out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`);
         out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`);
-        out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title\') || "COFFIM-ALVE";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types')) || JSON.parse(JSON.stringify(initialTypes));`);
+        
+        // Remplacement de l'ancien bloc de variables d'état avec les nouvelles valeurs par défaut (PROJET) et clés de localStorage (prog-xxx)
+        const oldStateStart = '    // State - UTILISE safeGetItem';
+        const oldStateEnd = '    let isLocked = safeGetItem(\'coffim-locked\') === \'true\';';
+        const newStateContent = `    // State - UTILISE safeGetItem\n    let pageTitle = safeGetItem('prog-title') || "PROJET"; // Titre réinitialisé\n    let data = JSON.parse(safeGetItem('prog-data')) || JSON.parse(JSON.stringify(initialData)); // Nouvelle clé\n    let types = JSON.parse(safeGetItem('prog-types')) || JSON.parse(JSON.stringify(initialTypes)); // Nouvelle clé\n    \n    // LOCKED MODE STATE\n    let isLocked = safeGetItem('prog-locked') === 'true'; // Nouvelle clé`;
+        
+        const s = out.indexOf(oldStateStart);
+        const e = out.indexOf(oldStateEnd);
+        if (s > -1 && e > -1) {
+             // Utilisation d'une regex pour capturer le contenu original du bloc pour le calcul de la fin.
+            const regex = new RegExp(`(let isLocked = safeGetItem\\('${'coffim-locked'}'\\) === 'true';)`, 's');
+            const endMatch = out.match(regex);
+            
+            if (endMatch) {
+                const endPos = out.indexOf(endMatch[1], s) + endMatch[1].length;
+                out = out.slice(0, s) + newStateContent + out.slice(endPos);
+            }
+        }
+        
         const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click();
     };
