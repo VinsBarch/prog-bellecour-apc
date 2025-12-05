@@ -1198,10 +1198,45 @@
 
     // --- NOUVELLES FONCTIONS D'IMPORT INTELLIGENT ---
 
-    // Fonction utilitaire pour générer des couleurs aléatoires lisibles
-    const getRandomColor = () => {
-        const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#06B6D4', '#EC4899', '#6366F1', '#64748B', '#d946ef', '#f97316'];
-        return colors[Math.floor(Math.random() * colors.length)];
+    // 1. Définition d'une palette stable et étendue (24 couleurs distinctes)
+    const stablePalette = [
+        '#3B82F6', // Blue 500
+        '#EF4444', // Red 500
+        '#10B981', // Emerald 500
+        '#F59E0B', // Amber 500
+        '#8B5CF6', // Violet 500
+        '#EC4899', // Pink 500
+        '#06B6D4', // Cyan 500
+        '#F97316', // Orange 500
+        '#6366F1', // Indigo 500
+        '#84CC16', // Lime 500
+        '#14B8A6', // Teal 500
+        '#D946EF', // Fuchsia 500
+        '#E11D48', // Rose 600
+        '#0EA5E9', // Sky 500
+        '#22C55E', // Green 500
+        '#EAB308', // Yellow 500
+        '#A855F7', // Purple 500
+        '#64748B', // Slate 500
+        '#0284C7', // Sky 600
+        '#7C3AED', // Violet 600
+        '#DB2777', // Pink 600
+        '#EA580C', // Orange 600
+        '#059669', // Emerald 600
+        '#475569'  // Slate 600
+    ];
+
+    // 2. Fonction qui transforme un texte en couleur de façon déterministe
+    const getStableColor = (str) => {
+        if (!str) return stablePalette[stablePalette.length - 1];
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            // Algorithme simple de hachage
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        // Utilisation du modulo pour toujours retomber sur une couleur de la liste
+        const index = Math.abs(hash) % stablePalette.length;
+        return stablePalette[index];
     };
 
     // Synchronise les types (Programmes, Niveaux, Fonctions) avec les données importées
@@ -1216,10 +1251,14 @@
             if(item.fonction) foundFonctions.add(item.fonction);
         });
 
-        // Mise à jour des Programmes
+        // Mise à jour des Programmes avec COULEURS STABLES
         foundProgs.forEach(nom => {
             if (!types.programmes.find(p => p.nom === nom)) {
-                types.programmes.push({ id: getNextId(types.programmes), nom: nom, couleur: getRandomColor() });
+                types.programmes.push({ 
+                    id: getNextId(types.programmes), 
+                    nom: nom, 
+                    couleur: getStableColor(nom) // Ici on utilise la couleur stable
+                });
             }
         });
 
