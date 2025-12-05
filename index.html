@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V40 --- */
+    /* --- DESIGN SYSTEM V5.0 (CORRECTED) --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -43,7 +43,7 @@
       min-height: 100vh; font-size: 14px; line-height: 1.5; 
       transition: background-color 0.3s ease, color 0.3s ease; 
     }
-    body { padding: 20px; padding-bottom: 80px; max-width: 1400px; margin: 0 auto; }
+    body { padding: 20px; padding-bottom: 120px; max-width: 1400px; margin: 0 auto; }
     
     /* HEADER */
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
@@ -258,14 +258,18 @@
     
     .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); font-size: 15px; background: var(--bg-card); border-radius: 20px; border: 1px dashed var(--border-color); max-width: 100%; }
     .sort-icon { display: inline-block; margin-left: 4px; font-size: 10px; opacity: 0.7; }
+    .lock-notice { background: rgba(245,158,11,0.1); color: var(--warning); padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; text-align:center; border: 1px solid rgba(245,158,11,0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
   </style>
-<link rel="manifest" href="/manifest.json">
+  
   <script>
+    // --- FORCE UPDATE / CACHE BUSTER ---
+    // Ce script supprime de force les anciens Service Workers pour s'assurer que vous voyez la dernière version
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(reg => console.log('Service Worker enregistré:', reg.scope))
-          .catch(err => console.log('Erreur Service Worker:', err));
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.log('Ancien Service Worker supprimé pour forcer la mise à jour.');
+        }
       });
     }
   </script>
@@ -309,7 +313,7 @@
     const initialData = [];
     // __DATA_END__
 
-    // State - UTILISE safeGetItem
+    // State
     let pageTitle = safeGetItem('coffim-page-title-v2') || "PROJET (Importer données)";
     let data = JSON.parse(safeGetItem('coffim-alve-data-v2')) || JSON.parse(JSON.stringify(initialData));
     let types = JSON.parse(safeGetItem('coffim-alve-types-v2')) || JSON.parse(JSON.stringify(initialTypes));
@@ -319,6 +323,7 @@
     // BATCH STATE
     let selectedIds = new Set();
     let batchField = 'statut';
+    let batchValue = ''; // Stocke la valeur du champ batch pour ne pas la perdre au re-render
 
     let filters = { programme: [], search: '', niveau: [], fonction: [] };
     let currentView = 'liste';
@@ -345,6 +350,7 @@
     
     function toggleLock() {
         isLocked = !isLocked;
+        if(isLocked) selectedIds.clear(); // Clear selection on lock
         try { localStorage.setItem('coffim-locked', isLocked); } catch(e) {} 
         render();
     }
@@ -368,26 +374,10 @@
         return niceColors[idx];
     };
 
-    const getProgrammeColor = (nom) => {
-      const p = types.programmes.find(p => p.nom === nom);
-      return p ? p.couleur : '#64748B';
-    };
-    
-    const getStatutStyle = (nom) => {
-      const s = types.statuts.find(s => s.nom === nom);
-      return s ? { bg: s.bgColor, text: s.textColor } : { bg: '#475569', text: '#E2E8F0' };
-    };
-    
-    const getNiveauStyle = (nom) => {
-        const n = types.niveaux.find(x => x.nom === nom);
-        if (n && n.bgColor) return { bg: n.bgColor, txt: n.textColor };
-        return getAutoBadgeStyle(nom);
-    };
-    
-    const getPrioriteStyle = (nom) => {
-      const p = types.priorites.find(p => p.nom === nom);
-      return p ? { bg: p.bgColor, text: p.textColor } : { bg: '#475569', text: '#E2E8F0' };
-    };
+    const getProgrammeColor = (nom) => { const p = types.programmes.find(p => p.nom === nom); return p ? p.couleur : '#64748B'; };
+    const getStatutStyle = (nom) => { const s = types.statuts.find(s => s.nom === nom); return s ? { bg: s.bgColor, text: s.textColor } : { bg: '#475569', text: '#E2E8F0' }; };
+    const getNiveauStyle = (nom) => { const n = types.niveaux.find(x => x.nom === nom); if (n && n.bgColor) return { bg: n.bgColor, txt: n.textColor }; return getAutoBadgeStyle(nom); };
+    const getPrioriteStyle = (nom) => { const p = types.priorites.find(p => p.nom === nom); return p ? { bg: p.bgColor, text: p.textColor } : { bg: '#475569', text: '#E2E8F0' }; };
     
     const priorityOrder = types.priorites.map(p => p.nom); 
     const getPriorityValue = (item) => item.priorite ? priorityOrder.indexOf(item.priorite) : 999; 
@@ -458,25 +448,33 @@
         render();
     };
     
-    window.setBatchField = (val) => { batchField = val; render(); };
+    window.setBatchField = (val) => { 
+        batchField = val; 
+        batchValue = ''; // Reset value when changing field
+        render(); 
+    };
+    
+    // Store batch value when user types or selects
+    window.setBatchValue = (val) => {
+        batchValue = val;
+        // No need to render here usually, but if we want to be safe:
+        // render(); // Optional, focus might be lost if we re-render on input
+    }
 
     window.applyBatch = () => {
-        let val = null;
-        if (['statut', 'priorite', 'programme', 'niveau', 'fonction'].includes(batchField)) {
-             val = document.getElementById('batch-select-input').value;
-        } else {
-             val = document.getElementById('batch-text-input').value;
-        }
+        let val = batchValue;
+        if (!val && confirm("Appliquer une valeur vide ?") === false) return;
         
         if (confirm(`Appliquer cette modification à ${selectedIds.size} élément(s) ?`)) {
             data.forEach(item => { if (selectedIds.has(item.id)) item[batchField] = val; });
             saveData();
             selectedIds.clear(); 
+            batchValue = '';
             render();
         }
     };
     
-    window.cancelBatch = () => { selectedIds.clear(); render(); };
+    window.cancelBatch = () => { selectedIds.clear(); batchValue = ''; render(); };
 
     function renderBatchBar() {
         if (selectedIds.size === 0 || isLocked) return '';
@@ -492,12 +490,15 @@
         ];
 
         let inputHtml = '';
-        if (batchField === 'statut') inputHtml = `<select id="batch-select-input" class="batch-select"><option value="">—</option>${types.statuts.map(s => `<option>${safe(s.nom)}</option>`).join('')}</select>`;
-        else if (batchField === 'priorite') inputHtml = `<select id="batch-select-input" class="batch-select"><option value="">—</option>${types.priorites.map(p => `<option>${safe(p.nom)}</option>`).join('')}</select>`;
-        else if (batchField === 'niveau') inputHtml = `<select id="batch-select-input" class="batch-select">${types.niveaux.map(n => `<option>${safe(n.nom)}</option>`).join('')}</select>`;
-        else if (batchField === 'programme') inputHtml = `<select id="batch-select-input" class="batch-select">${types.programmes.map(p => `<option>${safe(p.nom)}</option>`).join('')}</select>`;
-        else if (batchField === 'fonction') inputHtml = `<select id="batch-select-input" class="batch-select">${types.fonctions.map(f => `<option>${safe(f.nom)}</option>`).join('')}</select>`;
-        else inputHtml = `<input id="batch-text-input" class="batch-input" placeholder="Nouvelle valeur...">`;
+        const onChg = 'onchange="setBatchValue(this.value)"';
+        const onInp = 'oninput="setBatchValue(this.value)"'; // For text input
+        
+        if (batchField === 'statut') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.statuts.map(s => `<option ${batchValue === s.nom ? 'selected' : ''}>${safe(s.nom)}</option>`).join('')}</select>`;
+        else if (batchField === 'priorite') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.priorites.map(p => `<option ${batchValue === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select>`;
+        else if (batchField === 'niveau') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.niveaux.map(n => `<option ${batchValue === n.nom ? 'selected' : ''}>${safe(n.nom)}</option>`).join('')}</select>`;
+        else if (batchField === 'programme') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.programmes.map(p => `<option ${batchValue === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select>`;
+        else if (batchField === 'fonction') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.fonctions.map(f => `<option ${batchValue === f.nom ? 'selected' : ''}>${safe(f.nom)}</option>`).join('')}</select>`;
+        else inputHtml = `<input id="batch-text-input" class="batch-input" placeholder="Nouvelle valeur..." value="${safe(batchValue)}" ${onInp}>`;
 
         return `
             <div class="batch-bar visible">
@@ -591,6 +592,8 @@
           <div class="spacer"></div>
           ${!isLocked ? `<button class="btn btn-danger" onclick="openClearModal()">Effacer</button>` : ''}
         </div>
+        
+        ${isLocked ? `<div class="lock-notice">🔒 Mode lecture seule actif. Déverrouillez le cadenas pour modifier les données ou utiliser la sélection multiple.</div>` : ''}
 
         <div class="stats-grid">
           <div class="card stat-main-card">
@@ -699,10 +702,14 @@
               const prioStyle = item.priorite ? getPrioriteStyle(item.priorite) : null;
               const niveauStyle = getNiveauStyle(item.niveau);
               const fonctionStyle = getAutoBadgeStyle(item.fonction);
-              return `<div class="data-row" onclick="openModal('edit', ${item.id})">
+              const isSelected = selectedIds.has(item.id);
+              return `<div class="data-row" onclick="openModal('edit', ${item.id})" style="${isSelected ? 'background:var(--bg-hover);border-color:var(--primary)' : ''}">
                 <div class="data-row-inner" style="border-left-color:${getProgrammeColor(item.programme)}">
                   <div class="data-row-header" style="justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
-                    <span class="data-row-title">${safe(item.local)}</span>
+                    <div style="display:flex;align-items:center;">
+                        ${!isLocked ? `<input type="checkbox" class="row-checkbox" style="margin-right:12px" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectRow(${item.id})">` : ''}
+                        <span class="data-row-title">${safe(item.local)}</span>
+                    </div>
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                         <span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}; font-weight: 500;">${safe(item.niveau)}</span>
                         <span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}; font-weight: 500;">${safe(item.fonction)}</span>
