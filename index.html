@@ -754,49 +754,6 @@
           `}
         </div>
 
-        <div class="${currentView !== 'actions' ? 'hidden' : ''}" style="width: 100%;">
-          ${actions.length === 0 ? '<div class="empty-state">Aucune action requise</div>' : `
-          <div style="display:flex; flex-direction:column; gap:10px">
-            ${actions.map(item => {
-              const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
-              const prioStyle = item.priorite ? getPrioriteStyle(item.priorite) : null;
-              const niveauStyle = getNiveauStyle(item.niveau);
-              const fonctionStyle = getAutoBadgeStyle(item.fonction);
-              
-              return `
-              <div class="data-row" onclick="openModal('edit', ${item.id})">
-                <div class="data-row-inner" style="border-left-color:${getProgrammeColor(item.programme)}">
-                  
-                  <div class="data-row-header" style="justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
-                    <span class="data-row-title">${safe(item.local)}</span>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}; font-weight: 500;">${safe(item.niveau)}</span>
-                        <span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}; font-weight: 500;">${safe(item.fonction)}</span>
-                    </div>
-                  </div>
-                  
-                  ${item.priorite || item.action ? 
-                    // Action box: Priority (badge) & Action (text)
-                    `<div style="font-size:13px; color:var(--text-main); background:var(--bg-input); padding:10px; border-radius:6px; border: 1px solid var(--border-color);">
-                        <div style="display:flex; align-items: center; margin-bottom: 8px; gap: 10px; flex-wrap: wrap;">
-                            <span style="color: var(--primary); font-weight: 600; text-transform: uppercase;">Action Requise :</span>
-                            ${item.priorite ? `<span class="badge" style="background:${prioStyle.bg};color:${prioStyle.text}; font-size:12px;">${safe(item.priorite)}</span>` : ''}
-                        </div>
-                        <div style="font-weight: 500; padding-left: 10px; color: var(--text-muted);">${safe(item.action || 'Aucune action détaillée.')}</div>
-                    </div>` 
-                    : ''}
-                  
-                  <div class="data-row-meta" style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
-                    <span class="chip" style="color:${getProgrammeColor(item.programme)};font-weight:700;border-color:transparent">${safe(item.programme)}</span>
-                    ${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}
-                  </div>
-                </div>
-              </div>
-            `}).join('')}
-          </div>
-          `}
-        </div>
-
         <div class="footer-legal">
             Cet outil est la propriété exclusive de BELLECOUR architectes et ne peut être utilisé que dans le cadre des projets développés par le studio
         </div>
@@ -1126,6 +1083,7 @@
 
     window.resetTypes = () => { if(confirm('Rétablir les types par défaut ?')) { types = JSON.parse(JSON.stringify(initialTypes)); saveTypes(); render(); } };
 
+    // --- MISE À JOUR NOMENCLATURE EXPORT ---
     const getFileName = (extension) => {
       const now = new Date();
       const year = now.getFullYear().toString().slice(-2);
@@ -1133,8 +1091,9 @@
       const day = now.getDate().toString().padStart(2, '0');
       const hour = now.getHours().toString().padStart(2, '0');
       const minute = now.getMinutes().toString().padStart(2, '0');
-      const cleanTitle = (pageTitle || 'PROJET').trim().replace(/[^a-z0-9àâçéèêëîïôûùüÿñæœ]/gi, '-');
-      return `PROGRAMMATION-${cleanTitle}-BELLECOUR-architectes-${year}${month}${day}-${hour}${minute}.${extension}`;
+      const cleanTitle = (pageTitle || 'PROJET').trim().replace(/[^a-z0-9àâçéèêëîïôûùüÿñæœ]/gi, '-').toUpperCase();
+      // Format : SBA-[CLIENT-PROJET]-[YYMMDD]-[HHMM]
+      return `SBA-${cleanTitle}-${year}${month}${day}-${hour}${minute}.${extension}`;
     };
 
     window.exportData = (format) => {
@@ -1332,11 +1291,21 @@
                     // On scanne les nouvelles données pour créer les types manquants
                     syncTypesWithData(data);
                     
-                    // Mise à jour du titre basée sur le nom du fichier
-                    const fileName = file.name.replace(/\.[^/.]+$/, "").replace(/-/g, " ").toUpperCase();
-                    if(fileName.includes("PROGRAMMATION")) {
-                        updateTitle(fileName.replace("PROGRAMMATION ", ""));
+                    // --- MISE À JOUR TITRE IMPORT AMELIOREE ---
+                    // On extrait le nom sans l'extension
+                    let fileName = file.name.replace(/\.[^/.]+$/, ""); 
+                    
+                    // Si le nom commence par "SBA-", on l'enlève
+                    if (fileName.toUpperCase().startsWith("SBA-")) {
+                        fileName = fileName.substring(4);
                     }
+                    
+                    // On enlève le pattern de date à la fin (ex: -231205-1430)
+                    // Regex : tiret, 6 chiffres, tiret, 4 chiffres, fin de chaine
+                    fileName = fileName.replace(/-\d{6}-\d{4}$/, "");
+
+                    // On nettoie les tirets restants et les espaces
+                    updateTitle(fileName.replace(/-/g, " ").trim());
 
                     saveData(); 
                     render(); // Tout se met à jour
