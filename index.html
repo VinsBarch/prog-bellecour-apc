@@ -992,7 +992,27 @@
     
     window.openClearModal = () => { clearModal = true; render(); };
     window.closeClearModal = () => { clearModal = false; render(); };
-    window.confirmClear = () => { data = []; saveData(); clearModal = false; render(); };
+    
+    // --- FONCTION DE SUPPRESSION MISE À JOUR (RESET COMPLET) ---
+    window.confirmClear = () => { 
+        // 1. Vider les locaux
+        data = []; 
+        
+        // 2. Remettre les types à zéro (garder seulement statuts/priorités par défaut)
+        // Utilisation de JSON.parse/stringify pour éviter les références partagées
+        types = JSON.parse(JSON.stringify(initialTypes));
+        
+        // 3. Remettre le titre par défaut
+        updateTitle("PROJET (Importer données)");
+        
+        // 4. Sauvegarder le tout
+        saveData(); 
+        saveTypes(); 
+        
+        // 5. Fermer et rafraîchir
+        clearModal = false; 
+        render(); 
+    };
     
     window.calculateAuto = () => {
       const nb = parseFloat(document.getElementById('f-nombre').value) || 0;
