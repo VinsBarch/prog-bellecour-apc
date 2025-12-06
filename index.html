@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.3 (Large & Airy) --- */
+    /* --- DESIGN SYSTEM V5.4 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -21,7 +21,7 @@
       --primary: #3B82F6; --primary-hover: #2563EB;
       --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
       
-      --radius: 12px; /* Arrondis légèrement augmentés */
+      --radius: 12px;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -40,7 +40,7 @@
     html, body { 
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
       background: var(--bg-body); color: var(--text-main); 
-      min-height: 100vh; font-size: 15px; /* Base augmentée */
+      min-height: 100vh; font-size: 15px; 
       line-height: 1.6; 
       transition: background-color 0.3s ease, color 0.3s ease; 
     }
@@ -178,41 +178,15 @@
     .text-blue { color: #60A5FA; } .text-green { color: var(--success); }
     :root.light .text-blue { color: var(--primary); } 
     
-    /* --- TABLE STYLING IMPROVED --- */
-    .data-table { 
-        width: 100%; 
-        border-collapse: separate; 
-        border-spacing: 0; 
-        background: var(--bg-card); 
-        border-radius: 20px; /* More rounded */
-        border: 1px solid var(--border-color); 
-        overflow: hidden; 
-        font-size: 15px; /* BIGGER FONT */
-        box-shadow: var(--shadow-md); 
-    }
+    /* --- TABLE STYLING --- */
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; font-size: 15px; box-shadow: var(--shadow-md); }
     .data-table thead { background: var(--bg-input); }
-    .data-table th { 
-        padding: 20px 18px; /* MORE PADDING */
-        text-align: left; 
-        font-size: 12px; 
-        font-weight: 800; 
-        color: var(--text-muted); 
-        text-transform: uppercase; 
-        letter-spacing: 0.8px; 
-        border-bottom: 1px solid var(--border-color); 
-        cursor: pointer; 
-        user-select: none; 
-    }
+    .data-table th { padding: 20px 18px; text-align: left; font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border-color); cursor: pointer; user-select: none; }
     .data-table th:hover { color: var(--text-main); background: var(--bg-hover); }
-    .data-table td { 
-        padding: 22px 18px; /* AIRY CELLS */
-        vertical-align: middle; 
-        border-bottom: 1px solid var(--border-color); 
-        color: var(--text-main); 
-    }
+    .data-table td { padding: 22px 18px; vertical-align: middle; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
     .data-table tbody tr { transition: background 0.15s; cursor: pointer; }
     .data-table tbody tr:hover { background: var(--bg-hover); }
-    .data-table tbody tr:hover td { background: transparent; } /* Clean hover */
+    .data-table tbody tr:hover td { background: transparent; }
     .data-table tbody tr:last-child td { border-bottom: none; }
     .col-num { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 15px; }
     
@@ -639,12 +613,14 @@
 
         <div class="global-tools">
           <button class="btn btn-lock ${isLocked ? 'locked' : ''}" onclick="toggleLock()" title="${isLocked ? 'Déverrouiller pour éditer' : 'Verrouiller en lecture seule'}">${isLocked ? '🔒' : '🔓'}</button>
-          <button class="btn btn-primary" onclick="saveHtml()">💾 Sauvegarder</button>
+          
+          <button class="btn btn-primary" onclick="downloadJson()">💾 Sauvegarder</button>
           <div class="btn-separator"></div>
-          <button class="btn btn-export" onclick="exportData('csv')">CSV</button>
-          <button class="btn btn-export" onclick="exportData('json')">JSON</button>
+
+          <button class="btn btn-export" onclick="exportCsv()">Export CSV</button>
           <button class="btn btn-export" onclick="exportPdf()">PDF</button>
           <div class="btn-separator"></div>
+          
           ${!isLocked ? `<button class="btn btn-secondary" onclick="importData()">Import</button>` : ''}
           <div class="spacer"></div>
           ${!isLocked ? `<button class="btn btn-danger" onclick="openClearModal()">Effacer</button>` : ''}
@@ -1003,16 +979,19 @@
       return `SBA-${cleanTitle}-${year}${month}${day}-${hour}${minute}.${extension}`;
     };
 
-    window.exportData = (format) => {
-      if (format === 'csv') {
+    // --- NOUVELLE FONCTION DE SAUVEGARDE (JSON) ---
+    window.downloadJson = () => {
+        const payload = { author: "BELLECOUR architectes", data, types, pageTitle };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('json'); a.click();
+    };
+
+    // --- FONCTION EXPORT CSV SEULE ---
+    window.exportCsv = () => {
         const headers = ['ID', 'Programme', 'Niveau', 'Fonction', 'Local', 'Surface Unitaire', 'Extérieur', 'Nombre', 'Surface Utile Int.', 'Surface Utile Ext.', 'Détails', 'Statut', 'Priorité', 'Action'];
         const csvContent = [ headers.join(';'), ...data.map(d => [ d.id, d.programme, d.niveau, d.fonction, '"' + String(d.local || '').replace(/"/g, '""') + '"', d.surfUnite, d.isExt ? '1' : '0', d.nombre, d.sueInt, d.sueExt, '"' + String(d.details || '').replace(/"/g, '""') + '"', d.statut, d.priorite, '"' + String(d.action || '').replace(/"/g, '""') + '"' ].join(';')) ].join('\n');
         const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('csv'); a.click();
-      } else {
-        const blob = new Blob([JSON.stringify({ author: "BELLECOUR architectes", data, types }, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('json'); a.click();
-      }
     };
 
     window.exportPdf = () => {
@@ -1089,6 +1068,7 @@
       input.click();
     };
     
+    // Garder cette fonction au cas où vous voudriez sauvegarder le fichier HTML complet, mais elle n'est plus liée au bouton principal
     window.saveHtml = () => {
         const html = document.documentElement.outerHTML;
         const typesJson = JSON.stringify(types, null, 2);
