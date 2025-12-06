@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.6 --- */
+    /* --- DESIGN SYSTEM V5.7 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -21,7 +21,7 @@
       --primary: #3B82F6; --primary-hover: #2563EB;
       --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
       
-      --radius: 14px; /* Arrondis unifiés */
+      --radius: 16px; /* Arrondi unifié pour alignement parfait */
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -72,7 +72,7 @@
     .global-tools { display: flex; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; align-items: center; }
     
     /* BUTTONS */
-    .btn { height: 44px; padding: 0 20px; border-radius: var(--radius); font-size: 14px; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; box-shadow: var(--shadow-sm); white-space: nowrap; }
+    .btn { height: 44px; padding: 0 20px; border-radius: 12px; font-size: 14px; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; box-shadow: var(--shadow-sm); white-space: nowrap; }
     .btn:active { transform: translateY(1px); }
     .btn-add { background: var(--success); color: white; }
     .btn-add:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
@@ -95,7 +95,7 @@
         background: rgba(245,158,11,0.1); 
         color: var(--warning); 
         padding: 0 20px; 
-        border-radius: var(--radius); 
+        border-radius: 12px; 
         border: 1px solid rgba(245,158,11,0.3); 
         display: flex; align-items: center; justify-content: center; gap: 10px; 
         height: 44px; font-size: 13px; font-weight: 600;
@@ -113,7 +113,7 @@
     .card { 
         background: var(--bg-card); 
         border: 1px solid var(--border-color); 
-        border-radius: 18px; 
+        border-radius: var(--radius); /* Harmonisé */
         padding: 28px; 
         position: relative; 
         overflow: hidden; 
@@ -155,7 +155,8 @@
     
     .filter-container { 
         width: 100%; display: flex; flex-direction: column; gap: 16px; 
-        background: var(--bg-card); padding: 20px; border-radius: 18px; 
+        background: var(--bg-card); padding: 20px; 
+        border-radius: var(--radius); /* Harmonisé */
         border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); 
     }
     
@@ -165,13 +166,12 @@
     @media (max-width: 600px) { .search-row { grid-template-columns: 1fr; gap: 16px; } }
     
     .search-box { 
-        width: 100%; padding: 12px 16px; border-radius: var(--radius); 
+        width: 100%; padding: 12px 16px; border-radius: 12px; 
         border: 1px solid var(--border-color); background: var(--bg-input); 
         color: var(--text-main); font-size: 15px; transition: border-color 0.2s; height: 48px; 
     }
     .search-box:focus { outline: none; border-color: var(--primary); }
     
-    /* CHIPS & ACTIONS ROW */
     .filter-actions-row { display: flex; align-items: center; gap: 10px; padding-top: 4px; flex-wrap: wrap; }
     .chips-container { display: flex; flex-wrap: wrap; gap: 10px; }
     
@@ -192,7 +192,7 @@
 
     /* MULTISELECT DROPDOWN */
     .ms-container { flex: 1; position: relative; }
-    .ms-btn { width: 100%; height: 48px; padding: 0 16px; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .ms-btn { width: 100%; height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; margin-top: 8px; max-height: 280px; overflow-y: auto; z-index: 50; padding: 10px; box-shadow: var(--shadow-lg); display: none; }
     .ms-dropdown.show { display: block; }
     .ms-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background 0.1s; }
@@ -201,13 +201,14 @@
     .text-blue { color: #60A5FA; } .text-green { color: var(--success); }
     :root.light .text-blue { color: var(--primary); } 
     
-    /* --- TABLE STYLING V5.6 (SPACIOUS & ALIGNED) --- */
+    /* --- TABLE STYLING V5.7 (FIXED ALIGNMENT) --- */
     .data-table { 
         width: 100%; 
+        max-width: 100%; /* Empêche le débordement */
         border-collapse: separate; 
         border-spacing: 0; 
         background: var(--bg-card); 
-        border-radius: 20px; 
+        border-radius: var(--radius); /* Harmonisé */
         border: 1px solid var(--border-color); 
         overflow: hidden; 
         font-size: 15px; 
@@ -228,17 +229,22 @@
         user-select: none; 
     }
 
-    /* SPECIFIC FIX FOR LEFT SPACING */
-    /* La toute première colonne (que ce soit Checkbox ou Programme) aura toujours ce padding large */
+    /* PADDING SYMETRIQUE POUR ALIGNEMENT VISUEL */
+    /* Gauche (Programme/Check) */
     .data-table th:first-child,
     .data-table td:first-child {
         padding-left: 28px !important; 
+    }
+    /* Droit (Statut) - Aligne visuellement la fin du tableau avec les blocs du dessus */
+    .data-table th:last-child,
+    .data-table td:last-child {
+        padding-right: 28px !important; 
     }
 
     .data-table th:hover { color: var(--text-main); background: var(--bg-hover); }
     
     .data-table td { 
-        padding: 24px 18px; /* Plus d'espace vertical */
+        padding: 24px 18px; 
         vertical-align: middle; 
         border-bottom: 1px solid var(--border-color); 
         color: var(--text-main); 
@@ -275,7 +281,7 @@
     .data-row-mobile { display: none; }
     .data-row { 
         background: var(--bg-card); 
-        border-radius: 20px; /* Plus arrondi */
+        border-radius: var(--radius); /* Harmonisé */
         margin-bottom: 16px; 
         border: 1px solid var(--border-color); 
         cursor: pointer; 
@@ -286,7 +292,7 @@
     .data-row:active { transform: scale(0.98); }
     .data-row-inner { 
         padding: 24px; 
-        border-left: 8px solid transparent; /* Bordure gauche plus épaisse */
+        border-left: 8px solid transparent; 
     }
     
     @media (max-width: 899px) { .data-table { display: none; } .data-row-mobile { display: block; } }
@@ -307,7 +313,7 @@
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-col-span-2 { grid-column: span 1; } }
     
     .form-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.8px; }
-    .form-input, .form-select, .form-textarea { width: 100%; padding: 14px; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 15px; transition: all 0.2s; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 15px; transition: all 0.2s; }
     .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); }
     .form-input:disabled, .form-select:disabled, .form-textarea:disabled { opacity: 0.6; cursor: not-allowed; background: var(--bg-hover); }
     
@@ -326,7 +332,7 @@
     
     .checkbox-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; }
     .checkbox-input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; border-radius: 6px; }
-    .color-input { width: 100%; height: 48px; cursor: pointer; padding: 0; border: none; border-radius: var(--radius); }
+    .color-input { width: 100%; height: 48px; cursor: pointer; padding: 0; border: none; border-radius: 12px; }
     
     .footer-legal { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 13px; opacity: 0.8; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
     
