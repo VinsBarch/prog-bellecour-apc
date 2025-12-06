@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.5 --- */
+    /* --- DESIGN SYSTEM V5.6 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -21,7 +21,7 @@
       --primary: #3B82F6; --primary-hover: #2563EB;
       --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
       
-      --radius: 12px;
+      --radius: 14px; /* Arrondis unifiés */
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -180,7 +180,6 @@
         border: 2px solid transparent; cursor: pointer; transition: all 0.2s; 
         background: var(--bg-card); color: var(--text-muted); border-color: var(--border-color);
     }
-    /* Styles dynamiques appliqués via JS, mais base ici */
     
     .filter-buttons-group { margin-left: auto; display: flex; gap: 10px; }
     @media (max-width: 768px) { .filter-buttons-group { margin-left: 0; width: 100%; } .filter-buttons-group .btn { flex: 1; } }
@@ -202,12 +201,49 @@
     .text-blue { color: #60A5FA; } .text-green { color: var(--success); }
     :root.light .text-blue { color: var(--primary); } 
     
-    /* --- TABLE STYLING --- */
-    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; font-size: 15px; box-shadow: var(--shadow-md); }
+    /* --- TABLE STYLING V5.6 (SPACIOUS & ALIGNED) --- */
+    .data-table { 
+        width: 100%; 
+        border-collapse: separate; 
+        border-spacing: 0; 
+        background: var(--bg-card); 
+        border-radius: 20px; 
+        border: 1px solid var(--border-color); 
+        overflow: hidden; 
+        font-size: 15px; 
+        box-shadow: var(--shadow-md); 
+    }
     .data-table thead { background: var(--bg-input); }
-    .data-table th { padding: 20px 18px; text-align: left; font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border-color); cursor: pointer; user-select: none; }
+    
+    .data-table th { 
+        padding: 20px 18px; 
+        text-align: left; 
+        font-size: 12px; 
+        font-weight: 800; 
+        color: var(--text-muted); 
+        text-transform: uppercase; 
+        letter-spacing: 0.8px; 
+        border-bottom: 1px solid var(--border-color); 
+        cursor: pointer; 
+        user-select: none; 
+    }
+
+    /* SPECIFIC FIX FOR LEFT SPACING */
+    /* La toute première colonne (que ce soit Checkbox ou Programme) aura toujours ce padding large */
+    .data-table th:first-child,
+    .data-table td:first-child {
+        padding-left: 28px !important; 
+    }
+
     .data-table th:hover { color: var(--text-main); background: var(--bg-hover); }
-    .data-table td { padding: 22px 18px; vertical-align: middle; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    
+    .data-table td { 
+        padding: 24px 18px; /* Plus d'espace vertical */
+        vertical-align: middle; 
+        border-bottom: 1px solid var(--border-color); 
+        color: var(--text-main); 
+    }
+    
     .data-table tbody tr { transition: background 0.15s; cursor: pointer; }
     .data-table tbody tr:hover { background: var(--bg-hover); }
     .data-table tbody tr:hover td { background: transparent; }
@@ -215,7 +251,7 @@
     .col-num { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 15px; }
     
     /* BATCH / CHECKBOX STYLES */
-    .checkbox-col { width: 50px; text-align: center !important; padding: 0 !important; }
+    .checkbox-col { width: 50px; text-align: center !important; padding-right: 0 !important; }
     .row-checkbox { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; border-radius: 5px; }
     
     /* BATCH ACTION BAR */
@@ -237,8 +273,21 @@
     .badge-local { background: var(--bg-input); color: var(--text-main); border-color: var(--border-color); font-size: 13px; padding: 6px 14px; }
     
     .data-row-mobile { display: none; }
-    .data-row { background: var(--bg-card); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border-color); cursor: pointer; overflow: hidden; box-shadow: var(--shadow-sm); }
-    .data-row-inner { padding: 24px; border-left: 6px solid transparent; }
+    .data-row { 
+        background: var(--bg-card); 
+        border-radius: 20px; /* Plus arrondi */
+        margin-bottom: 16px; 
+        border: 1px solid var(--border-color); 
+        cursor: pointer; 
+        overflow: hidden; 
+        box-shadow: var(--shadow-sm); 
+        transition: transform 0.15s ease;
+    }
+    .data-row:active { transform: scale(0.98); }
+    .data-row-inner { 
+        padding: 24px; 
+        border-left: 8px solid transparent; /* Bordure gauche plus épaisse */
+    }
     
     @media (max-width: 899px) { .data-table { display: none; } .data-row-mobile { display: block; } }
     
