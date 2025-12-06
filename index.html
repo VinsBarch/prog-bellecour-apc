@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.1 --- */
+    /* --- DESIGN SYSTEM V5.2 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -321,7 +321,7 @@
     // BATCH STATE
     let selectedIds = new Set();
     let batchField = 'statut';
-    let batchValue = ''; // Stocke la valeur du champ batch pour ne pas la perdre au re-render
+    let batchValue = ''; 
 
     let filters = { programme: [], search: '', niveau: [], fonction: [] };
     let currentView = 'liste';
@@ -424,9 +424,6 @@
       return gradient.join(', ');
     };
 
-    // --- CORRECTION CLIQUE GLOBAL (v5.1) ---
-    // On ne rafraîchit la page que si un filtre personnalisé est ouvert et qu'on clique ailleurs.
-    // On ignore le rafraichissement si on interagit avec la barre d'action.
     window.addEventListener('click', (e) => {
         if (openDropdown && !e.target.closest('.ms-container')) {
             openDropdown = null;
@@ -451,15 +448,12 @@
     
     window.setBatchField = (val) => { 
         batchField = val; 
-        batchValue = ''; // Reset value when changing field
+        batchValue = ''; 
         render(); 
     };
     
-    // Store batch value when user types or selects
     window.setBatchValue = (val) => {
         batchValue = val;
-        // No need to render here usually, but if we want to be safe:
-        // render(); // Optional, focus might be lost if we re-render on input
     }
 
     window.applyBatch = () => {
@@ -467,7 +461,24 @@
         if (!val && confirm("Appliquer une valeur vide ?") === false) return;
         
         if (confirm(`Appliquer cette modification à ${selectedIds.size} élément(s) ?`)) {
-            data.forEach(item => { if (selectedIds.has(item.id)) item[batchField] = val; });
+            data.forEach(item => { 
+                if (selectedIds.has(item.id)) {
+                     // Application de la valeur avec conversion si nécessaire
+                     if (batchField === 'surfUnite') item.surfUnite = parseFloat(val) || 0;
+                     else if (batchField === 'nombre') item.nombre = parseFloat(val) || 1;
+                     else if (batchField === 'isExt') item.isExt = (val === 'true');
+                     else item[batchField] = val;
+
+                     // Recalcul automatique des totaux si on touche aux surfaces/nombre/ext
+                     if (['surfUnite', 'nombre', 'isExt'].includes(batchField)) {
+                         const unit = item.surfUnite || 0;
+                         const nb = item.nombre || 1;
+                         const total = Math.round(unit * nb * 100) / 100;
+                         if (item.isExt) { item.sueExt = total; item.sueInt = 0; }
+                         else { item.sueInt = total; item.sueExt = 0; }
+                     }
+                } 
+            });
             saveData();
             selectedIds.clear(); 
             batchValue = '';
@@ -487,19 +498,35 @@
             {v:'programme', l:'Programme'},
             {v:'fonction', l:'Fonction'},
             {v:'local', l:'Nom Local'},
+            {v:'surfUnite', l:'Surface Unit.'},
+            {v:'nombre', l:'Nombre'},
+            {v:'isExt', l:'Extérieur ?'},
+            {v:'details', l:'Détails'},
             {v:'action', l:'Action/Remarque'}
         ];
 
         let inputHtml = '';
         const onChg = 'onchange="setBatchValue(this.value)"';
-        const onInp = 'oninput="setBatchValue(this.value)"'; // For text input
+        const onInp = 'oninput="setBatchValue(this.value)"'; 
         
         if (batchField === 'statut') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.statuts.map(s => `<option ${batchValue === s.nom ? 'selected' : ''}>${safe(s.nom)}</option>`).join('')}</select>`;
         else if (batchField === 'priorite') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.priorites.map(p => `<option ${batchValue === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select>`;
         else if (batchField === 'niveau') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.niveaux.map(n => `<option ${batchValue === n.nom ? 'selected' : ''}>${safe(n.nom)}</option>`).join('')}</select>`;
         else if (batchField === 'programme') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.programmes.map(p => `<option ${batchValue === p.nom ? 'selected' : ''}>${safe(p.nom)}</option>`).join('')}</select>`;
         else if (batchField === 'fonction') inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}><option value="">—</option>${types.fonctions.map(f => `<option ${batchValue === f.nom ? 'selected' : ''}>${safe(f.nom)}</option>`).join('')}</select>`;
-        else inputHtml = `<input id="batch-text-input" class="batch-input" placeholder="Nouvelle valeur..." value="${safe(batchValue)}" ${onInp}>`;
+        else if (batchField === 'isExt') {
+             inputHtml = `<select id="batch-select-input" class="batch-select" ${onChg}>
+                <option value="false" ${batchValue === 'false' ? 'selected' : ''}>Non (Intérieur)</option>
+                <option value="true" ${batchValue === 'true' ? 'selected' : ''}>Oui (Extérieur)</option>
+             </select>`;
+        }
+        else if (batchField === 'surfUnite' || batchField === 'nombre') {
+             inputHtml = `<input type="number" step="0.01" id="batch-text-input" class="batch-input" placeholder="0" value="${safe(batchValue)}" ${onInp}>`;
+        }
+        else {
+             // Text input for local, details, action
+             inputHtml = `<input id="batch-text-input" class="batch-input" placeholder="Nouvelle valeur..." value="${safe(batchValue)}" ${onInp}>`;
+        }
 
         return `
             <div class="batch-bar visible">
