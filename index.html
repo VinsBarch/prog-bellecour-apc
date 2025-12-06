@@ -5,13 +5,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CLIENT - PROJET">
-  <title>PROGRAMMATION V6</title>
+  <title>PROGRAMMATION V6.1</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V6.0 (PRO + COMPACT) --- */
+    /* --- DESIGN SYSTEM V6.1 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -99,7 +99,7 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* TOAST NOTIFICATIONS (Option B) */
+    /* TOAST NOTIFICATIONS */
     .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 2000; pointer-events: none; }
     .toast { background: var(--bg-card); color: var(--text-main); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 350px; pointer-events: auto; }
     .toast.success { border-left: 4px solid var(--success); }
@@ -161,7 +161,7 @@
     .text-blue { color: #60A5FA; } .text-green { color: var(--success); }
     :root.light .text-blue { color: var(--primary); } 
     
-    /* TABLE CONTAINER & TOTALS (Option C) */
+    /* TABLE CONTAINER */
     .table-card { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
     .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; border: none; box-shadow: none; border-radius: 0; background: transparent; }
     .data-table thead { background: var(--bg-input); }
@@ -175,14 +175,26 @@
     .data-table tbody tr:hover td { background: transparent; }
     .data-table tbody tr:last-child td { border-bottom: none; }
     .col-num { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 14px; }
-    
-    /* FOOTER TOTALS ROW */
     .data-table tfoot { background: var(--bg-input); font-weight: 800; color: var(--text-main); position: sticky; bottom: 0; z-index: 5; }
     .data-table tfoot td { border-top: 2px solid var(--border-color); border-bottom: none; padding: 16px 10px; font-variant-numeric: tabular-nums; }
 
     .checkbox-col { width: 40px; text-align: center !important; padding-right: 0 !important; }
     .row-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; border-radius: 4px; }
     
+    /* ACTIONS VIEW STYLES (NEW V6.1) */
+    .action-group { margin-bottom: 40px; }
+    .action-group-title { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; padding-left: 4px; }
+    .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .action-grid { grid-template-columns: 1fr; } }
+
+    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.2s; position: relative; border-left-width: 4px; display: flex; flex-direction: column; gap: 12px; }
+    .action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); background: var(--bg-hover); }
+    .action-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .action-text { font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.5; flex: 1; }
+    .action-context { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-color); }
+    .action-local { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .action-prog { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+
     /* BATCH BAR */
     .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 16px 24px; border-radius: 100px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 20px; z-index: 90; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-main); }
     .batch-bar.visible { transform: translateX(-50%) translateY(0); }
@@ -289,9 +301,9 @@
     // --- OPTION A: HISTORY (UNDO) ---
     let historyStack = [];
     const pushHistory = () => {
-        if (historyStack.length > 20) historyStack.shift(); // Max 20 steps
+        if (historyStack.length > 20) historyStack.shift(); 
         historyStack.push(JSON.stringify(data));
-        render(); // Update Undo button state
+        render(); 
     };
     const undo = () => {
         if (historyStack.length === 0) return;
@@ -302,7 +314,6 @@
         showToast("Action annulée", "info");
     };
 
-    // Keyboard shortcut for Undo
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
             e.preventDefault();
@@ -321,7 +332,7 @@
     let modalType = null;
     let settingsModal = false;
     let clearModal = false;
-    let confirmModal = null; // New for custom confirm
+    let confirmModal = null; 
     let editingType = null;
     let editingTypeItem = null;
     let sortCol = null;
@@ -349,7 +360,6 @@
     const saveData = () => { try { localStorage.setItem('coffim-alve-data-v6', JSON.stringify(data)); } catch(e) {} };
     const saveTypes = () => { try { localStorage.setItem('coffim-alve-types-v6', JSON.stringify(types)); } catch(e) {} };
     
-    // --- OPTION B: TOAST SYSTEM ---
     const showToast = (msg, type = 'success') => {
         const id = Date.now();
         const icon = type === 'success' ? '✅' : (type === 'error' ? '⚠️' : 'ℹ️');
@@ -361,7 +371,6 @@
         }, 3000);
     };
 
-    // --- OPTION B: CUSTOM CONFIRM ---
     const showConfirm = (title, message, onConfirm) => {
         confirmModal = { title, message, onConfirm };
         render();
@@ -558,12 +567,53 @@
       };
       
       const allFilteredSelected = filtered.length > 0 && filtered.every(i => selectedIds.has(i.id));
-
-      // --- OPTION C: TOTALS CALCULATION ---
       const sumSurfUnite = filtered.reduce((a, b) => a + (b.surfUnite || 0), 0);
       const sumNombre = filtered.reduce((a, b) => a + (b.nombre || 0), 0);
       const sumSueInt = filtered.reduce((a, b) => a + (b.sueInt || 0), 0);
       const sumSueExt = filtered.reduce((a, b) => a + (b.sueExt || 0), 0);
+
+      const renderActionsView = () => {
+          if (actions.length === 0) return '<div class="empty-state">Aucune action requise</div>';
+          
+          const groups = {};
+          types.priorites.forEach(p => groups[p.nom] = []);
+          groups['AUTRE'] = [];
+
+          actions.forEach(item => {
+              if (item.priorite && groups[item.priorite]) groups[item.priorite].push(item);
+              else groups['AUTRE'].push(item);
+          });
+
+          let html = '';
+          [...types.priorites.map(p => p.nom), 'AUTRE'].forEach(groupName => {
+               const items = groups[groupName];
+               if (items.length === 0) return;
+               const groupColor = (types.priorites.find(p => p.nom === groupName) || {couleur:'var(--text-muted)'}).couleur;
+               
+               html += `<div class="action-group">
+                  <div class="action-group-title" style="color:${groupColor}">
+                    <span>${groupName === 'AUTRE' ? 'SANS PRIORITÉ' : groupName}</span>
+                    <span style="background:${groupColor}; color:white; padding:2px 8px; border-radius:10px; font-size:11px;">${items.length}</span>
+                  </div>
+                  <div class="action-grid">`;
+               
+               items.forEach(item => {
+                   const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
+                   html += `<div class="action-card" onclick="openModal('edit', ${item.id})" style="border-left-color:${groupColor}">
+                      <div class="action-card-header">
+                         <div class="action-text">${safe(item.action || 'Pas de description.')}</div>
+                         ${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}
+                      </div>
+                      <div class="action-context">
+                          <span class="action-prog">${safe(item.programme)}</span>
+                          <span class="action-local">${safe(item.local)}</span>
+                      </div>
+                   </div>`;
+               });
+               html += `</div></div>`;
+          });
+          return html;
+      };
 
       document.getElementById('app').innerHTML = `
         <div class="header">
@@ -694,13 +744,7 @@
         </div>
 
         <div class="${currentView !== 'actions' ? 'hidden' : ''}" style="width: 100%;">
-          ${actions.length === 0 ? '<div class="empty-state">Aucune action requise</div>' : `<div style="display:flex; flex-direction:column; gap:10px">${actions.map(item => {
-              const statutStyle = item.statut ? getStatutStyle(item.statut) : null;
-              const prioStyle = item.priorite ? getPrioriteStyle(item.priorite) : null;
-              const niveauStyle = getNiveauStyle(item.niveau);
-              const fonctionStyle = getAutoBadgeStyle(item.fonction);
-              const isSelected = selectedIds.has(item.id);
-              return `<div class="data-row" onclick="openModal('edit', ${item.id})" style="${isSelected ? 'background:var(--bg-hover);border-color:var(--primary)' : ''}"><div class="data-row-inner" style="border-left-color:${getProgrammeColor(item.programme)}"><div class="data-row-header" style="justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);"><div style="display:flex;align-items:center;">${!isLocked ? `<input type="checkbox" class="row-checkbox" style="margin-right:12px" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectRow(${item.id})">` : ''}<span class="data-row-title">${safe(item.local)}</span></div><div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"><span class="badge" style="background:${niveauStyle.bg};color:${niveauStyle.txt}; font-weight: 500;">${safe(item.niveau)}</span><span class="badge" style="background:${fonctionStyle.bg};color:${fonctionStyle.txt}; font-weight: 500;">${safe(item.fonction)}</span></div></div>${item.priorite || item.action ? `<div style="font-size:13px; color:var(--text-main); background:var(--bg-input); padding:10px; border-radius:6px; border: 1px solid var(--border-color);"><div style="display:flex; align-items: center; margin-bottom: 8px; gap: 10px; flex-wrap: wrap;"><span style="color: var(--primary); font-weight: 600; text-transform: uppercase;">Action Requise :</span>${item.priorite ? `<span class="badge" style="background:${prioStyle.bg};color:${prioStyle.text}; font-size:12px;">${safe(item.priorite)}</span>` : ''}</div><div style="font-weight: 500; padding-left: 10px; color: var(--text-muted);">${safe(item.action || 'Aucune action détaillée.')}</div></div>` : ''}<div class="data-row-meta" style="margin-top: 12px; display: flex; align-items: center; gap: 12px;"><span class="chip" style="color:${getProgrammeColor(item.programme)};font-weight:700;border-color:transparent">${safe(item.programme)}</span>${item.statut ? `<span class="badge" style="background:${statutStyle.bg};color:${statutStyle.text}">${safe(item.statut)}</span>` : ''}</div></div></div>`}).join('')}</div>`}
+          ${renderActionsView()}
         </div>
         
         ${renderBatchBar()}
@@ -757,7 +801,7 @@
     
     // --- UPDATED ACTIONS WITH HISTORY ---
     window.confirmClear = () => { 
-        pushHistory(); // Allow Undo even for Clear All
+        pushHistory(); 
         data = []; types = JSON.parse(JSON.stringify(initialTypes)); updateTitle("PROJET (Importer données)"); selectedIds.clear(); saveData(); saveTypes(); clearModal = false; render(); 
         showToast("Toutes les données ont été effacées.", "error");
     };
