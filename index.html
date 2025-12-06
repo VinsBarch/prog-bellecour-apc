@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V5.4 --- */
+    /* --- DESIGN SYSTEM V5.5 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -89,6 +89,19 @@
     .btn-separator { width: 1px; height: 28px; background: var(--border-color); margin: 0 4px; }
     .spacer { flex: 1; }
 
+    /* LOCK NOTICE INLINE */
+    .lock-notice-inline { 
+        flex: 1; 
+        background: rgba(245,158,11,0.1); 
+        color: var(--warning); 
+        padding: 0 20px; 
+        border-radius: var(--radius); 
+        border: 1px solid rgba(245,158,11,0.3); 
+        display: flex; align-items: center; justify-content: center; gap: 10px; 
+        height: 44px; font-size: 13px; font-weight: 600;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
     /* STATS GRID */
     .stats-grid { 
         display: grid; 
@@ -138,12 +151,12 @@
     .legend-value { color: var(--text-main); font-weight: 600; font-variant-numeric: tabular-nums; }
 
     /* FILTERS & SEARCH */
-    .filter-section { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; }
+    .filter-section { margin-bottom: 32px; }
     
     .filter-container { 
-        flex: 1; display: flex; flex-direction: column; gap: 16px; 
+        width: 100%; display: flex; flex-direction: column; gap: 16px; 
         background: var(--bg-card); padding: 20px; border-radius: 18px; 
-        border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); min-width: 0; 
+        border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); 
     }
     
     .search-row { 
@@ -157,9 +170,20 @@
         color: var(--text-main); font-size: 15px; transition: border-color 0.2s; height: 48px; 
     }
     .search-box:focus { outline: none; border-color: var(--primary); }
-    .chips-container { flex: 1; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; padding-top: 4px; }
-    .filter-chip { padding: 8px 16px; border-radius: 24px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; background: var(--bg-card); color: var(--text-muted); }
-    .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+    
+    /* CHIPS & ACTIONS ROW */
+    .filter-actions-row { display: flex; align-items: center; gap: 10px; padding-top: 4px; flex-wrap: wrap; }
+    .chips-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    
+    .filter-chip { 
+        padding: 8px 16px; border-radius: 24px; font-size: 13px; font-weight: 600; 
+        border: 2px solid transparent; cursor: pointer; transition: all 0.2s; 
+        background: var(--bg-card); color: var(--text-muted); border-color: var(--border-color);
+    }
+    /* Styles dynamiques appliqués via JS, mais base ici */
+    
+    .filter-buttons-group { margin-left: auto; display: flex; gap: 10px; }
+    @media (max-width: 768px) { .filter-buttons-group { margin-left: 0; width: 100%; } .filter-buttons-group .btn { flex: 1; } }
 
     .tabs { display: inline-flex; gap: 4px; margin-bottom: 24px; padding: 5px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 14px; }
     .tab { padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
@@ -261,7 +285,6 @@
     
     .empty-state { text-align: center; padding: 100px 24px; color: var(--text-muted); font-size: 16px; background: var(--bg-card); border-radius: 24px; border: 2px dashed var(--border-color); max-width: 100%; }
     .sort-icon { display: inline-block; margin-left: 6px; font-size: 11px; opacity: 0.7; }
-    .lock-notice { background: rgba(245,158,11,0.1); color: var(--warning); padding: 14px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; text-align:center; border: 1px solid rgba(245,158,11,0.3); display: flex; align-items: center; justify-content: center; gap: 10px; }
   </style>
   
   <script>
@@ -621,13 +644,14 @@
           <button class="btn btn-export" onclick="exportPdf()">PDF</button>
           <div class="btn-separator"></div>
           
-          ${!isLocked ? `<button class="btn btn-secondary" onclick="importData()">Import</button>` : ''}
-          <div class="spacer"></div>
-          ${!isLocked ? `<button class="btn btn-danger" onclick="openClearModal()">Effacer</button>` : ''}
+          ${isLocked 
+             ? `<div class="lock-notice-inline">🔒 Mode lecture seule actif.</div>` 
+             : `<button class="btn btn-secondary" onclick="importData()">Import</button>
+                <div class="spacer"></div>
+                <button class="btn btn-danger" onclick="openClearModal()">Effacer</button>`
+          }
         </div>
         
-        ${isLocked ? `<div class="lock-notice">🔒 Mode lecture seule actif. Déverrouillez le cadenas pour modifier les données ou utiliser la sélection multiple.</div>` : ''}
-
         <div class="stats-grid">
           <div class="card stat-main-card">
             <div class="stat-label">SURFACE PROGRAMME INTERIEUR</div>
@@ -648,15 +672,29 @@
                 ${renderMultiSelect('niveau', 'Niveaux', types.niveaux)}
                 ${renderMultiSelect('fonction', 'Fonctions', types.fonctions)}
              </div>
-             <div class="chips-container">
-              ${types.programmes.map(p => `<button class="filter-chip ${filters.programme.includes(p.nom) ? 'active' : 'inactive'}" onclick="toggleProgramme('${safe(p.nom)}')">${safe(p.nom)}</button>`).join('')}
-              ${(filters.programme.length || filters.niveau.length || filters.fonction.length || filters.search) ? `<button class="btn btn-clear" onclick="clearFilters()">✕</button>` : ''}
+             
+             <div class="filter-actions-row">
+                 <div class="chips-container">
+                  ${types.programmes.map(p => {
+                      const isActive = filters.programme.includes(p.nom);
+                      const col = p.couleur;
+                      // Dynamic style for colored chips
+                      const style = isActive 
+                        ? `background:${col}; border-color:${col}; color:#FFFFFF;` 
+                        : `background:transparent; border-color:${col}; color:${col};`;
+                      
+                      return `<button class="filter-chip" style="${style}" onclick="toggleProgramme('${safe(p.nom)}')">${safe(p.nom)}</button>`;
+                  }).join('')}
+                  ${(filters.programme.length || filters.niveau.length || filters.fonction.length || filters.search) ? `<button class="btn btn-clear" onclick="clearFilters()">✕</button>` : ''}
+                </div>
+                
+                ${!isLocked ? `
+                <div class="filter-buttons-group">
+                  <button class="btn btn-add" style="height:36px; font-size:13px;" onclick="openModal('add')">➕ Ajouter local</button>
+                  <button class="btn btn-secondary" style="height:36px; font-size:13px;" onclick="openSettings()">🎨 Gérer Types</button>
+                </div>` : ''}
             </div>
           </div>
-           <div class="action-bar" style="margin:0; align-self:stretch; display:flex; flex-direction:column; gap:10px;">
-              ${!isLocked ? `<button class="btn btn-add" style="flex:1" onclick="openModal('add')">➕ Ajouter local</button>` : ''}
-              ${!isLocked ? `<button class="btn btn-secondary" style="flex:1" onclick="openSettings()">🎨 Gérer Types</button>` : ''}
-           </div>
         </div>
         
         <div class="tabs">
