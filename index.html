@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.4 (Fixed)</title>
+  <title>PROGRAMMATION V7.5 (Final)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.4 --- */
+    /* --- DESIGN SYSTEM V7.5 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -35,7 +35,8 @@
     .flex { display: flex; align-items: center; gap: 10px; }
     .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
     .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: grayscale(1); }
+    
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { background: var(--bg-hover); }
@@ -55,12 +56,11 @@
     .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
     .spacer { flex: 1; }
 
-    /* STATS & CHARTS */
+    /* STATS */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
     @media(max-width: 1100px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
     @media(max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
     .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); position: relative; overflow: hidden; }
-    
     .chart-row { display: flex; gap: 16px; align-items: center; height: 100%; }
     .donut { width: 70px; height: 70px; border-radius: 50%; position: relative; flex-shrink: 0; }
     .donut::after { content: ''; position: absolute; inset: 15%; background: var(--bg-card); border-radius: 50%; }
@@ -70,19 +70,17 @@
 
     /* TABS */
     .tabs-container { margin-bottom: 16px; display: flex; gap: 8px; }
-    .tab-btn { background: transparent; border: none; padding: 10px 20px; color: var(--text-muted); font-weight: 700; cursor: pointer; border-radius: 8px; }
+    .tab-btn { background: transparent; border: none; padding: 10px 20px; color: var(--text-muted); font-weight: 700; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+    .tab-btn:hover { color: var(--text-main); }
     .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow); }
 
     /* FILTERS */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
     .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    
-    /* INPUTS */
     .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
     .input:focus { outline: none; border-color: var(--primary); }
-    .input:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-hover); }
-
-    /* Multi-select Styles */
+    
+    /* MULTI-SELECT DROPDOWNS */
     .ms-container { position: relative; width: 100%; }
     .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
@@ -98,21 +96,30 @@
     .view-chip:hover { background: var(--accent); color: white; }
     .chip-del { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.2); }
 
-    /* TABLE */
-    .table-wrap { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 800px; }
-    th { background: var(--bg-input); padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; cursor: pointer; position: sticky; top: 0; z-index: 10; }
-    td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-    tbody tr:hover { background: var(--bg-hover); cursor: pointer; }
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    /* TABLE V7.5 (High Quality) */
+    .table-wrap { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); overflow-x: auto; max-height: 75vh; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
+    
+    /* Sticky Header */
+    thead { position: sticky; top: 0; z-index: 20; }
+    th { background: var(--bg-input); padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; cursor: pointer; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+    th:hover { color: var(--text-main); background: var(--bg-hover); }
+    
+    td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; transition: background 0.1s; }
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover { background: var(--bg-hover) !important; cursor: pointer; }
+    tbody tr:last-child td { border-bottom: none; }
 
-    /* ACTION CARDS */
+    /* Badge Styles */
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; }
+    
+    /* ACTIONS GRID */
     .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
-    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s; cursor: pointer; }
+    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column; }
     .action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
     .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
-    .ac-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 12px; color: var(--text-muted); }
+    .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; flex: 1; }
+    .ac-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 12px; color: var(--text-muted); margin-top: auto; }
 
     /* BATCH BAR */
     .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 12px 24px; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 16px; z-index: 100; transition: transform 0.3s; color: var(--text-main); }
@@ -125,9 +132,11 @@
     .modal-overlay.open .modal { transform: translateY(0); }
 
     /* SETTINGS STYLES */
-    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border-color); background: var(--bg-card); }
+    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border-color); background: var(--bg-card); transition: background 0.1s; }
+    .settings-list-item:hover { background: var(--bg-hover); }
     .btn-action-sm { height: 28px; width:28px; padding: 0; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
     .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
+    .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
 
     .text-right { text-align: right; }
     .text-center { text-align: center; }
@@ -140,7 +149,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.4</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.5</div>
       </div>
     </div>
     <div class="flex">
@@ -169,8 +178,7 @@
     </div>
   </div>
 
-  <div class="stats-grid" id="stats-area">
-    </div>
+  <div class="stats-grid" id="stats-area"></div>
 
   <div class="filters-box">
     <div class="search-row">
@@ -178,9 +186,7 @@
        <div id="dropdown-niveau-container"></div>
        <div id="dropdown-fonction-container"></div>
     </div>
-    
-    <div class="chip-container" id="prog-chips">
-      </div>
+    <div class="chip-container" id="prog-chips"></div>
     <div class="flex" style="margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border-color);">
        <button class="btn btn-secondary btn-icon" id="btn-reset-filters" title="Reset">✕</button>
        <div style="width:1px; height:20px; background:var(--border-color);"></div>
@@ -197,13 +203,11 @@
      <button class="tab-btn" onclick="App.methods.switchView('actions')" id="tab-actions">⚠️ Actions requises</button>
   </div>
 
-  <div id="main-content">
-      </div>
+  <div id="main-content"></div>
 
   <div class="batch-bar" id="batch-bar">
       <span style="font-weight:800; color:var(--primary)" id="batch-count">0 sélectionné(s)</span>
       <div style="width:1px; height:20px; background:var(--border-color);"></div>
-      
       <select id="batch-field" class="input" style="height:32px; width:120px;" onchange="App.ui.updateBatchInput()">
           <option value="statut">Statut</option>
           <option value="niveau">Niveau</option>
@@ -212,11 +216,9 @@
           <option value="fonction">Fonction</option>
           <option value="local">Renommer (Local)</option>
       </select>
-      
       <div id="batch-input-container">
           <input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">
       </div>
-
       <button class="btn btn-primary" style="height:32px" onclick="App.methods.applyBatch()">Appliquer</button>
       <button class="btn btn-secondary" style="height:32px" onclick="App.methods.cancelBatch()">Annuler</button>
   </div>
@@ -314,9 +316,9 @@
         if(savedTypes) App.state.types = JSON.parse(savedTypes);
 
         document.getElementById('app-title').innerText = App.state.title;
+        // Fix 7.4: Mode Sombre/Clair sur HTML
         if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
 
-        // Close dropdowns on click outside
         window.addEventListener('click', (e) => {
             if(!e.target.closest('.ms-container')) {
                 App.state.openDropdown = null;
@@ -358,7 +360,6 @@
             App.render.content();
         },
         
-        // --- MULTI SELECT ---
         toggleDropdown: (e, key) => {
             e.stopPropagation();
             App.state.openDropdown = App.state.openDropdown === key ? null : key;
@@ -373,7 +374,6 @@
              App.render.charts();
         },
 
-        // --- SELECTION & BATCH ---
         toggleSelect: (id) => {
             if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id);
             else App.state.selectedIds.add(id);
@@ -412,7 +412,6 @@
             App.ui.toast(`${count} éléments modifiés`);
         },
 
-        // --- CRUD ---
         saveForm: () => {
           const id = document.getElementById('f-id').value;
           const formData = {
@@ -453,7 +452,6 @@
             }
         },
 
-        // --- VIEWS ---
         saveView: () => {
             const name = prompt("Nom de la vue ?");
             if(name) {
@@ -480,13 +478,12 @@
             }
         },
         
-        // --- TYPES ---
         addType: () => {
             const cat = document.getElementById('set-type-select').value;
             const nom = document.getElementById('set-new-name').value;
             const col = document.getElementById('set-new-color').value;
             if(!nom) return;
-            // Correction V7.4 : Uniformisation des clés de couleurs (bg/bgColor) pour éviter les bugs
+            // Fix 7.5: Ensure consistency for all types
             const newItem = { id: Date.now(), nom, couleur: col, bg: col+"20", bgColor: col+"20", txt: col, textColor: col };
             App.state.types[cat].push(newItem);
             App.methods.save();
@@ -517,9 +514,8 @@
              if(val) {
                  const t = App.state.types[cat].find(i=>i.id===id);
                  if(t) {
-                     // Update existing data
                      const oldName = t.nom;
-                     const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; // naive plural removal
+                     const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; 
                      App.state.data.forEach(d => { if(d[key] === oldName) d[key] = val; });
                      t.nom = val;
                      App.methods.save();
@@ -530,7 +526,6 @@
              }
         },
 
-        // --- IMPORTS / EXPORTS ---
         exportCsv: () => {
              const headers = ['Programme','Niveau','Fonction','Local','SU','Nbr','Total','Statut','Priorite','Remarque'];
              const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, `"${d.local}"`, d.surfUnite, d.nombre, (d.sueInt+d.sueExt), d.statut, d.priorite, `"${d.remarque||''}"`]);
@@ -555,6 +550,10 @@
                          const json = JSON.parse(reader.result);
                          if(confirm("Remplacer les données ?")) {
                              App.methods.pushHistory();
+                             // FIX 7.5: Import Title
+                             if(json.pageTitle || json.title) App.state.title = (json.pageTitle || json.title);
+                             document.getElementById('app-title').innerText = App.state.title;
+
                              if(Array.isArray(json)) App.state.data = json;
                              else if(json.data) {
                                  App.state.data = json.data;
@@ -615,7 +614,6 @@
         },
         
         filtersUI: () => {
-            // Dropdowns (dans des conteneurs séparés pour ne pas redessiner l'input search)
             const mkDropdown = (key, label, list) => {
                 const selected = App.state.filters[key];
                 const isOpen = App.state.openDropdown === key;
@@ -642,7 +640,6 @@
             document.getElementById('dropdown-niveau-container').innerHTML = mkDropdown('niveau', 'Niveaux', App.state.types.niveaux);
             document.getElementById('dropdown-fonction-container').innerHTML = mkDropdown('fonction', 'Fonctions', App.state.types.fonctions);
             
-            // Chips
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
             App.state.types.programmes.forEach(p => {
                 const active = App.state.filters.programme.includes(p.nom);
@@ -660,7 +657,6 @@
                 pc.appendChild(btn);
             });
             
-            // Views
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
@@ -698,11 +694,11 @@
             const html = `
                <div class="card" style="border-left:4px solid var(--primary); display:flex; flex-direction:column; justify-content:center;">
                   <div style="font-size:11px;font-weight:700;color:var(--text-muted)">SURFACE INT.</div>
-                  <div style="font-size:24px;font-weight:800;color:var(--primary)">${totInt.toLocaleString()} <span style="font-size:14px">m²</span></div>
+                  <div style="font-size:24px;font-weight:800;color:var(--primary)">${totInt.toLocaleString('fr-FR')} <span style="font-size:14px">m²</span></div>
                </div>
                <div class="card" style="border-left:4px solid var(--success); display:flex; flex-direction:column; justify-content:center;">
                   <div style="font-size:11px;font-weight:700;color:var(--text-muted)">SURFACE EXT.</div>
-                  <div style="font-size:24px;font-weight:800;color:var(--success)">${totExt.toLocaleString()} <span style="font-size:14px">m²</span></div>
+                  <div style="font-size:24px;font-weight:800;color:var(--success)">${totExt.toLocaleString('fr-FR')} <span style="font-size:14px">m²</span></div>
                </div>
                ${mkChart('PAR PROGRAMME', 'programme', App.state.types.programmes)}
                ${mkChart('PAR NIVEAU', 'niveau', App.state.types.niveaux.map(n=>({nom:n.nom, couleur:n.bgColor==='#F1F5F9'?'#94A3B8':n.bgColor})))}
@@ -740,13 +736,13 @@
                     if(sel) tr.style.background = "rgba(59, 130, 246, 0.1)";
                     tr.innerHTML = `
                       <td class="text-center" onclick="event.stopPropagation()"><input type="checkbox" ${sel?'checked':''} onchange="App.methods.toggleSelect(${i.id})"></td>
-                      <td style="color:${prog?prog.couleur:'inherit'};font-weight:600">${i.programme}</td>
+                      <td style="color:${prog?prog.couleur:'inherit'};font-weight:700">${i.programme}</td>
                       <td><span class="badge" style="background:var(--bg-input)">${i.niveau}</span></td>
                       <td>${i.fonction||'-'}</td>
                       <td><b>${i.local}</b></td>
                       <td class="text-right">${i.surfUnite||'-'}</td>
                       <td class="text-center">${i.nombre}</td>
-                      <td class="text-right" style="font-weight:700; color:${i.sueInt?'var(--primary)':'var(--success)'}">${(i.sueInt||i.sueExt)}</td>
+                      <td class="text-right" style="font-weight:700; color:${i.sueInt?'var(--primary)':'var(--success)'}">${(i.sueInt||i.sueExt).toLocaleString('fr-FR')}</td>
                       <td>${i.statut ? `<span class="badge" style="background:${st?st.bg:'#eee'}; color:${st?st.txt:'#333'}">${i.statut}</span>`:''}</td>
                     `;
                     tr.onclick = () => App.ui.openModalItem(i);
@@ -755,8 +751,7 @@
 
             } else {
                 const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ');
-                
-                // FORCE SORT BY PRIORITY FOR ACTIONS VIEW
+                // FIX 7.4: Tri par priorité
                 const prioMap = { 'HAUTE':1, 'MOYENNE':2, 'BASSE':3 };
                 actions.sort((a,b) => (prioMap[a.priorite]||9) - (prioMap[b.priorite]||9));
 
@@ -796,7 +791,6 @@
              if(count > 0 && !App.state.locked) {
                  bar.classList.add('visible');
                  document.getElementById('batch-count').innerText = `${count} sélectionné(s)`;
-                 // Init input state
                  App.ui.updateBatchInput();
              } else {
                  bar.classList.remove('visible');
@@ -810,10 +804,10 @@
              list.forEach(item => {
                  const row = document.createElement('div');
                  row.className = "settings-list-item";
-                 const colorBox = (item.couleur||item.bg) ? `<span style="width:12px;height:12px;background:${item.couleur||item.bg};display:inline-block;margin-right:8px;border-radius:2px"></span>` : '';
+                 const colorBox = (item.couleur||item.bg) ? `<span class="badge-preview" style="background:${item.couleur||item.bg};color:${item.txt||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
                  
                  row.innerHTML = `
-                   <div>${colorBox}${item.nom}</div>
+                   <div>${colorBox}</div>
                    <div>
                      <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
                      <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
@@ -834,14 +828,10 @@
             document.getElementById('toast-container').appendChild(t);
             setTimeout(()=>t.remove(), 3000);
         },
-        // NEW : Intelligent Batch Input
         updateBatchInput: () => {
             const field = document.getElementById('batch-field').value;
             const container = document.getElementById('batch-input-container');
-            
-            // Map field to types
             const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
-            
             if(typeMap[field]) {
                 const list = App.state.types[typeMap[field]];
                 let opts = list.map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
@@ -857,7 +847,6 @@
             document.getElementById('btn-del-item').classList.add('hidden');
             document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
             
-            // Fill Data
             if(item) {
                 document.getElementById('f-id').value = item.id;
                 document.getElementById('f-programme').value = item.programme;
@@ -873,11 +862,8 @@
                 document.getElementById('btn-del-item').classList.remove('hidden');
                 document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
             }
-            
-            // Handle Locked State
             const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item');
             inputs.forEach(el => el.disabled = App.state.locked);
-            
             document.getElementById('modal-item').classList.add('open');
         },
         closeModal: (id) => document.getElementById(id).classList.remove('open')
@@ -885,7 +871,6 @@
 
       events: {
         bindAll: () => {
-            // FIX THEME (cible HTML au lieu de BODY pour correspondre au CSS :root.light)
             document.getElementById('btn-theme').onclick = () => { 
                 document.documentElement.classList.toggle('light'); 
                 localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); 
@@ -895,12 +880,16 @@
                 App.state.locked = !App.state.locked; 
                 document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
                 document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
+                // Fix 7.5: Bloquer Effacer/Import en lecture seule
+                document.getElementById('btn-clear-all').disabled = App.state.locked;
+                document.getElementById('btn-import').disabled = App.state.locked;
+                document.getElementById('btn-add-item').disabled = App.state.locked;
+
                 App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
                 if(App.state.locked) App.methods.cancelBatch();
             };
             
             document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
-            
             document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
             
             document.getElementById('btn-save').onclick = App.methods.save;
