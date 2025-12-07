@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.1 (Full)</title>
+  <title>PROGRAMMATION V7.2 (Complete)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.1 --- */
+    /* --- DESIGN SYSTEM V7.2 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -35,6 +35,7 @@
     .flex { display: flex; align-items: center; gap: 10px; }
     .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
     .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { background: var(--bg-hover); }
@@ -47,7 +48,10 @@
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
     .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
     .header-title:hover { border-color: var(--border-color); }
-    .toolbar { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    
+    /* TOOLBAR GROUPÉE */
+    .toolbar { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
+    .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
     .spacer { flex: 1; }
 
     /* STATS & CHARTS */
@@ -56,7 +60,6 @@
     @media(max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
     .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); position: relative; overflow: hidden; }
     
-    /* DONUTS */
     .chart-row { display: flex; gap: 16px; align-items: center; height: 100%; }
     .donut { width: 70px; height: 70px; border-radius: 50%; position: relative; flex-shrink: 0; }
     .donut::after { content: ''; position: absolute; inset: 15%; background: var(--bg-card); border-radius: 50%; }
@@ -69,10 +72,21 @@
     .tab-btn { background: transparent; border: none; padding: 10px 20px; color: var(--text-muted); font-weight: 700; cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow); }
 
-    /* FILTERS */
+    /* FILTERS & MULTI-SELECT */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
     .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    
     .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); }
+    
+    /* Multi-select Styles */
+    .ms-container { position: relative; width: 100%; }
+    .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
+    .ms-dropdown.show { display: block; }
+    .ms-option { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.1s; }
+    .ms-option:hover { background: var(--bg-hover); }
+    .ms-checkbox { pointer-events: none; accent-color: var(--primary); width: 16px; height: 16px; }
+
     .chip-container { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .chip { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted); display:flex; align-items:center; gap:6px; }
     .chip.active { color: white; border-color: transparent; }
@@ -106,7 +120,6 @@
     .modal { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(20px); transition: transform 0.2s; max-height: 90vh; overflow-y: auto;}
     .modal-overlay.open .modal { transform: translateY(0); }
 
-    /* UTILS COLOR */
     .text-right { text-align: right; }
     .text-center { text-align: center; }
   </style>
@@ -118,7 +131,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.1</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.2</div>
       </div>
     </div>
     <div class="flex">
@@ -128,32 +141,40 @@
   </div>
 
   <div class="toolbar">
-    <button class="btn btn-secondary" id="btn-lock">🔓 Déverrouillé</button>
-    <button class="btn btn-secondary" id="btn-undo" disabled>↩ Annuler</button>
+    <div class="tool-group">
+        <button class="btn btn-primary" id="btn-save">💾 Sauvegarder</button>
+        <button class="btn btn-secondary" id="btn-undo" disabled>↩ Annuler</button>
+        <button class="btn btn-secondary" id="btn-import">Import</button>
+    </div>
+    
+    <div class="tool-group">
+        <button class="btn btn-secondary" id="btn-export-csv">CSV</button>
+        <button class="btn btn-secondary" id="btn-export-pdf">PDF</button>
+    </div>
+
     <div class="spacer"></div>
-    <button class="btn btn-primary" id="btn-save">💾 Sauvegarder</button>
-    <button class="btn btn-secondary" id="btn-export-csv">CSV</button>
-    <button class="btn btn-secondary" id="btn-export-pdf">PDF</button>
-    <button class="btn btn-danger" id="btn-clear-all">Effacer</button>
-    <button class="btn btn-secondary" id="btn-import">Import</button>
+
+    <div class="tool-group" style="border-color: rgba(239,68,68,0.3);">
+        <button class="btn btn-danger" id="btn-clear-all">Effacer</button>
+        <button class="btn btn-secondary" id="btn-lock">🔓</button>
+    </div>
   </div>
 
   <div class="stats-grid" id="stats-area">
     </div>
 
   <div class="filters-box">
-    <div class="search-row">
+    <div class="search-row" id="filters-container">
       <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
-      <select id="sel-niveau" class="input"><option value="">Tous Niveaux</option></select>
-      <select id="sel-fonction" class="input"><option value="">Toutes Fonctions</option></select>
-    </div>
+      </div>
     <div class="chip-container" id="prog-chips">
       </div>
     <div class="flex" style="margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border-color);">
        <button class="btn btn-secondary btn-icon" id="btn-reset-filters" title="Reset">✕</button>
        <div style="width:1px; height:20px; background:var(--border-color);"></div>
        <button class="btn btn-accent" id="btn-save-view">💾 Sauver Vue</button>
-       <div id="views-container" class="chip-container"></div> <div class="spacer"></div>
+       <div id="views-container" class="chip-container"></div>
+       <div class="spacer"></div>
        <button class="btn btn-success" id="btn-add-item" style="background:var(--success);color:white;">➕ Ajouter Local</button>
        <button class="btn btn-secondary" id="btn-settings">⚙ Types</button>
     </div>
@@ -213,7 +234,6 @@
   <div class="modal-overlay" id="modal-settings">
     <div class="modal">
         <h2 style="margin-bottom:10px">Configuration Types</h2>
-        <p style="margin-bottom:20px; color:var(--text-muted); font-size:12px;">Modifiez ici les listes déroulantes.</p>
         <div style="margin-bottom:12px">
             <select id="set-type-select" class="input" onchange="App.render.settingsList()">
                 <option value="programmes">Programmes</option>
@@ -252,14 +272,15 @@
       state: {
         data: [],
         title: "PROJET",
-        filters: { search: "", programme: [], niveau: "", fonction: "" },
+        filters: { search: "", programme: [], niveau: [], fonction: [] }, // Arrays for multi-select
         sort: { col: "programme", asc: true },
         locked: false,
         history: [],
         savedViews: [],
         types: JSON.parse(JSON.stringify(CONFIG.types)),
-        currentView: 'list', // 'list' or 'actions'
-        selectedIds: new Set()
+        currentView: 'list',
+        selectedIds: new Set(),
+        openDropdown: null
       },
 
       init: () => {
@@ -275,6 +296,14 @@
 
         document.getElementById('app-title').innerText = App.state.title;
         if(localStorage.getItem('v7-theme') === 'light') document.body.classList.add('light');
+
+        // Close dropdowns on click outside
+        window.addEventListener('click', (e) => {
+            if(!e.target.closest('.ms-container')) {
+                App.state.openDropdown = null;
+                App.render.filtersUI();
+            }
+        });
 
         App.render.all();
         App.events.bindAll();
@@ -299,7 +328,7 @@
           if(App.state.history.length === 0) document.getElementById('btn-undo').disabled = true;
           App.methods.save();
           App.render.all();
-          App.ui.toast("Annulation effectuée");
+          App.ui.toast("Action annulée");
         },
         switchView: (v) => {
             App.state.currentView = v;
@@ -309,6 +338,21 @@
             App.render.content();
         },
         
+        // --- MULTI SELECT ---
+        toggleDropdown: (e, key) => {
+            e.stopPropagation();
+            App.state.openDropdown = App.state.openDropdown === key ? null : key;
+            App.render.filtersUI();
+        },
+        toggleFilterVal: (key, val) => {
+             const arr = App.state.filters[key];
+             const idx = arr.indexOf(val);
+             if(idx >= 0) arr.splice(idx, 1); else arr.push(val);
+             App.render.filtersUI();
+             App.render.content(); // Refresh table
+             App.render.charts();  // Refresh charts
+        },
+
         // --- SELECTION & BATCH ---
         toggleSelect: (id) => {
             if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id);
@@ -322,7 +366,7 @@
                 if(allSelected) App.state.selectedIds.delete(i.id);
                 else App.state.selectedIds.add(i.id);
             });
-            App.render.all(); // Need to re-render checkboxes
+            App.render.all();
         },
         cancelBatch: () => {
             App.state.selectedIds.clear();
@@ -332,7 +376,6 @@
             const field = document.getElementById('batch-field').value;
             const val = document.getElementById('batch-value').value;
             if(!val && !confirm('Valeur vide. Continuer ?')) return;
-            
             App.methods.pushHistory();
             let count = 0;
             App.state.data.forEach(item => {
@@ -362,7 +405,6 @@
              priorite: document.getElementById('f-priorite').value,
              remarque: document.getElementById('f-remarque').value
           };
-          // Auto calc
           const total = Math.round(formData.surfUnite * formData.nombre * 100) / 100;
           formData.sueInt = formData.isExt ? 0 : total;
           formData.sueExt = formData.isExt ? total : 0;
@@ -395,17 +437,14 @@
             if(name) {
                 App.state.savedViews.push({ id: Date.now(), name, filters: JSON.parse(JSON.stringify(App.state.filters)) });
                 App.methods.save();
-                App.render.filters();
+                App.render.filtersUI();
             }
         },
         loadView: (id) => {
             const v = App.state.savedViews.find(view => view.id === id);
             if(v) {
                 App.state.filters = JSON.parse(JSON.stringify(v.filters));
-                // Update inputs UI
                 document.getElementById('inp-search').value = App.state.filters.search;
-                document.getElementById('sel-niveau').value = App.state.filters.niveau;
-                document.getElementById('sel-fonction').value = App.state.filters.fonction;
                 App.render.all();
                 App.ui.toast(`Vue "${v.name}" chargée`);
             }
@@ -415,7 +454,7 @@
             if(confirm('Supprimer cette vue ?')) {
                 App.state.savedViews = App.state.savedViews.filter(v => v.id !== id);
                 App.methods.save();
-                App.render.filters();
+                App.render.filtersUI();
             }
         },
         
@@ -425,17 +464,19 @@
             const nom = document.getElementById('set-new-name').value;
             const col = document.getElementById('set-new-color').value;
             if(!nom) return;
-            const newItem = { id: Date.now(), nom, couleur: col, bg:col+"20", txt:col }; // Simple logic
+            const newItem = { id: Date.now(), nom, couleur: col, bg:col+"20", txt:col };
             App.state.types[cat].push(newItem);
             App.methods.save();
             App.render.settingsList();
-            App.render.selects(); // Refresh main dropdowns
+            App.render.modalSelects(); // Update modal dropdowns
+            App.render.filtersUI(); // Update filter dropdowns
         },
         deleteType: (cat, id) => {
              App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id);
              App.methods.save();
              App.render.settingsList();
-             App.render.selects();
+             App.render.modalSelects();
+             App.render.filtersUI();
         },
 
         // --- IMPORTS / EXPORTS ---
@@ -463,8 +504,8 @@
                          const json = JSON.parse(reader.result);
                          if(confirm("Remplacer les données ?")) {
                              App.methods.pushHistory();
-                             if(Array.isArray(json)) App.state.data = json; // Old format
-                             else if(json.data) { // New format
+                             if(Array.isArray(json)) App.state.data = json;
+                             else if(json.data) {
                                  App.state.data = json.data;
                                  if(json.types) App.state.types = json.types;
                              }
@@ -485,22 +526,26 @@
              return App.state.data.filter(d => {
                  if(f.search && !d.local.toLowerCase().includes(f.search.toLowerCase())) return false;
                  if(f.programme.length && !f.programme.includes(d.programme)) return false;
-                 if(f.niveau && d.niveau !== f.niveau) return false;
-                 if(f.fonction && d.fonction !== f.fonction) return false;
+                 if(f.niveau.length && !f.niveau.includes(d.niveau)) return false; // Multi-select support
+                 if(f.fonction.length && !f.fonction.includes(d.fonction)) return false; // Multi-select support
                  return true;
              });
+         },
+         safe: (str) => {
+             if(!str) return '';
+             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
          }
       },
 
       render: {
         all: () => {
-            App.render.selects();
-            App.render.filters();
+            App.render.modalSelects(); // For modal forms
+            App.render.filtersUI();    // For main filters
             App.render.charts();
-            App.render.content(); // Decides List vs Actions
+            App.render.content();
             App.render.batchBar();
         },
-        selects: () => {
+        modalSelects: () => {
            const fill = (id, list, key='nom') => {
                const el = document.getElementById(id);
                const val = el.value;
@@ -511,18 +556,57 @@
                });
                el.value = val;
            };
-           // Filters
-           fill('sel-niveau', App.state.types.niveaux);
-           fill('sel-fonction', App.state.types.fonctions);
-           // Form
+           // Only fill form selects, not filters (handled by filtersUI)
            fill('f-programme', App.state.types.programmes);
            fill('f-niveau', App.state.types.niveaux);
            fill('f-fonction', App.state.types.fonctions);
            fill('f-statut', App.state.types.statuts);
            fill('f-priorite', App.state.types.priorites);
         },
-        filters: () => {
-            // Prog Chips
+        
+        // --- MULTI SELECT RENDERER ---
+        filtersUI: () => {
+            // 1. Generate Dropdowns for Niveau & Fonction
+            const container = document.getElementById('filters-container');
+            // Preserve search input, regenerate dropdowns
+            const searchVal = document.getElementById('inp-search').value;
+            
+            const mkDropdown = (key, label, list) => {
+                const selected = App.state.filters[key];
+                const isOpen = App.state.openDropdown === key;
+                let btnText = `${label} (Tous)`;
+                if(selected.length === 1) btnText = selected[0];
+                else if(selected.length > 1) btnText = `${label} (${selected.length})`;
+
+                return `
+                <div class="ms-container" onclick="App.methods.toggleDropdown(event, '${key}')">
+                    <div class="ms-btn" style="${isOpen ? 'border-color:var(--primary)' : ''}">
+                        ${App.helpers.safe(btnText)} <span style="font-size:10px">▼</span>
+                    </div>
+                    <div class="ms-dropdown ${isOpen ? 'show' : ''}" onclick="event.stopPropagation()">
+                        ${list.map(i => `
+                            <div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')">
+                                <input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly>
+                                <span>${App.helpers.safe(i.nom)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            };
+
+            container.innerHTML = `
+                <input type="text" id="inp-search" class="input" placeholder="Rechercher..." value="${searchVal}">
+                ${mkDropdown('niveau', 'Niveaux', App.state.types.niveaux)}
+                ${mkDropdown('fonction', 'Fonctions', App.state.types.fonctions)}
+            `;
+            
+            // Re-bind search event because innerHTML cleared it
+            document.getElementById('inp-search').oninput = (e) => { 
+                App.state.filters.search = e.target.value; App.render.content(); 
+            };
+            document.getElementById('inp-search').focus(); // Keep focus
+
+            // 2. Generate Prog Chips
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
             App.state.types.programmes.forEach(p => {
                 const active = App.state.filters.programme.includes(p.nom);
@@ -533,11 +617,14 @@
                 btn.onclick = () => {
                     const idx = App.state.filters.programme.indexOf(p.nom);
                     if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom);
-                    App.render.all();
+                    App.render.filtersUI();
+                    App.render.content();
+                    App.render.charts();
                 };
                 pc.appendChild(btn);
             });
-            // Saved Views
+            
+            // 3. Saved Views
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
@@ -547,12 +634,12 @@
                 vc.appendChild(d);
             });
         },
+
         charts: () => {
             const data = App.helpers.getFiltered();
             const totInt = data.reduce((a,b)=>a+(b.sueInt||0),0);
             const totExt = data.reduce((a,b)=>a+(b.sueExt||0),0);
             
-            // Helpers charts
             const mkChart = (title, groupKey, palette) => {
                 const groups = {};
                 data.forEach(i => { 
@@ -586,6 +673,7 @@
             `;
             document.getElementById('stats-area').innerHTML = html;
         },
+
         content: () => {
             const container = document.getElementById('main-content');
             const data = App.helpers.getFiltered();
@@ -596,7 +684,6 @@
             });
 
             if(App.state.currentView === 'list') {
-                // RENDER TABLE
                 container.innerHTML = `<div class="table-wrap"><table><thead><tr>
                    <th style="width:40px; text-align:center"><input type="checkbox" onclick="App.methods.toggleSelectAll()"></th>
                    <th onclick="App.state.sort.col='programme';App.render.content()">Prog</th>
@@ -631,9 +718,8 @@
                 });
 
             } else {
-                // RENDER ACTIONS (Kanban simplified)
-                const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ'); // Show only not validated
-                if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise. Tout est validé ou sans statut.</div>'; return; }
+                const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ');
+                if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise.</div>'; return; }
                 
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
@@ -726,12 +812,13 @@
       events: {
         bindAll: () => {
             document.getElementById('btn-theme').onclick = () => { document.body.classList.toggle('light'); localStorage.setItem('v7-theme', document.body.classList.contains('light')?'light':'dark'); };
-            document.getElementById('btn-lock').onclick = () => { App.state.locked = !App.state.locked; document.getElementById('btn-lock').innerText = App.state.locked ? '🔒 Verrouillé' : '🔓 Déverrouillé'; App.ui.toast(App.state.locked?"Lecture seule":"Édition activée"); };
+            document.getElementById('btn-lock').onclick = () => { 
+                App.state.locked = !App.state.locked; 
+                document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
+                App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
+            };
             
-            ['inp-search','sel-niveau','sel-fonction'].forEach(id => document.getElementById(id).oninput = (e) => { 
-                App.state.filters[id.split('-')[1]] = e.target.value; App.render.all(); 
-            });
-            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:"",fonction:""}; document.getElementById('inp-search').value=""; App.render.all(); };
+            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; App.render.filtersUI(); App.render.all(); };
             
             document.getElementById('btn-save').onclick = App.methods.save;
             document.getElementById('btn-undo').onclick = App.methods.undo;
@@ -739,11 +826,9 @@
             document.getElementById('btn-add-item').onclick = () => App.ui.openModalItem();
             document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.save(); };
             
-            // View & Settings
             document.getElementById('btn-save-view').onclick = App.methods.saveView;
             document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
             
-            // Export/Import
             document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
             document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
             document.getElementById('btn-import').onclick = App.methods.import;
