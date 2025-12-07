@@ -5,22 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.0 (Robust)</title>
+  <title>PROGRAMMATION V7.1 (Full)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.0 --- */
+    /* --- DESIGN SYSTEM V7.1 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
       --text-main: #F1F5F9; --text-muted: #94A3B8; --text-inv: #0F172A;
-      --primary: #3B82F6; --primary-hover: #2563EB;
-      --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
-      --accent: #8B5CF6;
+      --primary: #3B82F6; --success: #10B981; --danger: #EF4444; --warning: #F59E0B; --accent: #8B5CF6;
       --radius: 12px;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     :root.light {
       --bg-body: #F8FAFC; --bg-card: #FFFFFF; --bg-input: #F1F5F9;
@@ -30,71 +28,85 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg-body); color: var(--text-main); padding: 20px; padding-bottom: 120px; font-size: 14px; max-width: 1600px; margin: 0 auto; transition: background 0.3s, color 0.3s; }
+    body { background: var(--bg-body); color: var(--text-main); padding: 20px; padding-bottom: 140px; font-size: 14px; max-width: 1600px; margin: 0 auto; transition: background 0.3s; }
     
     /* UTILS */
     .hidden { display: none !important; }
-    .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; transition: all 0.2s; }
+    .flex { display: flex; align-items: center; gap: 10px; }
+    .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
     .btn:active { transform: scale(0.98); }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-accent { background: rgba(139, 92, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+    .btn-accent:hover { background: var(--accent); color: white; }
     .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border-color: transparent; }
     .btn-icon { width: 40px; padding: 0; font-size: 18px; }
 
     /* LAYOUT */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-    .header-title { font-size: 24px; font-weight: 800; }
-    .header-subtitle { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-
+    .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
+    .header-title:hover { border-color: var(--border-color); }
     .toolbar { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
     .spacer { flex: 1; }
 
-    /* STATS */
-    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px; }
-    .stat-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); }
-    .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-    .stat-value { font-size: 28px; font-weight: 800; }
+    /* STATS & CHARTS */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
+    @media(max-width: 1100px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    
+    /* DONUTS */
+    .chart-row { display: flex; gap: 16px; align-items: center; height: 100%; }
+    .donut { width: 70px; height: 70px; border-radius: 50%; position: relative; flex-shrink: 0; }
+    .donut::after { content: ''; position: absolute; inset: 15%; background: var(--bg-card); border-radius: 50%; }
+    .legend { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+    .legend-item { display: flex; justify-content: space-between; align-items: center; }
+    .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* FILTERS AREA */
-    .filters-wrapper { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
-    .search-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    @media(max-width:768px){ .search-grid { grid-template-columns: 1fr; } }
-    
-    .input-field { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
-    .input-field:focus { outline: none; border-color: var(--primary); }
-    
-    .chip-list { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .chip { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted); transition: all 0.2s; }
+    /* TABS */
+    .tabs-container { margin-bottom: 16px; display: flex; gap: 8px; }
+    .tab-btn { background: transparent; border: none; padding: 10px 20px; color: var(--text-muted); font-weight: 700; cursor: pointer; border-radius: 8px; }
+    .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow); }
+
+    /* FILTERS */
+    .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
+    .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); }
+    .chip-container { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .chip { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted); display:flex; align-items:center; gap:6px; }
     .chip.active { color: white; border-color: transparent; }
+    .view-chip { border-color: var(--accent); color: var(--accent); background: rgba(139, 92, 246, 0.05); }
+    .view-chip:hover { background: var(--accent); color: white; }
+    .chip-del { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.2); }
 
     /* TABLE */
-    .table-container { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); overflow: hidden; }
-    .main-table { width: 100%; border-collapse: collapse; }
-    .main-table th { background: var(--bg-input); padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); cursor: pointer; user-select: none; }
-    .main-table td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-    .main-table tbody tr:hover { background: var(--bg-hover); cursor: pointer; }
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-    
-    /* MODALS */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
-    .modal-content { background: var(--bg-card); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.2s; }
-    .modal-backdrop.open .modal-content { transform: translateY(0); }
-    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 18px; }
-    .modal-body { padding: 24px; }
-    
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group.span-2 { grid-column: span 2; }
-    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .table-wrap { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    th { background: var(--bg-input); padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; cursor: pointer; position: sticky; top: 0; z-index: 10; }
+    td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    tbody tr:hover { background: var(--bg-hover); cursor: pointer; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 
-    /* TOASTS */
-    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
-    .toast { background: var(--bg-card); padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: 500; animation: slideIn 0.3s; display: flex; align-items: center; gap: 10px;}
-    @keyframes slideIn { from{transform: translateX(100%)} to{transform: translateX(0)} }
+    /* ACTION CARDS */
+    .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
+    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s; cursor: pointer; }
+    .action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
+    .ac-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 12px; color: var(--text-muted); }
+
+    /* BATCH BAR */
+    .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 12px 24px; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 16px; z-index: 100; transition: transform 0.3s; color: var(--text-main); }
+    .batch-bar.visible { transform: translateX(-50%) translateY(0); }
     
-    /* Utility colors */
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(20px); transition: transform 0.2s; max-height: 90vh; overflow-y: auto;}
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    /* UTILS COLOR */
     .text-right { text-align: right; }
     .text-center { text-align: center; }
   </style>
@@ -102,128 +114,140 @@
 <body>
 
   <div class="header">
-    <div>
-      <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-      <div class="header-subtitle">Programmation V7.0 (Robust)</div>
+    <div class="flex">
+      <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
+      <div>
+        <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.1</div>
+      </div>
     </div>
-    <button class="btn btn-secondary btn-icon" id="btn-theme">☼</button>
+    <div class="flex">
+        <span style="font-size:12px; color:var(--text-muted);" id="firm-label">BELLECOUR architectes</span>
+        <button class="btn btn-secondary btn-icon" id="btn-theme">☼</button>
+    </div>
   </div>
 
   <div class="toolbar">
-    <button class="btn btn-secondary btn-icon" id="btn-lock">🔓</button>
+    <button class="btn btn-secondary" id="btn-lock">🔓 Déverrouillé</button>
     <button class="btn btn-secondary" id="btn-undo" disabled>↩ Annuler</button>
     <div class="spacer"></div>
     <button class="btn btn-primary" id="btn-save">💾 Sauvegarder</button>
-    <button class="btn btn-secondary" id="btn-export">Export CSV</button>
+    <button class="btn btn-secondary" id="btn-export-csv">CSV</button>
+    <button class="btn btn-secondary" id="btn-export-pdf">PDF</button>
+    <button class="btn btn-danger" id="btn-clear-all">Effacer</button>
     <button class="btn btn-secondary" id="btn-import">Import</button>
-    <button class="btn btn-danger" id="btn-clear">Effacer</button>
   </div>
 
-  <div class="stats-container" id="stats-area">
+  <div class="stats-grid" id="stats-area">
     </div>
 
-  <div class="filters-wrapper">
-    <div class="search-grid">
-      <input type="text" id="inp-search" class="input-field" placeholder="Rechercher un local...">
-      <select id="sel-niveau" class="input-field"><option value="">Tous Niveaux</option></select>
-      <select id="sel-fonction" class="input-field"><option value="">Toutes Fonctions</option></select>
+  <div class="filters-box">
+    <div class="search-row">
+      <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
+      <select id="sel-niveau" class="input"><option value="">Tous Niveaux</option></select>
+      <select id="sel-fonction" class="input"><option value="">Toutes Fonctions</option></select>
     </div>
-    <div class="chip-list" id="prog-chips">
+    <div class="chip-container" id="prog-chips">
       </div>
-    <div style="margin-top: 12px; padding-top:12px; border-top: 1px solid var(--border-color); display:flex; gap:10px;">
-       <button class="btn btn-secondary" id="btn-add-item">➕ Ajouter Local</button>
-       <div class="spacer"></div>
-       <button class="btn btn-secondary btn-icon" id="btn-reset-filters" title="Reset filtres">✕</button>
+    <div class="flex" style="margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border-color);">
+       <button class="btn btn-secondary btn-icon" id="btn-reset-filters" title="Reset">✕</button>
+       <div style="width:1px; height:20px; background:var(--border-color);"></div>
+       <button class="btn btn-accent" id="btn-save-view">💾 Sauver Vue</button>
+       <div id="views-container" class="chip-container"></div> <div class="spacer"></div>
+       <button class="btn btn-success" id="btn-add-item" style="background:var(--success);color:white;">➕ Ajouter Local</button>
+       <button class="btn btn-secondary" id="btn-settings">⚙ Types</button>
     </div>
   </div>
 
-  <div class="table-container">
-    <table class="main-table">
-      <thead>
-        <tr>
-          <th data-sort="programme">Programme</th>
-          <th data-sort="niveau">Niveau</th>
-          <th data-sort="fonction">Fonction</th>
-          <th data-sort="local">Local</th>
-          <th class="text-right" data-sort="surfUnite">S.U.</th>
-          <th class="text-center" data-sort="nombre">Nbr</th>
-          <th class="text-right" data-sort="sueInt">Total Int.</th>
-          <th class="text-right" data-sort="sueExt">Total Ext.</th>
-          <th data-sort="statut">Statut</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-        </tbody>
-      <tfoot id="table-foot">
-         </tfoot>
-    </table>
+  <div class="tabs-container">
+     <button class="tab-btn active" onclick="App.methods.switchView('list')">📋 Liste complète</button>
+     <button class="tab-btn" onclick="App.methods.switchView('actions')" id="tab-actions">⚠️ Actions requises</button>
   </div>
 
-  <div class="footer-legal" style="margin-top: 40px; text-align:center; opacity:0.5; font-size:12px;">BELLECOUR architectes - Propriété exclusive</div>
-
-  <div class="modal-backdrop" id="modal-item">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span id="modal-title">Éditer</span>
-        <button class="btn btn-secondary btn-icon" onclick="App.ui.closeModal()">×</button>
+  <div id="main-content">
       </div>
-      <div class="modal-body">
-        <form id="form-item" onsubmit="event.preventDefault(); App.methods.saveForm();">
+
+  <div class="batch-bar" id="batch-bar">
+      <span style="font-weight:800; color:var(--primary)" id="batch-count">0 sélectionné(s)</span>
+      <div style="width:1px; height:20px; background:var(--border-color);"></div>
+      <select id="batch-field" class="input" style="height:32px; width:120px;">
+          <option value="statut">Statut</option>
+          <option value="niveau">Niveau</option>
+          <option value="programme">Programme</option>
+          <option value="priorite">Priorité</option>
+      </select>
+      <input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">
+      <button class="btn btn-primary" style="height:32px" onclick="App.methods.applyBatch()">Appliquer</button>
+      <button class="btn btn-secondary" style="height:32px" onclick="App.methods.cancelBatch()">Annuler</button>
+  </div>
+
+  <div class="modal-overlay" id="modal-item">
+    <div class="modal">
+      <h2 style="margin-bottom:20px" id="modal-title">Éditer</h2>
+      <form id="form-item" onsubmit="event.preventDefault(); App.methods.saveForm();">
           <input type="hidden" id="f-id">
-          <div class="form-row">
-             <div class="form-group"><label class="form-label">Programme</label><select id="f-programme" class="input-field" required></select></div>
-             <div class="form-group"><label class="form-label">Niveau</label><select id="f-niveau" class="input-field" required></select></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px">
+             <div><label class="text-muted" style="font-size:11px">PROGRAMME</label><select id="f-programme" class="input" required></select></div>
+             <div><label class="text-muted" style="font-size:11px">NIVEAU</label><select id="f-niveau" class="input" required></select></div>
           </div>
-          <div class="form-group"><label class="form-label">Fonction</label><select id="f-fonction" class="input-field"></select></div>
-          <div class="form-group"><label class="form-label">Nom du local</label><input type="text" id="f-local" class="input-field" required></div>
-          
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">S.U. (m²)</label><input type="number" step="0.01" id="f-surf" class="input-field"></div>
-            <div class="form-group"><label class="form-label">Nombre</label><input type="number" step="1" id="f-nbr" class="input-field" value="1"></div>
+          <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">FONCTION</label><select id="f-fonction" class="input"></select></div>
+          <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">LOCAL</label><input type="text" id="f-local" class="input" required></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px">
+            <div><label class="text-muted" style="font-size:11px">S.U.</label><input type="number" step="0.01" id="f-surf" class="input"></div>
+            <div><label class="text-muted" style="font-size:11px">NBR</label><input type="number" id="f-nbr" class="input" value="1"></div>
+            <div class="flex" style="align-items:end"><label class="flex" style="cursor:pointer"><input type="checkbox" id="f-isExt"> Ext?</label></div>
           </div>
-          <div class="form-group"><label class="form-label" style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="f-isExt"> Est en Extérieur ?</label></div>
-
-          <div class="form-group"><label class="form-label">Statut</label><select id="f-statut" class="input-field"></select></div>
-          <div class="form-group"><label class="form-label">Remarques</label><textarea id="f-remarque" class="input-field" style="height:60px; padding-top:8px;"></textarea></div>
-
-          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-             <button type="button" class="btn btn-danger" id="btn-delete-item">Supprimer</button>
-             <button type="button" class="btn btn-secondary" onclick="App.ui.closeModal()">Annuler</button>
+          <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">STATUT</label><select id="f-statut" class="input"></select></div>
+          <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">PRIORITÉ</label><select id="f-priorite" class="input"></select></div>
+          <div style="margin-bottom:20px"><label class="text-muted" style="font-size:11px">REMARQUES / ACTIONS</label><textarea id="f-remarque" class="input" style="height:60px; padding-top:8px"></textarea></div>
+          <div class="flex" style="justify-content:end">
+             <button type="button" class="btn btn-danger" id="btn-del-item">Supprimer</button>
+             <div class="spacer"></div>
+             <button type="button" class="btn btn-secondary" onclick="App.ui.closeModal('modal-item')">Annuler</button>
              <button type="submit" class="btn btn-primary">Enregistrer</button>
           </div>
-        </form>
-      </div>
+      </form>
     </div>
   </div>
 
-  <div id="toast-container"></div>
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal">
+        <h2 style="margin-bottom:10px">Configuration Types</h2>
+        <p style="margin-bottom:20px; color:var(--text-muted); font-size:12px;">Modifiez ici les listes déroulantes.</p>
+        <div style="margin-bottom:12px">
+            <select id="set-type-select" class="input" onchange="App.render.settingsList()">
+                <option value="programmes">Programmes</option>
+                <option value="niveaux">Niveaux</option>
+                <option value="fonctions">Fonctions</option>
+                <option value="statuts">Statuts</option>
+                <option value="priorites">Priorités</option>
+            </select>
+        </div>
+        <div id="settings-list" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:12px;"></div>
+        <div class="flex">
+            <input type="text" id="set-new-name" class="input" placeholder="Nouveau..." style="flex:1">
+            <input type="color" id="set-new-color" value="#3B82F6" style="height:40px; border:none; background:none; cursor:pointer">
+            <button class="btn btn-success" onclick="App.methods.addType()">Ajouter</button>
+        </div>
+        <div class="flex" style="margin-top:20px; justify-content:end">
+            <button class="btn btn-secondary" onclick="App.ui.closeModal('modal-settings')">Fermer</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    /* =========================================
-       1. CONFIGURATION & DONNEES PAR DEFAUT
-       ========================================= */
     const CONFIG = {
       types: {
-        programmes: [
-           { nom: "BUREAUX", couleur: "#3B82F6" },
-           { nom: "LOGEMENTS", couleur: "#10B981" },
-           { nom: "COMMERCES", couleur: "#F59E0B" },
-           { nom: "COMMUNS", couleur: "#64748B" }
-        ],
-        niveaux: [ {nom:"R-1"}, {nom:"RDC"}, {nom:"R+1"}, {nom:"R+2"}, {nom:"R+3"}, {nom:"TOITURE"} ],
-        fonctions: [ {nom:"Circulation"}, {nom:"Travail"}, {nom:"Sanitaire"}, {nom:"Technique"}, {nom:"Stockage"} ],
-        statuts: [
-           { nom: "À CONFIRMER", bg: "#FFFBEB", txt: "#B45309" },
-           { nom: "VALIDÉ", bg: "#ECFDF5", txt: "#047857" },
-           { nom: "MODIFIÉ", bg: "#EFF6FF", txt: "#1D4ED8" },
-           { nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" }
-        ]
+        programmes: [ { id:1, nom: "BUREAUX", couleur: "#3B82F6" }, { id:2, nom: "LOGEMENTS", couleur: "#10B981" }, { id:3, nom: "COMMERCES", couleur: "#F59E0B" } ],
+        niveaux: [ { id:1, nom:"RDC", bgColor:"#F1F5F9", txt:"#334155"}, { id:2, nom:"R+1", bgColor:"#F1F5F9", txt:"#334155"} ],
+        fonctions: [ { id:1, nom:"Circulation"}, { id:2, nom:"Travail"} ],
+        statuts: [ { id:1, nom: "À CONFIRMER", bg: "#FFFBEB", txt: "#B45309" }, { id:2, nom: "VALIDÉ", bg: "#ECFDF5", txt: "#047857" }, { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" } ],
+        priorites: [ { id:1, nom:"HAUTE", couleur:"#EF4444"}, { id:2, nom:"MOYENNE", couleur:"#F59E0B"}, { id:3, nom:"BASSE", couleur:"#10B981"} ]
       }
     };
 
-    /* =========================================
-       2. GESTION DE L'ETAT (STATE MANAGEMENT)
-       ========================================= */
     const App = {
       state: {
         data: [],
@@ -232,44 +256,40 @@
         sort: { col: "programme", asc: true },
         locked: false,
         history: [],
-        types: JSON.parse(JSON.stringify(CONFIG.types)) // Copie profonde
+        savedViews: [],
+        types: JSON.parse(JSON.stringify(CONFIG.types)),
+        currentView: 'list', // 'list' or 'actions'
+        selectedIds: new Set()
       },
 
-      /* =========================================
-         3. INITIALISATION
-         ========================================= */
       init: () => {
-        // Chargement LocalStorage
         const savedData = localStorage.getItem('v7-data');
         const savedTitle = localStorage.getItem('v7-title');
+        const savedViews = localStorage.getItem('v7-views');
+        const savedTypes = localStorage.getItem('v7-types');
+
         if(savedData) App.state.data = JSON.parse(savedData);
         if(savedTitle) App.state.title = savedTitle;
-        
-        // Initialisation UI
+        if(savedViews) App.state.savedViews = JSON.parse(savedViews);
+        if(savedTypes) App.state.types = JSON.parse(savedTypes);
+
         document.getElementById('app-title').innerText = App.state.title;
         if(localStorage.getItem('v7-theme') === 'light') document.body.classList.add('light');
 
-        // Render initial
-        App.render.initSelects();
-        App.render.chips();
-        App.render.table();
-        App.render.stats();
-        
-        // Bind Events
+        App.render.all();
         App.events.bindAll();
       },
 
-      /* =========================================
-         4. METHODES DE LOGIQUE (CRUD)
-         ========================================= */
       methods: {
         save: () => {
           localStorage.setItem('v7-data', JSON.stringify(App.state.data));
           localStorage.setItem('v7-title', App.state.title);
-          App.ui.toast("Sauvegarde effectuée");
+          localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
+          localStorage.setItem('v7-types', JSON.stringify(App.state.types));
+          App.ui.toast("Sauvegardé");
         },
         pushHistory: () => {
-          if(App.state.history.length > 10) App.state.history.shift();
+          if(App.state.history.length > 20) App.state.history.shift();
           App.state.history.push(JSON.stringify(App.state.data));
           document.getElementById('btn-undo').disabled = false;
         },
@@ -278,29 +298,56 @@
           App.state.data = JSON.parse(App.state.history.pop());
           if(App.state.history.length === 0) document.getElementById('btn-undo').disabled = true;
           App.methods.save();
-          App.render.table();
-          App.render.stats();
+          App.render.all();
           App.ui.toast("Annulation effectuée");
         },
+        switchView: (v) => {
+            App.state.currentView = v;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if(v === 'list') document.querySelector('button[onclick*="list"]').classList.add('active');
+            else document.getElementById('tab-actions').classList.add('active');
+            App.render.content();
+        },
         
-        // CRUD Item
-        addItem: () => {
-          App.ui.openModal();
+        // --- SELECTION & BATCH ---
+        toggleSelect: (id) => {
+            if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id);
+            else App.state.selectedIds.add(id);
+            App.render.batchBar();
         },
-        editItem: (id) => {
-          const item = App.state.data.find(i => i.id === id);
-          if(item) App.ui.openModal(item);
+        toggleSelectAll: () => {
+            const visible = App.helpers.getFiltered();
+            const allSelected = visible.every(i => App.state.selectedIds.has(i.id));
+            visible.forEach(i => {
+                if(allSelected) App.state.selectedIds.delete(i.id);
+                else App.state.selectedIds.add(i.id);
+            });
+            App.render.all(); // Need to re-render checkboxes
         },
-        deleteItem: (id) => {
-          if(confirm("Supprimer ce local ?")) {
+        cancelBatch: () => {
+            App.state.selectedIds.clear();
+            App.render.all();
+        },
+        applyBatch: () => {
+            const field = document.getElementById('batch-field').value;
+            const val = document.getElementById('batch-value').value;
+            if(!val && !confirm('Valeur vide. Continuer ?')) return;
+            
             App.methods.pushHistory();
-            App.state.data = App.state.data.filter(i => i.id !== id);
+            let count = 0;
+            App.state.data.forEach(item => {
+                if(App.state.selectedIds.has(item.id)) {
+                    item[field] = val;
+                    count++;
+                }
+            });
             App.methods.save();
-            App.ui.closeModal();
-            App.render.table();
-            App.render.stats();
-          }
+            App.state.selectedIds.clear();
+            App.render.all();
+            App.ui.toast(`${count} éléments modifiés`);
         },
+
+        // --- CRUD ---
         saveForm: () => {
           const id = document.getElementById('f-id').value;
           const formData = {
@@ -312,285 +359,399 @@
              nombre: parseFloat(document.getElementById('f-nbr').value) || 1,
              isExt: document.getElementById('f-isExt').checked,
              statut: document.getElementById('f-statut').value,
+             priorite: document.getElementById('f-priorite').value,
              remarque: document.getElementById('f-remarque').value
           };
-          
-          // Calcul Auto
+          // Auto calc
           const total = Math.round(formData.surfUnite * formData.nombre * 100) / 100;
           formData.sueInt = formData.isExt ? 0 : total;
           formData.sueExt = formData.isExt ? total : 0;
 
           App.methods.pushHistory();
-
           if(id) {
-            // Edit
             const idx = App.state.data.findIndex(i => i.id == id);
             if(idx >= 0) App.state.data[idx] = { ...App.state.data[idx], ...formData };
           } else {
-            // Create
             formData.id = Date.now();
             App.state.data.push(formData);
           }
-          
           App.methods.save();
-          App.ui.closeModal();
-          App.render.table();
-          App.render.stats();
+          App.ui.closeModal('modal-item');
+          App.render.all();
+        },
+        deleteItem: (id) => {
+            if(confirm("Supprimer ?")) {
+                App.methods.pushHistory();
+                App.state.data = App.state.data.filter(i => i.id != id);
+                App.methods.save();
+                App.ui.closeModal('modal-item');
+                App.render.all();
+            }
+        },
+
+        // --- VIEWS ---
+        saveView: () => {
+            const name = prompt("Nom de la vue ?");
+            if(name) {
+                App.state.savedViews.push({ id: Date.now(), name, filters: JSON.parse(JSON.stringify(App.state.filters)) });
+                App.methods.save();
+                App.render.filters();
+            }
+        },
+        loadView: (id) => {
+            const v = App.state.savedViews.find(view => view.id === id);
+            if(v) {
+                App.state.filters = JSON.parse(JSON.stringify(v.filters));
+                // Update inputs UI
+                document.getElementById('inp-search').value = App.state.filters.search;
+                document.getElementById('sel-niveau').value = App.state.filters.niveau;
+                document.getElementById('sel-fonction').value = App.state.filters.fonction;
+                App.render.all();
+                App.ui.toast(`Vue "${v.name}" chargée`);
+            }
+        },
+        deleteView: (id, e) => {
+            e.stopPropagation();
+            if(confirm('Supprimer cette vue ?')) {
+                App.state.savedViews = App.state.savedViews.filter(v => v.id !== id);
+                App.methods.save();
+                App.render.filters();
+            }
         },
         
-        clearAll: () => {
-           if(confirm("Tout effacer ? Cette action est irréversible.")) {
-               App.methods.pushHistory();
-               App.state.data = [];
-               App.methods.save();
-               App.render.table();
-               App.render.stats();
-           }
-        }
-      },
-
-      /* =========================================
-         5. RENDU DOM (Optimisé, pas de innerHTML global)
-         ========================================= */
-      render: {
-        initSelects: () => {
-          // Remplit les selects filtres et modal une fois pour toutes
-          const fill = (id, list) => {
-            const el = document.getElementById(id);
-            // Garder la première option si c'est un filtre
-            const start = el.options.length > 0 ? 1 : 0;
-            // Nettoyer sauf le default
-            while(el.options.length > start) el.remove(start);
-            list.forEach(item => {
-              const opt = document.createElement('option');
-              opt.value = item.nom;
-              opt.innerText = item.nom;
-              el.appendChild(opt);
-            });
-          };
-          
-          // Filtres
-          fill('sel-niveau', App.state.types.niveaux);
-          fill('sel-fonction', App.state.types.fonctions);
-          
-          // Formulaire
-          fill('f-programme', App.state.types.programmes);
-          fill('f-niveau', App.state.types.niveaux);
-          fill('f-fonction', App.state.types.fonctions);
-          fill('f-statut', App.state.types.statuts);
+        // --- TYPES ---
+        addType: () => {
+            const cat = document.getElementById('set-type-select').value;
+            const nom = document.getElementById('set-new-name').value;
+            const col = document.getElementById('set-new-color').value;
+            if(!nom) return;
+            const newItem = { id: Date.now(), nom, couleur: col, bg:col+"20", txt:col }; // Simple logic
+            App.state.types[cat].push(newItem);
+            App.methods.save();
+            App.render.settingsList();
+            App.render.selects(); // Refresh main dropdowns
+        },
+        deleteType: (cat, id) => {
+             App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id);
+             App.methods.save();
+             App.render.settingsList();
+             App.render.selects();
         },
 
-        chips: () => {
-          const container = document.getElementById('prog-chips');
-          container.innerHTML = '';
-          App.state.types.programmes.forEach(p => {
-             const btn = document.createElement('button');
-             btn.className = `chip ${App.state.filters.programme.includes(p.nom) ? 'active' : ''}`;
-             btn.innerText = p.nom;
-             if(btn.classList.contains('active')) btn.style.backgroundColor = p.couleur;
-             else btn.style.borderColor = p.couleur;
-             
-             btn.onclick = () => {
-                const idx = App.state.filters.programme.indexOf(p.nom);
-                if(idx > -1) App.state.filters.programme.splice(idx, 1);
-                else App.state.filters.programme.push(p.nom);
-                App.render.chips();
-                App.render.table();
-                App.render.stats();
+        // --- IMPORTS / EXPORTS ---
+        exportCsv: () => {
+             const headers = ['Programme','Niveau','Fonction','Local','SU','Nbr','Total','Statut','Priorite','Remarque'];
+             const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, `"${d.local}"`, d.surfUnite, d.nombre, (d.sueInt+d.sueExt), d.statut, d.priorite, `"${d.remarque||''}"`]);
+             const csvContent = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+             const blob = new Blob(['\ufeff'+csvContent], {type: 'text/csv;charset=utf-8'});
+             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'projet.csv'; link.click();
+        },
+        exportPdf: () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l','mm','a4');
+            doc.text(App.state.title, 14, 15);
+            const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]);
+            doc.autoTable({ head:[['Prog','Niv','Fct','Local','SU','Nb','Tot','Statut']], body: rows, startY: 20 });
+            doc.save('projet.pdf');
+        },
+        import: () => {
+             const input = document.createElement('input'); input.type='file'; input.accept='.json';
+             input.onchange = e => {
+                 const reader = new FileReader();
+                 reader.onload = () => {
+                     try {
+                         const json = JSON.parse(reader.result);
+                         if(confirm("Remplacer les données ?")) {
+                             App.methods.pushHistory();
+                             if(Array.isArray(json)) App.state.data = json; // Old format
+                             else if(json.data) { // New format
+                                 App.state.data = json.data;
+                                 if(json.types) App.state.types = json.types;
+                             }
+                             App.methods.save();
+                             App.render.all();
+                         }
+                     } catch(err) { alert('Fichier invalide'); }
+                 };
+                 reader.readAsText(e.target.files[0]);
              };
-             container.appendChild(btn);
-          });
-        },
-
-        table: () => {
-          const tbody = document.getElementById('table-body');
-          const tfoot = document.getElementById('table-foot');
-          tbody.innerHTML = ''; 
-
-          // Filtrage
-          const f = App.state.filters;
-          let filtered = App.state.data.filter(d => {
-             if(f.search && !d.local.toLowerCase().includes(f.search.toLowerCase())) return false;
-             if(f.programme.length && !f.programme.includes(d.programme)) return false;
-             if(f.niveau && d.niveau !== f.niveau) return false;
-             if(f.fonction && d.fonction !== f.fonction) return false;
-             return true;
-          });
-
-          // Tri
-          const col = App.state.sort.col;
-          const asc = App.state.sort.asc;
-          filtered.sort((a, b) => {
-             let va = a[col], vb = b[col];
-             if(typeof va === 'string') return asc ? va.localeCompare(vb) : vb.localeCompare(va);
-             return asc ? va - vb : vb - va;
-          });
-
-          // Rendu Lignes
-          if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="padding:40px; color:var(--text-muted)">Aucun résultat</td></tr>';
-          } else {
-             const fragment = document.createDocumentFragment();
-             filtered.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.onclick = () => { if(!App.state.locked) App.methods.editItem(item.id); };
-                
-                // Styles couleurs
-                const progColor = App.state.types.programmes.find(p=>p.nom===item.programme)?.couleur || '#888';
-                const stConf = App.state.types.statuts.find(s=>s.nom===item.statut);
-                const stStyle = stConf ? `background:${stConf.bg}; color:${stConf.txt}` : '';
-
-                tr.innerHTML = `
-                  <td style="color:${progColor}; font-weight:600">${item.programme}</td>
-                  <td><span class="badge" style="background:var(--bg-input)">${item.niveau}</span></td>
-                  <td>${item.fonction || '-'}</td>
-                  <td><strong>${item.local}</strong></td>
-                  <td class="text-right">${item.surfUnite || '-'}</td>
-                  <td class="text-center">${item.nombre}</td>
-                  <td class="text-right" style="color:${item.sueInt ? 'var(--primary)' : 'inherit'}; font-weight:700">${item.sueInt||'-'}</td>
-                  <td class="text-right" style="color:${item.sueExt ? 'var(--success)' : 'inherit'}; font-weight:700">${item.sueExt||'-'}</td>
-                  <td>${item.statut ? `<span class="badge" style="${stStyle}">${item.statut}</span>` : ''}</td>
-                `;
-                fragment.appendChild(tr);
-             });
-             tbody.appendChild(fragment);
-          }
-          
-          // Rendu Footer (Totaux)
-          const sumInt = filtered.reduce((a,b)=> a+(b.sueInt||0), 0);
-          const sumExt = filtered.reduce((a,b)=> a+(b.sueExt||0), 0);
-          tfoot.innerHTML = `<tr><td colspan="6" class="text-right"><strong>TOTAUX VISIBLES</strong></td><td class="text-right"><strong>${sumInt.toLocaleString()} m²</strong></td><td class="text-right"><strong>${sumExt.toLocaleString()} m²</strong></td><td></td></tr>`;
-        },
-
-        stats: () => {
-          const container = document.getElementById('stats-area');
-          const totalInt = App.state.data.reduce((a,b)=> a+(b.sueInt||0), 0);
-          const totalExt = App.state.data.reduce((a,b)=> a+(b.sueExt||0), 0);
-          
-          container.innerHTML = `
-            <div class="stat-card" style="border-left:4px solid var(--primary)">
-               <div class="stat-label">Total Intérieur</div>
-               <div class="stat-value" style="color:var(--primary)">${totalInt.toLocaleString()} <span style="font-size:14px">m²</span></div>
-            </div>
-            <div class="stat-card" style="border-left:4px solid var(--success)">
-               <div class="stat-label">Total Extérieur</div>
-               <div class="stat-value" style="color:var(--success)">${totalExt.toLocaleString()} <span style="font-size:14px">m²</span></div>
-            </div>
-             <div class="stat-card">
-               <div class="stat-label">Nombre de Locaux</div>
-               <div class="stat-value">${App.state.data.length}</div>
-            </div>
-          `;
+             input.click();
         }
       },
 
-      /* =========================================
-         6. GESTION UI & EVENTS
-         ========================================= */
+      helpers: {
+         getFiltered: () => {
+             const f = App.state.filters;
+             return App.state.data.filter(d => {
+                 if(f.search && !d.local.toLowerCase().includes(f.search.toLowerCase())) return false;
+                 if(f.programme.length && !f.programme.includes(d.programme)) return false;
+                 if(f.niveau && d.niveau !== f.niveau) return false;
+                 if(f.fonction && d.fonction !== f.fonction) return false;
+                 return true;
+             });
+         }
+      },
+
+      render: {
+        all: () => {
+            App.render.selects();
+            App.render.filters();
+            App.render.charts();
+            App.render.content(); // Decides List vs Actions
+            App.render.batchBar();
+        },
+        selects: () => {
+           const fill = (id, list, key='nom') => {
+               const el = document.getElementById(id);
+               const val = el.value;
+               el.innerHTML = el.id.startsWith('f-') ? '' : `<option value="">${el.options[0]?.text || ''}</option>`;
+               list.forEach(i => {
+                   const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key];
+                   el.appendChild(opt);
+               });
+               el.value = val;
+           };
+           // Filters
+           fill('sel-niveau', App.state.types.niveaux);
+           fill('sel-fonction', App.state.types.fonctions);
+           // Form
+           fill('f-programme', App.state.types.programmes);
+           fill('f-niveau', App.state.types.niveaux);
+           fill('f-fonction', App.state.types.fonctions);
+           fill('f-statut', App.state.types.statuts);
+           fill('f-priorite', App.state.types.priorites);
+        },
+        filters: () => {
+            // Prog Chips
+            const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
+            App.state.types.programmes.forEach(p => {
+                const active = App.state.filters.programme.includes(p.nom);
+                const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
+                btn.style.borderColor = p.couleur; btn.style.color = active ? 'white' : p.couleur;
+                if(active) btn.style.background = p.couleur;
+                btn.innerText = p.nom;
+                btn.onclick = () => {
+                    const idx = App.state.filters.programme.indexOf(p.nom);
+                    if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom);
+                    App.render.all();
+                };
+                pc.appendChild(btn);
+            });
+            // Saved Views
+            const vc = document.getElementById('views-container'); vc.innerHTML = '';
+            App.state.savedViews.forEach(v => {
+                const d = document.createElement('div'); d.className = 'chip view-chip';
+                d.innerHTML = `<span>${v.name}</span><span class="chip-del">×</span>`;
+                d.querySelector('span').onclick = () => App.methods.loadView(v.id);
+                d.querySelector('.chip-del').onclick = (e) => App.methods.deleteView(v.id, e);
+                vc.appendChild(d);
+            });
+        },
+        charts: () => {
+            const data = App.helpers.getFiltered();
+            const totInt = data.reduce((a,b)=>a+(b.sueInt||0),0);
+            const totExt = data.reduce((a,b)=>a+(b.sueExt||0),0);
+            
+            // Helpers charts
+            const mkChart = (title, groupKey, palette) => {
+                const groups = {};
+                data.forEach(i => { 
+                    if(i.sueInt>0) groups[i[groupKey]] = (groups[i[groupKey]]||0) + i.sueInt; 
+                });
+                let conic = [], deg=0, listHTML='';
+                const total = totInt || 1; 
+                Object.entries(groups).forEach(([k, v]) => {
+                    const conf = palette.find(p=>p.nom===k) || {couleur:'#888'};
+                    const col = conf.couleur || conf.bg || '#888';
+                    const pct = (v/total)*100;
+                    conic.push(`${col} ${deg}% ${deg+pct}%`);
+                    deg += pct;
+                    listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${k}</div><div>${Math.round(v)}m²</div></div>`;
+                });
+                const grad = conic.length ? `conic-gradient(${conic.join(', ')})` : 'var(--bg-input)';
+                return `<div class="card"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px">${title}</div><div class="chart-row"><div class="donut" style="background:${grad}"></div><div class="legend">${listHTML||'Aucune donnée'}</div></div></div>`;
+            };
+
+            const html = `
+               <div class="card" style="border-left:4px solid var(--primary); display:flex; flex-direction:column; justify-content:center;">
+                  <div style="font-size:11px;font-weight:700;color:var(--text-muted)">SURFACE INT.</div>
+                  <div style="font-size:24px;font-weight:800;color:var(--primary)">${totInt.toLocaleString()} <span style="font-size:14px">m²</span></div>
+               </div>
+               <div class="card" style="border-left:4px solid var(--success); display:flex; flex-direction:column; justify-content:center;">
+                  <div style="font-size:11px;font-weight:700;color:var(--text-muted)">SURFACE EXT.</div>
+                  <div style="font-size:24px;font-weight:800;color:var(--success)">${totExt.toLocaleString()} <span style="font-size:14px">m²</span></div>
+               </div>
+               ${mkChart('PAR PROGRAMME', 'programme', App.state.types.programmes)}
+               ${mkChart('PAR NIVEAU', 'niveau', App.state.types.niveaux.map(n=>({nom:n.nom, couleur:n.bgColor==='#F1F5F9'?'#94A3B8':n.bgColor})))}
+            `;
+            document.getElementById('stats-area').innerHTML = html;
+        },
+        content: () => {
+            const container = document.getElementById('main-content');
+            const data = App.helpers.getFiltered();
+            const sorted = [...data].sort((a,b) => {
+                 let vA=a[App.state.sort.col], vB=b[App.state.sort.col];
+                 if(typeof vA==='string') return App.state.sort.asc ? vA.localeCompare(vB):vB.localeCompare(vA);
+                 return App.state.sort.asc ? vA-vB : vB-vA;
+            });
+
+            if(App.state.currentView === 'list') {
+                // RENDER TABLE
+                container.innerHTML = `<div class="table-wrap"><table><thead><tr>
+                   <th style="width:40px; text-align:center"><input type="checkbox" onclick="App.methods.toggleSelectAll()"></th>
+                   <th onclick="App.state.sort.col='programme';App.render.content()">Prog</th>
+                   <th onclick="App.state.sort.col='niveau';App.render.content()">Niv</th>
+                   <th onclick="App.state.sort.col='fonction';App.render.content()">Fct</th>
+                   <th onclick="App.state.sort.col='local';App.render.content()">Local</th>
+                   <th class="text-right">SU</th><th class="text-center">Nb</th><th class="text-right">Tot</th>
+                   <th onclick="App.state.sort.col='statut';App.render.content()">Statut</th>
+                </tr></thead><tbody id="tb"></tbody></table></div>`;
+                
+                const tb = document.getElementById('tb');
+                if(!sorted.length) tb.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:30px">Vide</td></tr>`;
+                sorted.forEach(i => {
+                    const sel = App.state.selectedIds.has(i.id);
+                    const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
+                    const st = App.state.types.statuts.find(s=>s.nom===i.statut);
+                    const tr = document.createElement('tr');
+                    if(sel) tr.style.background = "rgba(59, 130, 246, 0.1)";
+                    tr.innerHTML = `
+                      <td class="text-center" onclick="event.stopPropagation()"><input type="checkbox" ${sel?'checked':''} onchange="App.methods.toggleSelect(${i.id})"></td>
+                      <td style="color:${prog?prog.couleur:'inherit'};font-weight:600">${i.programme}</td>
+                      <td><span class="badge" style="background:var(--bg-input)">${i.niveau}</span></td>
+                      <td>${i.fonction||'-'}</td>
+                      <td><b>${i.local}</b></td>
+                      <td class="text-right">${i.surfUnite||'-'}</td>
+                      <td class="text-center">${i.nombre}</td>
+                      <td class="text-right" style="font-weight:700; color:${i.sueInt?'var(--primary)':'var(--success)'}">${(i.sueInt||i.sueExt)}</td>
+                      <td>${i.statut ? `<span class="badge" style="background:${st?st.bg:'#eee'}; color:${st?st.txt:'#333'}">${i.statut}</span>`:''}</td>
+                    `;
+                    tr.onclick = () => !App.state.locked && App.ui.openModalItem(i);
+                    tb.appendChild(tr);
+                });
+
+            } else {
+                // RENDER ACTIONS (Kanban simplified)
+                const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ'); // Show only not validated
+                if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise. Tout est validé ou sans statut.</div>'; return; }
+                
+                container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
+                const ag = document.getElementById('ag');
+                actions.forEach(i => {
+                    const prio = App.state.types.priorites.find(p=>p.nom===i.priorite);
+                    const col = prio ? prio.couleur : 'var(--border-color)';
+                    const card = document.createElement('div');
+                    card.className = 'action-card';
+                    card.style.borderLeftColor = col;
+                    card.onclick = () => App.ui.openModalItem(i);
+                    card.innerHTML = `
+                      <div class="ac-header">
+                        <span style="font-size:11px; font-weight:700; color:${col}">${i.priorite || 'SANS PRIORITÉ'}</span>
+                        <span class="badge" style="background:var(--bg-input)">${i.statut}</span>
+                      </div>
+                      <div class="ac-body">
+                         <div style="font-size:16px; margin-bottom:4px">${i.local}</div>
+                         <div style="color:var(--text-muted); font-size:12px">${i.programme} - ${i.niveau}</div>
+                         ${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${i.remarque}"</div>` : ''}
+                      </div>
+                      <div class="ac-footer">
+                         <span>Action requise</span>
+                         <button class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:11px">Modifier</button>
+                      </div>
+                    `;
+                    ag.appendChild(card);
+                });
+            }
+        },
+        batchBar: () => {
+             const bar = document.getElementById('batch-bar');
+             const count = App.state.selectedIds.size;
+             if(count > 0 && !App.state.locked) {
+                 bar.classList.add('visible');
+                 document.getElementById('batch-count').innerText = `${count} sélectionné(s)`;
+             } else {
+                 bar.classList.remove('visible');
+             }
+        },
+        settingsList: () => {
+             const cat = document.getElementById('set-type-select').value;
+             const list = App.state.types[cat];
+             const div = document.getElementById('settings-list');
+             div.innerHTML = '';
+             list.forEach(item => {
+                 const row = document.createElement('div');
+                 row.style.cssText = "display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-color); align-items:center";
+                 const colorBox = (item.couleur||item.bg) ? `<span style="width:12px;height:12px;background:${item.couleur||item.bg};display:inline-block;margin-right:8px;border-radius:2px"></span>` : '';
+                 row.innerHTML = `<div>${colorBox}${item.nom}</div><button class="btn btn-danger" style="height:24px; padding:0 8px" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>`;
+                 div.appendChild(row);
+             });
+        }
+      },
+
       ui: {
         toast: (msg) => {
-           const div = document.createElement('div');
-           div.className = 'toast';
-           div.innerText = msg;
-           document.getElementById('toast-container').appendChild(div);
-           setTimeout(() => div.remove(), 3000);
+            const t = document.createElement('div'); t.className='toast';
+            t.style.cssText = "background:var(--bg-card); padding:12px 20px; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 5px 15px rgba(0,0,0,0.3); animation:slideIn 0.3s forwards";
+            t.innerText = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(()=>t.remove(), 3000);
         },
-        openModal: (item = null) => {
-           const modal = document.getElementById('modal-item');
-           const form = document.getElementById('form-item');
-           form.reset();
-           document.getElementById('f-id').value = '';
-           document.getElementById('btn-delete-item').style.display = 'none';
-
-           if(item) {
-             document.getElementById('modal-title').innerText = "Modifier Local";
-             document.getElementById('f-id').value = item.id;
-             document.getElementById('f-programme').value = item.programme;
-             document.getElementById('f-niveau').value = item.niveau;
-             document.getElementById('f-fonction').value = item.fonction;
-             document.getElementById('f-local').value = item.local;
-             document.getElementById('f-surf').value = item.surfUnite;
-             document.getElementById('f-nbr').value = item.nombre;
-             document.getElementById('f-isExt').checked = item.isExt;
-             document.getElementById('f-statut').value = item.statut;
-             document.getElementById('f-remarque').value = item.remarque || '';
-             document.getElementById('btn-delete-item').style.display = 'block';
-             document.getElementById('btn-delete-item').onclick = () => App.methods.deleteItem(item.id);
-           } else {
-             document.getElementById('modal-title').innerText = "Nouveau Local";
-           }
-           modal.classList.add('open');
+        openModalItem: (item=null) => {
+            const form = document.getElementById('form-item');
+            form.reset();
+            document.getElementById('f-id').value = '';
+            document.getElementById('btn-del-item').classList.add('hidden');
+            document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
+            
+            if(item) {
+                document.getElementById('f-id').value = item.id;
+                document.getElementById('f-programme').value = item.programme;
+                document.getElementById('f-niveau').value = item.niveau;
+                document.getElementById('f-fonction').value = item.fonction;
+                document.getElementById('f-local').value = item.local;
+                document.getElementById('f-surf').value = item.surfUnite;
+                document.getElementById('f-nbr').value = item.nombre;
+                document.getElementById('f-isExt').checked = item.isExt;
+                document.getElementById('f-statut').value = item.statut;
+                document.getElementById('f-priorite').value = item.priorite;
+                document.getElementById('f-remarque').value = item.remarque || '';
+                document.getElementById('btn-del-item').classList.remove('hidden');
+                document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
+            }
+            document.getElementById('modal-item').classList.add('open');
         },
-        closeModal: () => {
-           document.getElementById('modal-item').classList.remove('open');
-        }
+        closeModal: (id) => document.getElementById(id).classList.remove('open')
       },
 
       events: {
         bindAll: () => {
-          // Theme
-          document.getElementById('btn-theme').onclick = () => {
-             document.body.classList.toggle('light');
-             localStorage.setItem('v7-theme', document.body.classList.contains('light')?'light':'dark');
-          };
-          
-          // Lock
-          document.getElementById('btn-lock').onclick = () => {
-             App.state.locked = !App.state.locked;
-             document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓';
-             App.ui.toast(App.state.locked ? "Mode Lecture Seule" : "Mode Édition");
-          };
-
-          // Filtres (Input Search : Pas de re-render global !)
-          document.getElementById('inp-search').oninput = (e) => {
-             App.state.filters.search = e.target.value;
-             App.render.table();
-          };
-          document.getElementById('sel-niveau').onchange = (e) => {
-             App.state.filters.niveau = e.target.value;
-             App.render.table();
-          };
-          document.getElementById('sel-fonction').onchange = (e) => {
-             App.state.filters.fonction = e.target.value;
-             App.render.table();
-          };
-          document.getElementById('btn-reset-filters').onclick = () => {
-             App.state.filters = { search: "", programme: [], niveau: "", fonction: "" };
-             document.getElementById('inp-search').value = "";
-             document.getElementById('sel-niveau').value = "";
-             document.getElementById('sel-fonction').value = "";
-             App.render.chips();
-             App.render.table();
-          };
-
-          // CRUD Buttons
-          document.getElementById('btn-add-item').onclick = App.methods.addItem;
-          document.getElementById('btn-save').onclick = App.methods.save;
-          document.getElementById('btn-clear').onclick = App.methods.clearAll;
-          document.getElementById('btn-undo').onclick = App.methods.undo;
-
-          // Title Edit
-          document.getElementById('app-title').onblur = (e) => {
-             App.state.title = e.target.innerText;
-             App.methods.save();
-          };
-          
-          // Sort
-          document.querySelectorAll('th[data-sort]').forEach(th => {
-             th.onclick = () => {
-                const col = th.dataset.sort;
-                if(App.state.sort.col === col) App.state.sort.asc = !App.state.sort.asc;
-                else { App.state.sort.col = col; App.state.sort.asc = true; }
-                App.render.table();
-             };
-          });
+            document.getElementById('btn-theme').onclick = () => { document.body.classList.toggle('light'); localStorage.setItem('v7-theme', document.body.classList.contains('light')?'light':'dark'); };
+            document.getElementById('btn-lock').onclick = () => { App.state.locked = !App.state.locked; document.getElementById('btn-lock').innerText = App.state.locked ? '🔒 Verrouillé' : '🔓 Déverrouillé'; App.ui.toast(App.state.locked?"Lecture seule":"Édition activée"); };
+            
+            ['inp-search','sel-niveau','sel-fonction'].forEach(id => document.getElementById(id).oninput = (e) => { 
+                App.state.filters[id.split('-')[1]] = e.target.value; App.render.all(); 
+            });
+            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:"",fonction:""}; document.getElementById('inp-search').value=""; App.render.all(); };
+            
+            document.getElementById('btn-save').onclick = App.methods.save;
+            document.getElementById('btn-undo').onclick = App.methods.undo;
+            document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.save(); App.render.all(); }};
+            document.getElementById('btn-add-item').onclick = () => App.ui.openModalItem();
+            document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.save(); };
+            
+            // View & Settings
+            document.getElementById('btn-save-view').onclick = App.methods.saveView;
+            document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
+            
+            // Export/Import
+            document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
+            document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
+            document.getElementById('btn-import').onclick = App.methods.import;
         }
       }
     };
 
-    // START
     window.addEventListener('DOMContentLoaded', App.init);
-
   </script>
 </body>
 </html>
