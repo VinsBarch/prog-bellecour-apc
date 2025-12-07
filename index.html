@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.8 (Colors)</title>
+  <title>PROGRAMMATION V7.9 (Stable)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.8 --- */
+    /* --- DESIGN SYSTEM V7.9 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -68,28 +68,11 @@
     .legend-item { display: flex; justify-content: space-between; align-items: center; }
     .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* SEGMENTED CONTROL (TABS) */
-    .segmented-control { 
-        display: inline-flex; 
-        background: var(--bg-card); 
-        padding: 4px; 
-        border-radius: 12px; 
-        border: 1px solid var(--border-color);
-        margin-bottom: 20px;
-    }
-    .seg-btn { 
-        padding: 8px 24px; 
-        border-radius: 8px; 
-        font-weight: 600; 
-        font-size: 13px; 
-        cursor: pointer; 
-        color: var(--text-muted); 
-        transition: all 0.2s;
-        border: none;
-        background: transparent;
-    }
+    /* SEGMENTED CONTROL */
+    .segmented-control { display: inline-flex; background: var(--bg-card); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+    .seg-btn { padding: 8px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; border: none; background: transparent; }
     .seg-btn:hover { color: var(--text-main); }
-    .seg-btn.active { background: var(--bg-hover); color: var(--text-main); shadow: var(--shadow-sm); }
+    .seg-btn.active { background: var(--bg-hover); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
     /* FILTERS */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
@@ -164,7 +147,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.8</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9</div>
       </div>
     </div>
     <div class="flex">
@@ -301,7 +284,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    // --- V7.8 DEFAULT PALETTE ---
+    // --- V7.9 DEFAULT CONFIG ---
     const CONFIG = {
       types: {
         programmes: [ 
@@ -354,39 +337,58 @@
       },
 
       init: () => {
-        const savedData = localStorage.getItem('v7-data');
-        const savedTitle = localStorage.getItem('v7-title');
-        const savedViews = localStorage.getItem('v7-views');
-        const savedTypes = localStorage.getItem('v7-types');
-
-        if(savedData) App.state.data = JSON.parse(savedData);
-        if(savedTitle) App.state.title = savedTitle;
-        if(savedViews) App.state.savedViews = JSON.parse(savedViews);
-        if(savedTypes) {
-             const t = JSON.parse(savedTypes);
-             // Migration V7.8: Normalize color keys
-             for(let key in t) {
-                 t[key].forEach(i => {
-                     if(!i.bg && i.couleur) i.bg = i.couleur; // Migrer couleur vers bg
-                     if(!i.txt) i.txt = (i.bg === '#F1F5F9') ? '#334155' : '#FFFFFF'; // Default text
-                 });
-             }
-             App.state.types = t;
-        }
-
-        document.getElementById('app-title').innerText = App.state.title;
-        if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
-
-        window.addEventListener('click', (e) => {
-            if(!e.target.closest('.ms-container')) {
-                App.state.openDropdown = null;
-                App.render.filtersUI();
-            }
-        });
-
-        App.render.modalSelects();
-        App.render.all();
+        // 1. Bind Events FIRST (Critical Fix)
         App.events.bindAll();
+
+        try {
+            const savedData = localStorage.getItem('v7-data');
+            const savedTitle = localStorage.getItem('v7-title');
+            const savedViews = localStorage.getItem('v7-views');
+            const savedTypes = localStorage.getItem('v7-types');
+
+            if(savedData) App.state.data = JSON.parse(savedData);
+            if(savedTitle) App.state.title = savedTitle;
+            if(savedViews) App.state.savedViews = JSON.parse(savedViews);
+            
+            // 2. Data Sanitization (Fix Colors)
+            if(savedTypes) {
+                 const t = JSON.parse(savedTypes);
+                 for(let key in t) {
+                     if(Array.isArray(t[key])) {
+                         t[key].forEach(i => {
+                             // Normalize Colors (V6 -> V7 Migration)
+                             if(!i.bg && i.couleur) i.bg = i.couleur;
+                             if(!i.bg) i.bg = "#94A3B8"; // Default Grey
+                             if(!i.txt) i.txt = "#FFFFFF"; // Default White
+                         });
+                     } else {
+                        // Reset corrupt type category
+                        t[key] = JSON.parse(JSON.stringify(CONFIG.types[key] || []));
+                     }
+                 }
+                 App.state.types = t;
+            }
+
+            document.getElementById('app-title').innerText = App.state.title;
+            if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
+
+            window.addEventListener('click', (e) => {
+                if(!e.target.closest('.ms-container')) {
+                    App.state.openDropdown = null;
+                    App.render.filtersUI();
+                }
+            });
+
+            // 3. Render
+            App.render.modalSelects();
+            App.render.all();
+
+        } catch (e) {
+            console.error("Initialization Error:", e);
+            alert("Une erreur de données a été détectée. L'application a activé le mode sans échec. Veuillez cliquer sur 'Effacer' si le problème persiste.");
+            // Render basic UI anyway
+            App.render.filtersUI();
+        }
       },
 
       methods: {
@@ -397,18 +399,20 @@
            const dd = String(d.getDate()).padStart(2,'0');
            const hh = String(d.getHours()).padStart(2,'0');
            const min = String(d.getMinutes()).padStart(2,'0');
-           const cleanTitle = App.state.title.replace(/[^a-z0-9]/gi, '_').toUpperCase();
+           const cleanTitle = (App.state.title || "PROJET").replace(/[^a-z0-9]/gi, '_').toUpperCase();
            return `SBA-${cleanTitle}-PROG-${yy}${mm}${dd}-${hh}${min}`;
         },
         saveLocal: () => {
-          localStorage.setItem('v7-data', JSON.stringify(App.state.data));
-          localStorage.setItem('v7-title', App.state.title);
-          localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
-          localStorage.setItem('v7-types', JSON.stringify(App.state.types));
+          try {
+            localStorage.setItem('v7-data', JSON.stringify(App.state.data));
+            localStorage.setItem('v7-title', App.state.title);
+            localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
+            localStorage.setItem('v7-types', JSON.stringify(App.state.types));
+          } catch(e) { console.error("Save failed", e); alert("Erreur sauvegarde locale (Quota ?)"); }
         },
         saveJson: () => {
             App.methods.saveLocal();
-            const exportObj = { title: App.state.title, data: App.state.data, types: App.state.types, version: "7.8" };
+            const exportObj = { title: App.state.title, data: App.state.data, types: App.state.types, version: "7.9" };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${App.methods.getExportName()}.json`; link.click();
             App.ui.toast("Fichier JSON généré");
@@ -485,7 +489,6 @@
         loadView: (id) => { const v = App.state.savedViews.find(view => view.id === id); if(v) { App.state.filters = JSON.parse(JSON.stringify(v.filters)); document.getElementById('inp-search').value = App.state.filters.search; App.render.all(); App.ui.toast(`Vue "${v.name}" chargée`); } },
         deleteView: (id, e) => { e.stopPropagation(); if(confirm('Supprimer cette vue ?')) { App.state.savedViews = App.state.savedViews.filter(v => v.id !== id); App.methods.saveLocal(); App.render.filtersUI(); } },
         
-        // --- TYPES MANAGEMENT (Inline Edit) ---
         addType: () => {
             const cat = document.getElementById('set-type-select').value;
             const nom = document.getElementById('set-new-name').value;
@@ -502,12 +505,10 @@
              [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
              App.methods.saveLocal(); App.render.settingsList(); App.render.modalSelects(); App.render.all();
         },
-        // Inline Update
         updateType: (cat, id, field, val) => {
              const t = App.state.types[cat].find(i=>i.id===id);
              if(t) {
                  if(field === 'nom') {
-                     // Cascade update data if name changes
                      const oldName = t.nom; const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; 
                      App.state.data.forEach(d => { if(d[key] === oldName) d[key] = val; });
                  }
@@ -543,15 +544,20 @@
                              document.getElementById('app-title').innerText = App.state.title;
                              if(Array.isArray(json)) App.state.data = json;
                              else if(json.data) { App.state.data = json.data; if(json.types) App.state.types = json.types; }
-                             // Re-run init logic to normalize imported colors if old version
+                             
+                             // Re-sanitize on import
                              if(App.state.types) {
                                  for(let key in App.state.types) {
-                                     App.state.types[key].forEach(i => {
-                                         if(!i.bg && i.couleur) i.bg = i.couleur;
-                                         if(!i.txt) i.txt = (i.bg === '#F1F5F9') ? '#334155' : '#FFFFFF';
-                                     });
+                                     if(Array.isArray(App.state.types[key])) {
+                                         App.state.types[key].forEach(i => {
+                                             if(!i.bg && i.couleur) i.bg = i.couleur;
+                                             if(!i.bg) i.bg = "#94A3B8";
+                                             if(!i.txt) i.txt = "#FFFFFF";
+                                         });
+                                     }
                                  }
                              }
+
                              App.methods.saveLocal(); App.render.all();
                          }
                      } catch(err) { alert('Fichier invalide'); }
@@ -575,6 +581,7 @@
          },
          safe: (str) => { if(!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); },
          getStyle: (cat, name) => {
+             if(!App.state.types[cat]) return `background:var(--bg-input); color:var(--text-muted)`;
              const t = App.state.types[cat].find(i => i.nom === name);
              if(t) return `background:${t.bg}; color:${t.txt}`;
              return `background:var(--bg-input); color:var(--text-muted)`;
@@ -588,7 +595,7 @@
                const el = document.getElementById(id); if(!el) return;
                const val = el.value;
                el.innerHTML = el.id.startsWith('f-') ? '' : `<option value="">${el.options[0]?.text || ''}</option>`;
-               list.forEach(i => { const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key]; el.appendChild(opt); });
+               if(list) list.forEach(i => { const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key]; el.appendChild(opt); });
                el.value = val;
            };
            fill('f-programme', App.state.types.programmes); fill('f-niveau', App.state.types.niveaux);
@@ -603,22 +610,24 @@
                 return `<div class="ms-container" onclick="App.methods.toggleDropdown(event, '${key}')">
                     <div class="ms-btn" style="${isOpen ? 'border-color:var(--primary)' : ''}">${App.helpers.safe(btnText)} <span style="font-size:10px">▼</span></div>
                     <div class="ms-dropdown ${isOpen ? 'show' : ''}" onclick="event.stopPropagation()">
-                        ${list.map(i => `<div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')"><input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly><span>${App.helpers.safe(i.nom)}</span></div>`).join('')}
+                        ${(list||[]).map(i => `<div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')"><input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly><span>${App.helpers.safe(i.nom)}</span></div>`).join('')}
                     </div></div>`;
             };
             document.getElementById('dropdown-niveau-container').innerHTML = mkDropdown('niveau', 'Niveaux', App.state.types.niveaux);
             document.getElementById('dropdown-fonction-container').innerHTML = mkDropdown('fonction', 'Fonctions', App.state.types.fonctions);
             
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
-            App.state.types.programmes.forEach(p => {
-                const active = App.state.filters.programme.includes(p.nom);
-                const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
-                btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
-                if(active) btn.style.background = p.bg;
-                btn.innerText = p.nom;
-                btn.onclick = () => { const idx = App.state.filters.programme.indexOf(p.nom); if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom); App.render.filtersUI(); App.render.content(); App.render.charts(); };
-                pc.appendChild(btn);
-            });
+            if(App.state.types.programmes) {
+                App.state.types.programmes.forEach(p => {
+                    const active = App.state.filters.programme.includes(p.nom);
+                    const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
+                    btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
+                    if(active) btn.style.background = p.bg;
+                    btn.innerText = p.nom;
+                    btn.onclick = () => { const idx = App.state.filters.programme.indexOf(p.nom); if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom); App.render.filtersUI(); App.render.content(); App.render.charts(); };
+                    pc.appendChild(btn);
+                });
+            }
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
@@ -638,20 +647,18 @@
                 const groups = {}; data.forEach(i => { if(i.sueInt>0) groups[i[groupKey]] = (groups[i[groupKey]]||0) + i.sueInt; });
                 let conic = [], deg=0, listHTML=''; const total = totInt || 1; 
 
-                palette.forEach(type => {
-                     const v = groups[type.nom] || 0;
-                     if(v > 0) {
-                         const col = type.bg || '#888';
-                         const pct = (v/total)*100;
-                         conic.push(`${col} ${deg}% ${deg+pct}%`);
-                         deg += pct;
-                         listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
-                     }
-                });
-                const knowns = palette.map(p=>p.nom); let unknownSum = 0;
-                Object.keys(groups).forEach(k => { if(!knowns.includes(k)) unknownSum += groups[k]; });
-                if(unknownSum > 0) { const pct = (unknownSum/total)*100; conic.push(`#888 ${deg}% ${deg+pct}%`); listHTML += `<div class="legend-item"><div><span class="dot" style="background:#888"></span>Autre</div><div>${Math.round(unknownSum)}m²</div></div>`; }
-
+                if(palette) {
+                    palette.forEach(type => {
+                        const v = groups[type.nom] || 0;
+                        if(v > 0) {
+                            const col = type.bg || '#888';
+                            const pct = (v/total)*100;
+                            conic.push(`${col} ${deg}% ${deg+pct}%`);
+                            deg += pct;
+                            listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
+                        }
+                    });
+                }
                 const grad = conic.length ? `conic-gradient(${conic.join(', ')})` : 'var(--bg-input)';
                 return `<div class="card"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px">${title}</div><div class="chart-row"><div class="donut" style="background:${grad}"></div><div class="legend">${listHTML||'Aucune donnée'}</div></div></div>`;
             };
@@ -694,8 +701,8 @@
                 if(!sorted.length) tb.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:30px">Vide</td></tr>`;
                 sorted.forEach(i => {
                     const sel = App.state.selectedIds.has(i.id);
-                    const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
-                    const st = App.state.types.statuts.find(s=>s.nom===i.statut);
+                    const prog = (App.state.types.programmes||[]).find(p=>p.nom===i.programme);
+                    const st = (App.state.types.statuts||[]).find(s=>s.nom===i.statut);
                     const nivStyle = App.helpers.getStyle('niveaux', i.niveau);
                     const fnStyle = App.helpers.getStyle('fonctions', i.fonction);
                     const tr = document.createElement('tr');
@@ -722,7 +729,7 @@
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
                 actions.forEach(i => {
-                    const prio = App.state.types.priorites.find(p=>p.nom===i.priorite);
+                    const prio = (App.state.types.priorites||[]).find(p=>p.nom===i.priorite);
                     const col = prio ? prio.bg : 'var(--border-color)';
                     const card = document.createElement('div');
                     card.className = 'action-card';
@@ -743,7 +750,7 @@
         },
         settingsList: () => {
              const cat = document.getElementById('set-type-select').value;
-             const list = App.state.types[cat];
+             const list = App.state.types[cat] || [];
              const div = document.getElementById('settings-list');
              div.innerHTML = '';
              list.forEach(item => {
@@ -763,6 +770,60 @@
                  `;
                  div.appendChild(row);
              });
+        },
+        
+        ui: {
+            toast: (msg) => { const t = document.createElement('div'); t.className='toast'; t.style.cssText = "background:var(--bg-card); padding:12px 20px; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 5px 15px rgba(0,0,0,0.3); animation:slideIn 0.3s forwards"; t.innerText = msg; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(), 3000); },
+            updateBatchInput: () => {
+                const field = document.getElementById('batch-field').value; const container = document.getElementById('batch-input-container');
+                const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
+                if(typeMap[field]) {
+                    const list = App.state.types[typeMap[field]] || [];
+                    let opts = list.map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
+                    container.innerHTML = `<select id="batch-value-select" class="input" style="height:32px; width:150px;">${opts}</select>`;
+                } else { container.innerHTML = `<input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">`; }
+            },
+            openModalItem: (item=null) => {
+                const form = document.getElementById('form-item'); form.reset(); document.getElementById('f-id').value = ''; document.getElementById('btn-del-item').classList.add('hidden'); document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
+                if(item) {
+                    document.getElementById('f-id').value = item.id;
+                    document.getElementById('f-programme').value = item.programme;
+                    document.getElementById('f-niveau').value = item.niveau;
+                    document.getElementById('f-fonction').value = item.fonction;
+                    document.getElementById('f-local').value = item.local;
+                    document.getElementById('f-surf').value = item.surfUnite;
+                    document.getElementById('f-nbr').value = item.nombre;
+                    document.getElementById('f-isExt').checked = item.isExt;
+                    document.getElementById('f-statut').value = item.statut;
+                    document.getElementById('f-priorite').value = item.priorite;
+                    document.getElementById('f-remarque').value = item.remarque || '';
+                    document.getElementById('btn-del-item').classList.remove('hidden'); document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
+                }
+                const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item'); inputs.forEach(el => el.disabled = App.state.locked); document.getElementById('modal-item').classList.add('open');
+            },
+            closeModal: (id) => document.getElementById(id).classList.remove('open')
+        },
+        events: {
+            bindAll: () => {
+                document.getElementById('btn-theme').onclick = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); };
+                document.getElementById('btn-lock').onclick = () => { 
+                    App.state.locked = !App.state.locked; document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
+                    document.getElementById('btn-clear-all').disabled = App.state.locked; document.getElementById('btn-import').disabled = App.state.locked; document.getElementById('btn-add-item').disabled = App.state.locked; document.getElementById('btn-undo').disabled = App.state.locked;
+                    App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); if(App.state.locked) App.methods.cancelBatch();
+                };
+                document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
+                document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
+                document.getElementById('btn-save-json').onclick = App.methods.saveJson;
+                document.getElementById('btn-undo').onclick = App.methods.undo;
+                document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }};
+                document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
+                document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); };
+                document.getElementById('btn-save-view').onclick = App.methods.saveView;
+                document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
+                document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
+                document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
+                document.getElementById('btn-import').onclick = App.methods.import;
+            }
         }
       }
     };
