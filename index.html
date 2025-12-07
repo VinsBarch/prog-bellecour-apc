@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7</title>
+  <title>PROGRAMMATION V7.8 (Colors)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.7 --- */
+    /* --- DESIGN SYSTEM V7.8 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -68,7 +68,7 @@
     .legend-item { display: flex; justify-content: space-between; align-items: center; }
     .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* SEGMENTED CONTROL (TABS - LEFT ALIGNED) */
+    /* SEGMENTED CONTROL (TABS) */
     .segmented-control { 
         display: inline-flex; 
         background: var(--bg-card); 
@@ -144,14 +144,14 @@
     .modal-overlay.open .modal { transform: translateY(0); }
 
     /* SETTINGS STYLES */
-    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border-color); background: var(--bg-card); transition: background 0.1s; }
+    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border-color); transition: background 0.1s; }
     .settings-list-item:hover { background: var(--bg-hover); }
-    .btn-action-sm { height: 28px; width:28px; padding: 0; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
+    .btn-action-sm { height: 30px; width:30px; padding: 0; font-size: 14px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
     .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
-    .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
     
-    .color-picker-wrap { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); padding: 0; position: relative; }
-    .color-picker-wrap input[type=color] { position: absolute; inset: -5px; width: 50px; height: 50px; cursor: pointer; }
+    .color-input { width: 32px; height: 32px; padding: 0; border: none; border-radius: 4px; background: none; cursor: pointer; }
+    .set-input-name { background: transparent; border: 1px solid transparent; color: var(--text-main); padding: 4px 8px; font-weight: 600; font-size: 13px; border-radius: 4px; width: 100%; }
+    .set-input-name:focus { border-color: var(--primary); background: var(--bg-input); outline: none; }
 
     .text-right { text-align: right; }
     .text-center { text-align: center; }
@@ -164,7 +164,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.8</div>
       </div>
     </div>
     <div class="flex">
@@ -278,19 +278,20 @@
                 <option value="priorites">Priorités</option>
             </select>
         </div>
-        <div id="settings-list" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:12px;"></div>
         
-        <label class="text-muted" style="font-size:11px; margin-bottom:4px; display:block">Ajouter un élément :</label>
+        <div style="display:grid; grid-template-columns: 40px 40px 1fr 100px; gap:8px; margin-bottom:8px; padding:0 10px; font-size:11px; color:var(--text-muted); font-weight:700;">
+           <div>FOND</div><div>TXT</div><div>NOM</div><div>ACTIONS</div>
+        </div>
+        <div id="settings-list" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:12px; padding:0 10px;"></div>
+        
+        <label class="text-muted" style="font-size:11px; margin-bottom:4px; display:block">Ajouter :</label>
         <div class="flex">
+            <input type="color" id="set-new-bg" value="#3B82F6" style="width:40px;height:40px;border:none;background:none;">
+            <input type="color" id="set-new-txt" value="#FFFFFF" style="width:40px;height:40px;border:none;background:none;">
             <input type="text" id="set-new-name" class="input" placeholder="Nom..." style="flex:1">
-            <div class="color-picker-wrap" title="Couleur de FOND">
-               <input type="color" id="set-new-bg" value="#F1F5F9">
-            </div>
-            <div class="color-picker-wrap" title="Couleur de TEXTE">
-               <input type="color" id="set-new-txt" value="#334155">
-            </div>
             <button class="btn btn-success" onclick="App.methods.addType()">+</button>
         </div>
+        
         <div class="flex" style="margin-top:20px; justify-content:end">
             <button class="btn btn-secondary" onclick="App.ui.closeModal('modal-settings')">Fermer</button>
         </div>
@@ -300,13 +301,40 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
+    // --- V7.8 DEFAULT PALETTE ---
     const CONFIG = {
       types: {
-        programmes: [ { id:1, nom: "BUREAUX", bg: "#3B82F6", txt:"#FFFFFF" }, { id:2, nom: "LOGEMENTS", bg: "#10B981", txt:"#FFFFFF" }, { id:3, nom: "COMMERCES", bg: "#F59E0B", txt:"#FFFFFF" } ],
-        niveaux: [ { id:1, nom:"RDC", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"R+1", bg:"#F1F5F9", txt:"#334155"} ],
-        fonctions: [ { id:1, nom:"Circulation", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"Travail", bg:"#F1F5F9", txt:"#334155"} ],
-        statuts: [ { id:1, nom: "À CONFIRMER", bg: "#FFFBEB", txt: "#B45309" }, { id:2, nom: "VALIDÉ", bg: "#ECFDF5", txt: "#047857" }, { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" } ],
-        priorites: [ { id:1, nom:"HAUTE", bg:"#EF4444", txt:"#FFFFFF"}, { id:2, nom:"MOYENNE", bg:"#F59E0B", txt:"#FFFFFF"}, { id:3, nom:"BASSE", bg:"#10B981", txt:"#FFFFFF"} ]
+        programmes: [ 
+            { id:1, nom: "BUREAUX", bg: "#3B82F6", txt:"#FFFFFF" }, 
+            { id:2, nom: "LOGEMENTS", bg: "#10B981", txt:"#FFFFFF" }, 
+            { id:3, nom: "COMMERCES", bg: "#F59E0B", txt:"#FFFFFF" },
+            { id:4, nom: "ACTIVITÉS", bg: "#8B5CF6", txt:"#FFFFFF" },
+            { id:5, nom: "PARKING", bg: "#64748B", txt:"#FFFFFF" }
+        ],
+        niveaux: [ 
+            { id:1, nom:"S-1", bg:"#94A3B8", txt:"#FFFFFF"}, 
+            { id:2, nom:"RDC", bg:"#475569", txt:"#FFFFFF"}, 
+            { id:3, nom:"R+1", bg:"#CBD5E1", txt:"#1E293B"},
+            { id:4, nom:"R+2", bg:"#CBD5E1", txt:"#1E293B"},
+            { id:5, nom:"R+3", bg:"#CBD5E1", txt:"#1E293B"}
+        ],
+        fonctions: [ 
+            { id:1, nom:"Circulation", bg:"#E2E8F0", txt:"#475569"}, 
+            { id:2, nom:"Travail", bg:"#DBEAFE", txt:"#1E40AF"},
+            { id:3, nom:"Sanitaire", bg:"#FAE8FF", txt:"#86198F"},
+            { id:4, nom:"Technique", bg:"#F1F5F9", txt:"#64748B"}
+        ],
+        statuts: [ 
+            { id:1, nom: "À CONFIRMER", bg: "#FFF7ED", txt: "#9A3412" }, 
+            { id:2, nom: "VALIDÉ", bg: "#F0FDF4", txt: "#166534" }, 
+            { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#991B1B" },
+            { id:4, nom: "EN ÉTUDE", bg: "#EFF6FF", txt: "#1E40AF" }
+        ],
+        priorites: [ 
+            { id:1, nom:"HAUTE", bg:"#EF4444", txt:"#FFFFFF"}, 
+            { id:2, nom:"MOYENNE", bg:"#F59E0B", txt:"#FFFFFF"}, 
+            { id:3, nom:"BASSE", bg:"#10B981", txt:"#FFFFFF"} 
+        ]
       }
     };
 
@@ -334,7 +362,17 @@
         if(savedData) App.state.data = JSON.parse(savedData);
         if(savedTitle) App.state.title = savedTitle;
         if(savedViews) App.state.savedViews = JSON.parse(savedViews);
-        if(savedTypes) App.state.types = JSON.parse(savedTypes);
+        if(savedTypes) {
+             const t = JSON.parse(savedTypes);
+             // Migration V7.8: Normalize color keys
+             for(let key in t) {
+                 t[key].forEach(i => {
+                     if(!i.bg && i.couleur) i.bg = i.couleur; // Migrer couleur vers bg
+                     if(!i.txt) i.txt = (i.bg === '#F1F5F9') ? '#334155' : '#FFFFFF'; // Default text
+                 });
+             }
+             App.state.types = t;
+        }
 
         document.getElementById('app-title').innerText = App.state.title;
         if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
@@ -370,17 +408,9 @@
         },
         saveJson: () => {
             App.methods.saveLocal();
-            const exportObj = {
-                title: App.state.title,
-                data: App.state.data,
-                types: App.state.types,
-                version: "7.7"
-            };
+            const exportObj = { title: App.state.title, data: App.state.data, types: App.state.types, version: "7.8" };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${App.methods.getExportName()}.json`;
-            link.click();
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${App.methods.getExportName()}.json`; link.click();
             App.ui.toast("Fichier JSON généré");
         },
         pushHistory: () => {
@@ -404,58 +434,30 @@
             App.render.content();
         },
         
-        toggleDropdown: (e, key) => {
-            e.stopPropagation();
-            App.state.openDropdown = App.state.openDropdown === key ? null : key;
-            App.render.filtersUI();
-        },
+        toggleDropdown: (e, key) => { e.stopPropagation(); App.state.openDropdown = App.state.openDropdown === key ? null : key; App.render.filtersUI(); },
         toggleFilterVal: (key, val) => {
-             const arr = App.state.filters[key];
-             const idx = arr.indexOf(val);
+             const arr = App.state.filters[key]; const idx = arr.indexOf(val);
              if(idx >= 0) arr.splice(idx, 1); else arr.push(val);
-             App.render.filtersUI();
-             App.render.content();
-             App.render.charts();
+             App.render.filtersUI(); App.render.content(); App.render.charts();
         },
-
-        toggleSelect: (id) => {
-            if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id);
-            else App.state.selectedIds.add(id);
-            App.render.batchBar();
-        },
+        toggleSelect: (id) => { if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id); else App.state.selectedIds.add(id); App.render.batchBar(); },
         toggleSelectAll: () => {
             const visible = App.helpers.getFiltered();
             const allSelected = visible.every(i => App.state.selectedIds.has(i.id));
-            visible.forEach(i => {
-                if(allSelected) App.state.selectedIds.delete(i.id);
-                else App.state.selectedIds.add(i.id);
-            });
+            visible.forEach(i => { if(allSelected) App.state.selectedIds.delete(i.id); else App.state.selectedIds.add(i.id); });
             App.render.all();
         },
-        cancelBatch: () => {
-            App.state.selectedIds.clear();
-            App.render.all();
-        },
+        cancelBatch: () => { App.state.selectedIds.clear(); App.render.all(); },
         applyBatch: () => {
             const field = document.getElementById('batch-field').value;
             const valEl = document.getElementById('batch-value-select') || document.getElementById('batch-value');
             const val = valEl.value;
-            
             if(!val && !confirm('Valeur vide. Continuer ?')) return;
             App.methods.pushHistory();
             let count = 0;
-            App.state.data.forEach(item => {
-                if(App.state.selectedIds.has(item.id)) {
-                    item[field] = val;
-                    count++;
-                }
-            });
-            App.methods.saveLocal();
-            App.state.selectedIds.clear();
-            App.render.all();
-            App.ui.toast(`${count} éléments modifiés`);
+            App.state.data.forEach(item => { if(App.state.selectedIds.has(item.id)) { item[field] = val; count++; } });
+            App.methods.saveLocal(); App.state.selectedIds.clear(); App.render.all(); App.ui.toast(`${count} éléments modifiés`);
         },
-
         saveForm: () => {
           const id = document.getElementById('f-id').value;
           const formData = {
@@ -473,104 +475,44 @@
           const total = Math.round(formData.surfUnite * formData.nombre * 100) / 100;
           formData.sueInt = formData.isExt ? 0 : total;
           formData.sueExt = formData.isExt ? total : 0;
-
           App.methods.pushHistory();
-          if(id) {
-            const idx = App.state.data.findIndex(i => i.id == id);
-            if(idx >= 0) App.state.data[idx] = { ...App.state.data[idx], ...formData };
-          } else {
-            formData.id = Date.now();
-            App.state.data.push(formData);
-          }
-          App.methods.saveLocal();
-          App.ui.closeModal('modal-item');
-          App.render.all();
+          if(id) { const idx = App.state.data.findIndex(i => i.id == id); if(idx >= 0) App.state.data[idx] = { ...App.state.data[idx], ...formData }; } 
+          else { formData.id = Date.now(); App.state.data.push(formData); }
+          App.methods.saveLocal(); App.ui.closeModal('modal-item'); App.render.all();
         },
-        deleteItem: (id) => {
-            if(confirm("Supprimer ?")) {
-                App.methods.pushHistory();
-                App.state.data = App.state.data.filter(i => i.id != id);
-                App.methods.saveLocal();
-                App.ui.closeModal('modal-item');
-                App.render.all();
-            }
-        },
-
-        saveView: () => {
-            const name = prompt("Nom de la vue ?");
-            if(name) {
-                App.state.savedViews.push({ id: Date.now(), name, filters: JSON.parse(JSON.stringify(App.state.filters)) });
-                App.methods.saveLocal();
-                App.render.filtersUI();
-            }
-        },
-        loadView: (id) => {
-            const v = App.state.savedViews.find(view => view.id === id);
-            if(v) {
-                App.state.filters = JSON.parse(JSON.stringify(v.filters));
-                document.getElementById('inp-search').value = App.state.filters.search;
-                App.render.all();
-                App.ui.toast(`Vue "${v.name}" chargée`);
-            }
-        },
-        deleteView: (id, e) => {
-            e.stopPropagation();
-            if(confirm('Supprimer cette vue ?')) {
-                App.state.savedViews = App.state.savedViews.filter(v => v.id !== id);
-                App.methods.saveLocal();
-                App.render.filtersUI();
-            }
-        },
+        deleteItem: (id) => { if(confirm("Supprimer ?")) { App.methods.pushHistory(); App.state.data = App.state.data.filter(i => i.id != id); App.methods.saveLocal(); App.ui.closeModal('modal-item'); App.render.all(); } },
+        saveView: () => { const name = prompt("Nom de la vue ?"); if(name) { App.state.savedViews.push({ id: Date.now(), name, filters: JSON.parse(JSON.stringify(App.state.filters)) }); App.methods.saveLocal(); App.render.filtersUI(); } },
+        loadView: (id) => { const v = App.state.savedViews.find(view => view.id === id); if(v) { App.state.filters = JSON.parse(JSON.stringify(v.filters)); document.getElementById('inp-search').value = App.state.filters.search; App.render.all(); App.ui.toast(`Vue "${v.name}" chargée`); } },
+        deleteView: (id, e) => { e.stopPropagation(); if(confirm('Supprimer cette vue ?')) { App.state.savedViews = App.state.savedViews.filter(v => v.id !== id); App.methods.saveLocal(); App.render.filtersUI(); } },
         
+        // --- TYPES MANAGEMENT (Inline Edit) ---
         addType: () => {
             const cat = document.getElementById('set-type-select').value;
             const nom = document.getElementById('set-new-name').value;
             const bg = document.getElementById('set-new-bg').value;
             const txt = document.getElementById('set-new-txt').value;
             if(!nom) return;
-            // Fix V7.7: Dual color support
-            const newItem = { id: Date.now(), nom, bg, txt };
-            App.state.types[cat].push(newItem);
-            App.methods.saveLocal();
-            App.render.settingsList();
-            App.render.modalSelects();
-            App.render.filtersUI();
-            App.render.all();
+            App.state.types[cat].push({ id: Date.now(), nom, bg, txt });
+            App.methods.saveLocal(); App.render.settingsList(); App.render.modalSelects(); App.render.filtersUI(); App.render.all();
         },
-        deleteType: (cat, id) => {
-             App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id);
-             App.methods.saveLocal();
-             App.render.settingsList();
-             App.render.modalSelects();
-             App.render.filtersUI();
-             App.render.all();
-        },
+        deleteType: (cat, id) => { App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id); App.methods.saveLocal(); App.render.settingsList(); App.render.modalSelects(); App.render.filtersUI(); App.render.all(); },
         moveType: (cat, id, dir) => {
-             const arr = App.state.types[cat];
-             const idx = arr.findIndex(i=>i.id===id);
-             if(idx<0) return;
-             const newIdx = idx+dir;
-             if(newIdx<0 || newIdx>=arr.length) return;
+             const arr = App.state.types[cat]; const idx = arr.findIndex(i=>i.id===id); if(idx<0) return;
+             const newIdx = idx+dir; if(newIdx<0 || newIdx>=arr.length) return;
              [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
-             App.methods.saveLocal();
-             App.render.settingsList();
-             App.render.modalSelects();
-             App.render.all(); // Re-render all to update charts order
+             App.methods.saveLocal(); App.render.settingsList(); App.render.modalSelects(); App.render.all();
         },
-        editType: (cat, id) => {
-             const val = prompt("Nouveau nom :");
-             if(val) {
-                 const t = App.state.types[cat].find(i=>i.id===id);
-                 if(t) {
-                     const oldName = t.nom;
-                     const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; 
+        // Inline Update
+        updateType: (cat, id, field, val) => {
+             const t = App.state.types[cat].find(i=>i.id===id);
+             if(t) {
+                 if(field === 'nom') {
+                     // Cascade update data if name changes
+                     const oldName = t.nom; const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; 
                      App.state.data.forEach(d => { if(d[key] === oldName) d[key] = val; });
-                     t.nom = val;
-                     App.methods.saveLocal();
-                     App.render.settingsList();
-                     App.render.modalSelects();
-                     App.render.all();
                  }
+                 t[field] = val;
+                 App.methods.saveLocal(); App.render.modalSelects(); App.render.all();
              }
         },
 
@@ -579,13 +521,10 @@
              const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, `"${d.local}"`, d.surfUnite, d.nombre, (d.sueInt+d.sueExt), d.statut, d.priorite, `"${d.remarque||''}"`]);
              const csvContent = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
              const blob = new Blob(['\ufeff'+csvContent], {type: 'text/csv;charset=utf-8'});
-             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); 
-             link.download = `${App.methods.getExportName()}.csv`; 
-             link.click();
+             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${App.methods.getExportName()}.csv`; link.click();
         },
         exportPdf: () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l','mm','a4');
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('l','mm','a4');
             doc.text(App.state.title, 14, 15);
             const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]);
             doc.autoTable({ head:[['Prog','Niv','Fct','Local','SU','Nb','Tot','Statut']], body: rows, startY: 20 });
@@ -602,14 +541,18 @@
                              App.methods.pushHistory();
                              if(json.pageTitle || json.title) App.state.title = (json.pageTitle || json.title);
                              document.getElementById('app-title').innerText = App.state.title;
-
                              if(Array.isArray(json)) App.state.data = json;
-                             else if(json.data) {
-                                 App.state.data = json.data;
-                                 if(json.types) App.state.types = json.types;
+                             else if(json.data) { App.state.data = json.data; if(json.types) App.state.types = json.types; }
+                             // Re-run init logic to normalize imported colors if old version
+                             if(App.state.types) {
+                                 for(let key in App.state.types) {
+                                     App.state.types[key].forEach(i => {
+                                         if(!i.bg && i.couleur) i.bg = i.couleur;
+                                         if(!i.txt) i.txt = (i.bg === '#F1F5F9') ? '#334155' : '#FFFFFF';
+                                     });
+                                 }
                              }
-                             App.methods.saveLocal();
-                             App.render.all();
+                             App.methods.saveLocal(); App.render.all();
                          }
                      } catch(err) { alert('Fichier invalide'); }
                  };
@@ -630,10 +573,7 @@
                  return true;
              });
          },
-         safe: (str) => {
-             if(!str) return '';
-             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-         },
+         safe: (str) => { if(!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); },
          getStyle: (cat, name) => {
              const t = App.state.types[cat].find(i => i.nom === name);
              if(t) return `background:${t.bg}; color:${t.txt}`;
@@ -642,55 +582,30 @@
       },
 
       render: {
-        all: () => {
-            App.render.filtersUI();
-            App.render.charts();
-            App.render.content();
-            App.render.batchBar();
-        },
+        all: () => { App.render.filtersUI(); App.render.charts(); App.render.content(); App.render.batchBar(); },
         modalSelects: () => {
            const fill = (id, list, key='nom') => {
-               const el = document.getElementById(id);
-               if(!el) return;
+               const el = document.getElementById(id); if(!el) return;
                const val = el.value;
                el.innerHTML = el.id.startsWith('f-') ? '' : `<option value="">${el.options[0]?.text || ''}</option>`;
-               list.forEach(i => {
-                   const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key];
-                   el.appendChild(opt);
-               });
+               list.forEach(i => { const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key]; el.appendChild(opt); });
                el.value = val;
            };
-           fill('f-programme', App.state.types.programmes);
-           fill('f-niveau', App.state.types.niveaux);
-           fill('f-fonction', App.state.types.fonctions);
-           fill('f-statut', App.state.types.statuts);
-           fill('f-priorite', App.state.types.priorites);
+           fill('f-programme', App.state.types.programmes); fill('f-niveau', App.state.types.niveaux);
+           fill('f-fonction', App.state.types.fonctions); fill('f-statut', App.state.types.statuts); fill('f-priorite', App.state.types.priorites);
         },
         
         filtersUI: () => {
             const mkDropdown = (key, label, list) => {
-                const selected = App.state.filters[key];
-                const isOpen = App.state.openDropdown === key;
+                const selected = App.state.filters[key]; const isOpen = App.state.openDropdown === key;
                 let btnText = `${label} (Tous)`;
-                if(selected.length === 1) btnText = selected[0];
-                else if(selected.length > 1) btnText = `${label} (${selected.length})`;
-
-                return `
-                <div class="ms-container" onclick="App.methods.toggleDropdown(event, '${key}')">
-                    <div class="ms-btn" style="${isOpen ? 'border-color:var(--primary)' : ''}">
-                        ${App.helpers.safe(btnText)} <span style="font-size:10px">▼</span>
-                    </div>
+                if(selected.length === 1) btnText = selected[0]; else if(selected.length > 1) btnText = `${label} (${selected.length})`;
+                return `<div class="ms-container" onclick="App.methods.toggleDropdown(event, '${key}')">
+                    <div class="ms-btn" style="${isOpen ? 'border-color:var(--primary)' : ''}">${App.helpers.safe(btnText)} <span style="font-size:10px">▼</span></div>
                     <div class="ms-dropdown ${isOpen ? 'show' : ''}" onclick="event.stopPropagation()">
-                        ${list.map(i => `
-                            <div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')">
-                                <input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly>
-                                <span>${App.helpers.safe(i.nom)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+                        ${list.map(i => `<div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')"><input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly><span>${App.helpers.safe(i.nom)}</span></div>`).join('')}
+                    </div></div>`;
             };
-
             document.getElementById('dropdown-niveau-container').innerHTML = mkDropdown('niveau', 'Niveaux', App.state.types.niveaux);
             document.getElementById('dropdown-fonction-container').innerHTML = mkDropdown('fonction', 'Fonctions', App.state.types.fonctions);
             
@@ -701,16 +616,9 @@
                 btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
                 if(active) btn.style.background = p.bg;
                 btn.innerText = p.nom;
-                btn.onclick = () => {
-                    const idx = App.state.filters.programme.indexOf(p.nom);
-                    if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom);
-                    App.render.filtersUI();
-                    App.render.content();
-                    App.render.charts();
-                };
+                btn.onclick = () => { const idx = App.state.filters.programme.indexOf(p.nom); if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom); App.render.filtersUI(); App.render.content(); App.render.charts(); };
                 pc.appendChild(btn);
             });
-            
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
@@ -727,15 +635,9 @@
             const totExt = data.reduce((a,b)=>a+(b.sueExt||0),0);
             
             const mkChart = (title, groupKey, palette) => {
-                const groups = {};
-                data.forEach(i => { 
-                    if(i.sueInt>0) groups[i[groupKey]] = (groups[i[groupKey]]||0) + i.sueInt; 
-                });
-                
-                let conic = [], deg=0, listHTML='';
-                const total = totInt || 1; 
+                const groups = {}; data.forEach(i => { if(i.sueInt>0) groups[i[groupKey]] = (groups[i[groupKey]]||0) + i.sueInt; });
+                let conic = [], deg=0, listHTML=''; const total = totInt || 1; 
 
-                // Fix 7.7: Use palette order
                 palette.forEach(type => {
                      const v = groups[type.nom] || 0;
                      if(v > 0) {
@@ -746,15 +648,9 @@
                          listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
                      }
                 });
-                // Handle unknowns (optional, but good practice)
-                const knowns = palette.map(p=>p.nom);
-                let unknownSum = 0;
+                const knowns = palette.map(p=>p.nom); let unknownSum = 0;
                 Object.keys(groups).forEach(k => { if(!knowns.includes(k)) unknownSum += groups[k]; });
-                if(unknownSum > 0) {
-                     const pct = (unknownSum/total)*100;
-                     conic.push(`#888 ${deg}% ${deg+pct}%`);
-                     listHTML += `<div class="legend-item"><div><span class="dot" style="background:#888"></span>Autre</div><div>${Math.round(unknownSum)}m²</div></div>`;
-                }
+                if(unknownSum > 0) { const pct = (unknownSum/total)*100; conic.push(`#888 ${deg}% ${deg+pct}%`); listHTML += `<div class="legend-item"><div><span class="dot" style="background:#888"></span>Autre</div><div>${Math.round(unknownSum)}m²</div></div>`; }
 
                 const grad = conic.length ? `conic-gradient(${conic.join(', ')})` : 'var(--bg-input)';
                 return `<div class="card"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px">${title}</div><div class="chart-row"><div class="donut" style="background:${grad}"></div><div class="legend">${listHTML||'Aucune donnée'}</div></div></div>`;
@@ -794,17 +690,14 @@
                    <th class="text-right">SU</th><th class="text-center">Nb</th><th class="text-right">Tot</th>
                    <th onclick="App.state.sort.col='statut';App.render.content()">Statut</th>
                 </tr></thead><tbody id="tb"></tbody></table></div>`;
-                
                 const tb = document.getElementById('tb');
                 if(!sorted.length) tb.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:30px">Vide</td></tr>`;
                 sorted.forEach(i => {
                     const sel = App.state.selectedIds.has(i.id);
                     const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
                     const st = App.state.types.statuts.find(s=>s.nom===i.statut);
-                    
                     const nivStyle = App.helpers.getStyle('niveaux', i.niveau);
                     const fnStyle = App.helpers.getStyle('fonctions', i.fonction);
-
                     const tr = document.createElement('tr');
                     if(sel) tr.style.background = "rgba(59, 130, 246, 0.1)";
                     tr.innerHTML = `
@@ -821,14 +714,11 @@
                     tr.onclick = () => App.ui.openModalItem(i);
                     tb.appendChild(tr);
                 });
-
             } else {
                 const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ');
                 const prioMap = { 'HAUTE':1, 'MOYENNE':2, 'BASSE':3 };
                 actions.sort((a,b) => (prioMap[a.priorite]||9) - (prioMap[b.priorite]||9));
-
                 if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise.</div>'; return; }
-                
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
                 actions.forEach(i => {
@@ -839,34 +729,17 @@
                     card.style.borderLeftColor = col;
                     card.onclick = () => App.ui.openModalItem(i);
                     card.innerHTML = `
-                      <div class="ac-header">
-                        <span style="font-size:11px; font-weight:700; color:${col}">${i.priorite || 'SANS PRIORITÉ'}</span>
-                        <span class="badge" style="background:var(--bg-input)">${i.statut}</span>
-                      </div>
-                      <div class="ac-body">
-                         <div style="font-size:16px; margin-bottom:4px">${i.local}</div>
-                         <div style="color:var(--text-muted); font-size:12px">${i.programme} - ${i.niveau}</div>
-                         ${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${i.remarque}"</div>` : ''}
-                      </div>
-                      <div class="ac-footer">
-                         <span>Action requise</span>
-                         <button class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:11px">Modifier</button>
-                      </div>
+                      <div class="ac-header"><span style="font-size:11px; font-weight:700; color:${col}">${i.priorite || 'SANS PRIORITÉ'}</span><span class="badge" style="background:var(--bg-input)">${i.statut}</span></div>
+                      <div class="ac-body"><div style="font-size:16px; margin-bottom:4px">${i.local}</div><div style="color:var(--text-muted); font-size:12px">${i.programme} - ${i.niveau}</div>${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${i.remarque}"</div>` : ''}</div>
+                      <div class="ac-footer"><span>Action requise</span><button class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:11px">Modifier</button></div>
                     `;
                     ag.appendChild(card);
                 });
             }
         },
         batchBar: () => {
-             const bar = document.getElementById('batch-bar');
-             const count = App.state.selectedIds.size;
-             if(count > 0 && !App.state.locked) {
-                 bar.classList.add('visible');
-                 document.getElementById('batch-count').innerText = `${count} sélectionné(s)`;
-                 App.ui.updateBatchInput();
-             } else {
-                 bar.classList.remove('visible');
-             }
+             const bar = document.getElementById('batch-bar'); const count = App.state.selectedIds.size;
+             if(count > 0 && !App.state.locked) { bar.classList.add('visible'); document.getElementById('batch-count').innerText = `${count} sélectionné(s)`; App.ui.updateBatchInput(); } else { bar.classList.remove('visible'); }
         },
         settingsList: () => {
              const cat = document.getElementById('set-type-select').value;
@@ -874,109 +747,22 @@
              const div = document.getElementById('settings-list');
              div.innerHTML = '';
              list.forEach(item => {
-                 const row = document.createElement('div');
-                 row.className = "settings-list-item";
-                 const colorBox = (item.bg||item.couleur) ? `<span class="badge-preview" style="background:${item.bg||item.couleur};color:${item.txt||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
-                 
+                 const row = document.createElement('div'); row.className = "settings-list-item";
+                 // Inline Editing Blocks
                  row.innerHTML = `
-                   <div>${colorBox}</div>
-                   <div>
-                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
-                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
-                     <button class="btn-action-sm" onclick="App.methods.editType('${cat}', ${item.id})">✎</button>
-                     <button class="btn-action-sm" style="color:var(--danger)" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>
+                   <div style="display:grid; grid-template-columns: 40px 40px 1fr 100px; gap:8px; width:100%; align-items:center;">
+                       <input type="color" class="color-input" value="${item.bg||'#888888'}" onchange="App.methods.updateType('${cat}', ${item.id}, 'bg', this.value)">
+                       <input type="color" class="color-input" value="${item.txt||'#ffffff'}" onchange="App.methods.updateType('${cat}', ${item.id}, 'txt', this.value)">
+                       <input type="text" class="set-input-name" value="${item.nom}" onchange="App.methods.updateType('${cat}', ${item.id}, 'nom', this.value)">
+                       <div class="text-right">
+                           <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
+                           <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
+                           <button class="btn-action-sm" style="color:var(--danger)" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>
+                       </div>
                    </div>
                  `;
                  div.appendChild(row);
              });
-        }
-      },
-
-      ui: {
-        toast: (msg) => {
-            const t = document.createElement('div'); t.className='toast';
-            t.style.cssText = "background:var(--bg-card); padding:12px 20px; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 5px 15px rgba(0,0,0,0.3); animation:slideIn 0.3s forwards";
-            t.innerText = msg;
-            document.getElementById('toast-container').appendChild(t);
-            setTimeout(()=>t.remove(), 3000);
-        },
-        updateBatchInput: () => {
-            const field = document.getElementById('batch-field').value;
-            const container = document.getElementById('batch-input-container');
-            const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
-            if(typeMap[field]) {
-                const list = App.state.types[typeMap[field]];
-                let opts = list.map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
-                container.innerHTML = `<select id="batch-value-select" class="input" style="height:32px; width:150px;">${opts}</select>`;
-            } else {
-                container.innerHTML = `<input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">`;
-            }
-        },
-        openModalItem: (item=null) => {
-            const form = document.getElementById('form-item');
-            form.reset();
-            document.getElementById('f-id').value = '';
-            document.getElementById('btn-del-item').classList.add('hidden');
-            document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
-            
-            if(item) {
-                document.getElementById('f-id').value = item.id;
-                document.getElementById('f-programme').value = item.programme;
-                document.getElementById('f-niveau').value = item.niveau;
-                document.getElementById('f-fonction').value = item.fonction;
-                document.getElementById('f-local').value = item.local;
-                document.getElementById('f-surf').value = item.surfUnite;
-                document.getElementById('f-nbr').value = item.nombre;
-                document.getElementById('f-isExt').checked = item.isExt;
-                document.getElementById('f-statut').value = item.statut;
-                document.getElementById('f-priorite').value = item.priorite;
-                document.getElementById('f-remarque').value = item.remarque || '';
-                document.getElementById('btn-del-item').classList.remove('hidden');
-                document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
-            }
-            const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item');
-            inputs.forEach(el => el.disabled = App.state.locked);
-            document.getElementById('modal-item').classList.add('open');
-        },
-        closeModal: (id) => document.getElementById(id).classList.remove('open')
-      },
-
-      events: {
-        bindAll: () => {
-            document.getElementById('btn-theme').onclick = () => { 
-                document.documentElement.classList.toggle('light'); 
-                localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); 
-            };
-            
-            document.getElementById('btn-lock').onclick = () => { 
-                App.state.locked = !App.state.locked; 
-                document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
-                document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
-                
-                document.getElementById('btn-clear-all').disabled = App.state.locked;
-                document.getElementById('btn-import').disabled = App.state.locked;
-                document.getElementById('btn-add-item').disabled = App.state.locked;
-                document.getElementById('btn-undo').disabled = App.state.locked;
-
-                App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
-                if(App.state.locked) App.methods.cancelBatch();
-            };
-            
-            document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
-            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
-            
-            document.getElementById('btn-save-json').onclick = App.methods.saveJson;
-            document.getElementById('btn-undo').onclick = App.methods.undo;
-            document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }};
-            document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
-            document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); };
-            
-            document.getElementById('btn-save-view').onclick = App.methods.saveView;
-            document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
-            
-            document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
-            document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
-            document.getElementById('btn-import').onclick = App.methods.import;
         }
       }
     };
