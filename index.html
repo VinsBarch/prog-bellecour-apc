@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7 (Stable)</title>
+  <title>PROGRAMMATION V7.7</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -326,43 +326,29 @@
       },
 
       init: () => {
-        try {
-            const savedData = localStorage.getItem('v7-data');
-            const savedTitle = localStorage.getItem('v7-title');
-            const savedViews = localStorage.getItem('v7-views');
-            const savedTypes = localStorage.getItem('v7-types');
+        const savedData = localStorage.getItem('v7-data');
+        const savedTitle = localStorage.getItem('v7-title');
+        const savedViews = localStorage.getItem('v7-views');
+        const savedTypes = localStorage.getItem('v7-types');
 
-            if(savedData && savedData !== "undefined") App.state.data = JSON.parse(savedData);
-            if(savedTitle) App.state.title = savedTitle;
-            if(savedViews && savedViews !== "undefined") App.state.savedViews = JSON.parse(savedViews);
-            if(savedTypes && savedTypes !== "undefined") {
-                // SÉCURITÉ V7.7 : Si les types existent mais sont corrompus par V7.8/V7.9
-                // On essaie de les utiliser, sinon on remet défaut
-                try {
-                    App.state.types = JSON.parse(savedTypes);
-                } catch(e) {
-                    console.warn("Types corrompus, reset.");
-                    App.state.types = JSON.parse(JSON.stringify(CONFIG.types));
-                }
+        if(savedData) App.state.data = JSON.parse(savedData);
+        if(savedTitle) App.state.title = savedTitle;
+        if(savedViews) App.state.savedViews = JSON.parse(savedViews);
+        if(savedTypes) App.state.types = JSON.parse(savedTypes);
+
+        document.getElementById('app-title').innerText = App.state.title;
+        if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
+
+        window.addEventListener('click', (e) => {
+            if(!e.target.closest('.ms-container')) {
+                App.state.openDropdown = null;
+                App.render.filtersUI();
             }
+        });
 
-            document.getElementById('app-title').innerText = App.state.title;
-            if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
-
-            window.addEventListener('click', (e) => {
-                if(!e.target.closest('.ms-container')) {
-                    App.state.openDropdown = null;
-                    App.render.filtersUI();
-                }
-            });
-
-            App.render.modalSelects();
-            App.render.all();
-            App.events.bindAll();
-        } catch(e) {
-            console.error("FATAL ERROR INIT:", e);
-            alert("Erreur critique au démarrage. Utilisez 'Effacer' ou rechargez la page.");
-        }
+        App.render.modalSelects();
+        App.render.all();
+        App.events.bindAll();
       },
 
       methods: {
@@ -649,7 +635,6 @@
              return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
          },
          getStyle: (cat, name) => {
-             if(!App.state.types[cat]) return `background:var(--bg-input); color:var(--text-muted)`;
              const t = App.state.types[cat].find(i => i.nom === name);
              if(t) return `background:${t.bg}; color:${t.txt}`;
              return `background:var(--bg-input); color:var(--text-muted)`;
@@ -669,7 +654,7 @@
                if(!el) return;
                const val = el.value;
                el.innerHTML = el.id.startsWith('f-') ? '' : `<option value="">${el.options[0]?.text || ''}</option>`;
-               if(list) list.forEach(i => {
+               list.forEach(i => {
                    const opt = document.createElement('option'); opt.value = i[key]; opt.text = i[key];
                    el.appendChild(opt);
                });
@@ -696,7 +681,7 @@
                         ${App.helpers.safe(btnText)} <span style="font-size:10px">▼</span>
                     </div>
                     <div class="ms-dropdown ${isOpen ? 'show' : ''}" onclick="event.stopPropagation()">
-                        ${(list||[]).map(i => `
+                        ${list.map(i => `
                             <div class="ms-option" onclick="App.methods.toggleFilterVal('${key}', '${App.helpers.safe(i.nom)}')">
                                 <input type="checkbox" class="ms-checkbox" ${selected.includes(i.nom) ? 'checked' : ''} readonly>
                                 <span>${App.helpers.safe(i.nom)}</span>
@@ -710,23 +695,21 @@
             document.getElementById('dropdown-fonction-container').innerHTML = mkDropdown('fonction', 'Fonctions', App.state.types.fonctions);
             
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
-            if(App.state.types.programmes) {
-                App.state.types.programmes.forEach(p => {
-                    const active = App.state.filters.programme.includes(p.nom);
-                    const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
-                    btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
-                    if(active) btn.style.background = p.bg;
-                    btn.innerText = p.nom;
-                    btn.onclick = () => {
-                        const idx = App.state.filters.programme.indexOf(p.nom);
-                        if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom);
-                        App.render.filtersUI();
-                        App.render.content();
-                        App.render.charts();
-                    };
-                    pc.appendChild(btn);
-                });
-            }
+            App.state.types.programmes.forEach(p => {
+                const active = App.state.filters.programme.includes(p.nom);
+                const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
+                btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
+                if(active) btn.style.background = p.bg;
+                btn.innerText = p.nom;
+                btn.onclick = () => {
+                    const idx = App.state.filters.programme.indexOf(p.nom);
+                    if(idx>-1) App.state.filters.programme.splice(idx,1); else App.state.filters.programme.push(p.nom);
+                    App.render.filtersUI();
+                    App.render.content();
+                    App.render.charts();
+                };
+                pc.appendChild(btn);
+            });
             
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
@@ -753,18 +736,26 @@
                 const total = totInt || 1; 
 
                 // Fix 7.7: Use palette order
-                if(palette) {
-                    palette.forEach(type => {
-                        const v = groups[type.nom] || 0;
-                        if(v > 0) {
-                            const col = type.bg || '#888';
-                            const pct = (v/total)*100;
-                            conic.push(`${col} ${deg}% ${deg+pct}%`);
-                            deg += pct;
-                            listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
-                        }
-                    });
+                palette.forEach(type => {
+                     const v = groups[type.nom] || 0;
+                     if(v > 0) {
+                         const col = type.bg || '#888';
+                         const pct = (v/total)*100;
+                         conic.push(`${col} ${deg}% ${deg+pct}%`);
+                         deg += pct;
+                         listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
+                     }
+                });
+                // Handle unknowns (optional, but good practice)
+                const knowns = palette.map(p=>p.nom);
+                let unknownSum = 0;
+                Object.keys(groups).forEach(k => { if(!knowns.includes(k)) unknownSum += groups[k]; });
+                if(unknownSum > 0) {
+                     const pct = (unknownSum/total)*100;
+                     conic.push(`#888 ${deg}% ${deg+pct}%`);
+                     listHTML += `<div class="legend-item"><div><span class="dot" style="background:#888"></span>Autre</div><div>${Math.round(unknownSum)}m²</div></div>`;
                 }
+
                 const grad = conic.length ? `conic-gradient(${conic.join(', ')})` : 'var(--bg-input)';
                 return `<div class="card"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px">${title}</div><div class="chart-row"><div class="donut" style="background:${grad}"></div><div class="legend">${listHTML||'Aucune donnée'}</div></div></div>`;
             };
@@ -808,8 +799,8 @@
                 if(!sorted.length) tb.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:30px">Vide</td></tr>`;
                 sorted.forEach(i => {
                     const sel = App.state.selectedIds.has(i.id);
-                    const prog = (App.state.types.programmes||[]).find(p=>p.nom===i.programme);
-                    const st = (App.state.types.statuts||[]).find(s=>s.nom===i.statut);
+                    const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
+                    const st = App.state.types.statuts.find(s=>s.nom===i.statut);
                     
                     const nivStyle = App.helpers.getStyle('niveaux', i.niveau);
                     const fnStyle = App.helpers.getStyle('fonctions', i.fonction);
@@ -841,7 +832,7 @@
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
                 actions.forEach(i => {
-                    const prio = (App.state.types.priorites||[]).find(p=>p.nom===i.priorite);
+                    const prio = App.state.types.priorites.find(p=>p.nom===i.priorite);
                     const col = prio ? prio.bg : 'var(--border-color)';
                     const card = document.createElement('div');
                     card.className = 'action-card';
@@ -882,7 +873,7 @@
              const list = App.state.types[cat];
              const div = document.getElementById('settings-list');
              div.innerHTML = '';
-             if(list) list.forEach(item => {
+             list.forEach(item => {
                  const row = document.createElement('div');
                  row.className = "settings-list-item";
                  const colorBox = (item.bg||item.couleur) ? `<span class="badge-preview" style="background:${item.bg||item.couleur};color:${item.txt||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
@@ -898,96 +889,96 @@
                  `;
                  div.appendChild(row);
              });
-        },
-
-        ui: {
-            toast: (msg) => {
-                const t = document.createElement('div'); t.className='toast';
-                t.style.cssText = "background:var(--bg-card); padding:12px 20px; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 5px 15px rgba(0,0,0,0.3); animation:slideIn 0.3s forwards; position:fixed; bottom:20px; right:20px; z-index:9000;";
-                t.innerText = msg;
-                document.getElementById('toast-container').appendChild(t);
-                setTimeout(()=>t.remove(), 3000);
-            },
-            updateBatchInput: () => {
-                const field = document.getElementById('batch-field').value;
-                const container = document.getElementById('batch-input-container');
-                const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
-                if(typeMap[field]) {
-                    const list = App.state.types[typeMap[field]];
-                    let opts = (list||[]).map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
-                    container.innerHTML = `<select id="batch-value-select" class="input" style="height:32px; width:150px;">${opts}</select>`;
-                } else {
-                    container.innerHTML = `<input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">`;
-                }
-            },
-            openModalItem: (item=null) => {
-                const form = document.getElementById('form-item');
-                form.reset();
-                document.getElementById('f-id').value = '';
-                document.getElementById('btn-del-item').classList.add('hidden');
-                document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
-                
-                if(item) {
-                    document.getElementById('f-id').value = item.id;
-                    document.getElementById('f-programme').value = item.programme;
-                    document.getElementById('f-niveau').value = item.niveau;
-                    document.getElementById('f-fonction').value = item.fonction;
-                    document.getElementById('f-local').value = item.local;
-                    document.getElementById('f-surf').value = item.surfUnite;
-                    document.getElementById('f-nbr').value = item.nombre;
-                    document.getElementById('f-isExt').checked = item.isExt;
-                    document.getElementById('f-statut').value = item.statut;
-                    document.getElementById('f-priorite').value = item.priorite;
-                    document.getElementById('f-remarque').value = item.remarque || '';
-                    document.getElementById('btn-del-item').classList.remove('hidden');
-                    document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
-                }
-                const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item');
-                inputs.forEach(el => el.disabled = App.state.locked);
-                document.getElementById('modal-item').classList.add('open');
-            },
-            closeModal: (id) => document.getElementById(id).classList.remove('open')
-        },
-
-        events: {
-            bindAll: () => {
-                // Binding sécurisé : on attache les événements directement
-                document.getElementById('btn-theme').onclick = () => { 
-                    document.documentElement.classList.toggle('light'); 
-                    localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); 
-                };
-                
-                document.getElementById('btn-lock').onclick = () => { 
-                    App.state.locked = !App.state.locked; 
-                    document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
-                    document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
-                    
-                    document.getElementById('btn-clear-all').disabled = App.state.locked;
-                    document.getElementById('btn-import').disabled = App.state.locked;
-                    document.getElementById('btn-add-item').disabled = App.state.locked;
-                    document.getElementById('btn-undo').disabled = App.state.locked;
-    
-                    App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
-                    if(App.state.locked) App.methods.cancelBatch();
-                };
-                
-                document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
-                document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
-                
-                document.getElementById('btn-save-json').onclick = App.methods.saveJson;
-                document.getElementById('btn-undo').onclick = App.methods.undo;
-                document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }};
-                document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
-                document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); };
-                
-                document.getElementById('btn-save-view').onclick = App.methods.saveView;
-                document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
-                
-                document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
-                document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
-                document.getElementById('btn-import').onclick = App.methods.import;
-            }
         }
+      },
+
+      ui: {
+        toast: (msg) => {
+            const t = document.createElement('div'); t.className='toast';
+            t.style.cssText = "background:var(--bg-card); padding:12px 20px; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 5px 15px rgba(0,0,0,0.3); animation:slideIn 0.3s forwards";
+            t.innerText = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(()=>t.remove(), 3000);
+        },
+        updateBatchInput: () => {
+            const field = document.getElementById('batch-field').value;
+            const container = document.getElementById('batch-input-container');
+            const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
+            if(typeMap[field]) {
+                const list = App.state.types[typeMap[field]];
+                let opts = list.map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
+                container.innerHTML = `<select id="batch-value-select" class="input" style="height:32px; width:150px;">${opts}</select>`;
+            } else {
+                container.innerHTML = `<input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">`;
+            }
+        },
+        openModalItem: (item=null) => {
+            const form = document.getElementById('form-item');
+            form.reset();
+            document.getElementById('f-id').value = '';
+            document.getElementById('btn-del-item').classList.add('hidden');
+            document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
+            
+            if(item) {
+                document.getElementById('f-id').value = item.id;
+                document.getElementById('f-programme').value = item.programme;
+                document.getElementById('f-niveau').value = item.niveau;
+                document.getElementById('f-fonction').value = item.fonction;
+                document.getElementById('f-local').value = item.local;
+                document.getElementById('f-surf').value = item.surfUnite;
+                document.getElementById('f-nbr').value = item.nombre;
+                document.getElementById('f-isExt').checked = item.isExt;
+                document.getElementById('f-statut').value = item.statut;
+                document.getElementById('f-priorite').value = item.priorite;
+                document.getElementById('f-remarque').value = item.remarque || '';
+                document.getElementById('btn-del-item').classList.remove('hidden');
+                document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
+            }
+            const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item');
+            inputs.forEach(el => el.disabled = App.state.locked);
+            document.getElementById('modal-item').classList.add('open');
+        },
+        closeModal: (id) => document.getElementById(id).classList.remove('open')
+      },
+
+      events: {
+        bindAll: () => {
+            document.getElementById('btn-theme').onclick = () => { 
+                document.documentElement.classList.toggle('light'); 
+                localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); 
+            };
+            
+            document.getElementById('btn-lock').onclick = () => { 
+                App.state.locked = !App.state.locked; 
+                document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
+                document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
+                
+                document.getElementById('btn-clear-all').disabled = App.state.locked;
+                document.getElementById('btn-import').disabled = App.state.locked;
+                document.getElementById('btn-add-item').disabled = App.state.locked;
+                document.getElementById('btn-undo').disabled = App.state.locked;
+
+                App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
+                if(App.state.locked) App.methods.cancelBatch();
+            };
+            
+            document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
+            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
+            
+            document.getElementById('btn-save-json').onclick = App.methods.saveJson;
+            document.getElementById('btn-undo').onclick = App.methods.undo;
+            document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }};
+            document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
+            document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); };
+            
+            document.getElementById('btn-save-view').onclick = App.methods.saveView;
+            document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
+            
+            document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
+            document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
+            document.getElementById('btn-import').onclick = App.methods.import;
+        }
+      }
     };
 
     window.addEventListener('DOMContentLoaded', App.init);
