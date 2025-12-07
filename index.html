@@ -2,85 +2,128 @@
 <html lang="fr"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>APP FRAMEWORK V8 - GRAPH</title>
+  <title>PROGRAMMATION & ORGANIGRAMME (V8)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-  
   <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
   <style>
-    /* --- CORE CSS --- */
-    :root { --bg: #0F172A; --card: #1E293B; --input: #0F172A; --text: #F1F5F9; --muted: #94A3B8; --primary: #3B82F6; --success: #10B981; --danger: #EF4444; --accent: #8B5CF6; --border: #334155; }
-    :root.light { --bg: #F8FAFC; --card: #FFFFFF; --input: #F1F5F9; --text: #0F172A; --muted: #64748B; --primary: #2563EB; --border: #CBD5E1; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px; font-size: 14px; padding-bottom: 100px; max-width: 1600px; margin: 0 auto; transition: 0.3s; height: 100vh; display: flex; flex-direction: column; }
+    /* --- DESIGN SYSTEM --- */
+    :root { 
+        --bg: #0F172A; --card: #1E293B; --input: #0F172A; 
+        --text: #F1F5F9; --muted: #94A3B8; --border: #334155; 
+        --primary: #3B82F6; --success: #10B981; --danger: #EF4444; --accent: #8B5CF6;
+    }
+    :root.light { 
+        --bg: #F8FAFC; --card: #FFFFFF; --input: #F1F5F9; 
+        --text: #0F172A; --muted: #64748B; --border: #CBD5E1; 
+        --primary: #2563EB; 
+    }
     
-    /* Layout */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; flex-shrink: 0; }
-    .app-title { font-size: 24px; font-weight: 800; }
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; flex-shrink: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
     
-    /* Components */
-    .btn { height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; background: var(--card); color: var(--text); transition: 0.2s; }
+    body { 
+        background: var(--bg); color: var(--text); 
+        height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        transition: 0.3s;
+    }
+    
+    /* HEADER & TOOLBAR */
+    .header { 
+        padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--card);
+        display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .app-title { font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+    .nav-group { display: flex; gap: 8px; background: var(--input); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
+    
+    /* BUTTONS */
+    .btn { 
+        height: 36px; padding: 0 16px; border-radius: 6px; border: 1px solid var(--border); 
+        cursor: pointer; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; 
+        background: var(--card); color: var(--text); transition: 0.2s; 
+    }
     .btn:hover { background: var(--border); }
     .btn-primary { background: var(--primary); color: white; border: none; }
-    .btn-danger { color: var(--danger); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
-    .btn-xs { height: 28px; padding: 0 10px; font-size: 12px; }
+    .btn-nav { border: none; background: transparent; color: var(--muted); }
+    .btn-nav.active { background: var(--card); color: var(--text); shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .btn-xs { height: 26px; padding: 0 8px; font-size: 11px; }
+    .btn-danger { color: var(--danger); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+
+    /* VIEW CONTAINER */
+    .main-container { flex: 1; position: relative; overflow: hidden; }
+    .view-section { position: absolute; inset: 0; display: none; padding: 20px; overflow: hidden; }
+    .view-section.active { display: block; }
     
-    /* Views */
-    .view-container { flex: 1; overflow: hidden; display: none; }
-    .view-container.active { display: block; }
-    
-    /* Table */
-    .table-scroll { height: 100%; overflow: auto; background: var(--card); border-radius: 12px; border: 1px solid var(--border); }
+    /* LIST VIEW */
+    .table-wrapper { height: 100%; overflow: auto; background: var(--card); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-    th { text-align: left; padding: 14px 12px; background: var(--input); color: var(--muted); font-size: 11px; text-transform: uppercase; position: sticky; top: 0; z-index: 10; }
-    td { padding: 12px; border-bottom: 1px solid var(--border); }
-    tr:hover td { background: var(--bg); }
-
-    /* Graph View */
+    th { text-align: left; padding: 12px 16px; background: var(--input); color: var(--muted); font-size: 11px; text-transform: uppercase; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    tr:hover td { background: var(--input); }
+    
+    /* GRAPH VIEW */
     #mynetwork { width: 100%; height: 100%; background: var(--card); border-radius: 12px; border: 1px solid var(--border); }
+    .graph-legend { position: absolute; bottom: 30px; left: 30px; background: var(--card); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); pointer-events: none; }
 
-    /* Modals */
+    /* MODAL */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
-    .modal { background: var(--card); padding: 30px; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); display: flex; flex-direction: column; }
+    .modal { background: var(--card); padding: 24px; border-radius: 16px; width: 100%; max-width: 550px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .modal-body { flex: 1; overflow-y: auto; padding-right: 4px; }
+    
+    /* FORM ELEMENTS */
     .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--input); color: var(--text); }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+    .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--input); color: var(--text); font-size: 14px; }
+    .form-control:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+    /* RELATION ITEMS */
+    .rel-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--input); margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--border); }
+    .rel-tag { font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: var(--accent); color: white; margin-right: 8px; opacity: 0.8; }
     
-    /* Relations Specific */
-    .rel-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; background: var(--input); margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--border); }
-    .rel-weight { font-size: 11px; font-weight: bold; color: var(--accent); margin-right: 10px; }
-    
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-    .highlight { background: rgba(253, 224, 71, 0.3); color: var(--text); padding: 0 2px; border-radius: 2px; }
-    .hidden { display: none; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block; }
   </style>
 </head>
 <body>
 
 <script>
-// 🟢 CONFIGURATION
+// ============================================================
+// 🟢 CONFIGURATION MÉTIER (Framework V8)
+// ============================================================
 const APP_DEF = {
-    title: "PROGRAMME & ORGANIGRAMME",
+    title: "PROGRAMME ARCHI",
     storageKey: "coffim-app-v8",
+    
+    // Données de référence
     lists: {
-        niveaux: [ {id:1, nom:"RDC"}, {id:2, nom:"R+1"}, {id:3, nom:"R+2"} ],
-        fonctions: [ {id:1, nom:"Public"}, {id:2, nom:"Personnel"}, {id:3, nom:"Logistique"} ],
-        weights: [ {val: 1, label: "Proximité (Faible)"}, {val: 3, label: "Adjacence (Moyenne)"}, {val: 6, label: "Connexion Directe (Forte)"} ]
+        niveaux: [ {id:1, nom:"RDC"}, {id:2, nom:"R+1"}, {id:3, nom:"R+2"}, {id:4, nom:"Sous-sol"}, {id:5, nom:"Extérieur"} ],
+        fonctions: [ {id:1, nom:"Accueil / Public"}, {id:2, nom:"Bureaux"}, {id:3, nom:"Réunion"}, {id:4, nom:"Logistique / Technique"}, {id:5, nom:"Sanitaires"} ],
+        // Poids pour les relations graphiques
+        weights: [ 
+            {val: 1, label: "Proximité (Faible)", color: "#94A3B8"}, 
+            {val: 3, label: "Adjacence (Moyenne)", color: "#F59E0B"}, 
+            {val: 6, label: "Connexion Directe (Forte)", color: "#EF4444"} 
+        ]
     },
+
+    // Colonnes du tableau (et Champs du formulaire)
     fields: [
         { key: 'niveau',    label: 'Niveau',    type: 'select', list: 'niveaux',    width: '80px',  badge: true },
-        { key: 'fonction',  label: 'Fonction',  type: 'select', list: 'fonctions',  width: '100px', badge: true },
-        { key: 'local',     label: 'Local',     type: 'text',   width: '200px',     main: true,     required: true },
-        { key: 'surfUnite', label: 'S.U.',      type: 'number', width: '80px',      align: 'right', summary: 'sum' },
-        // Champ caché pour stocker les relations
-        { key: 'relations', label: 'Liens',     type: 'json',   hidden: true,       default: [] }
+        { key: 'fonction',  label: 'Fonction',  type: 'select', list: 'fonctions',  width: '120px', badge: true },
+        { key: 'local',     label: 'Désignation', type: 'text', width: '250px',     main: true,     required: true },
+        { key: 'surfUnite', label: 'S.U. (m²)', type: 'number', width: '80px',      align: 'right', summary: 'sum' },
+        
+        // CHAMP SPÉCIAL V8 (Caché dans la liste principale, utilisé pour le graphe)
+        { key: 'relations', label: 'Relations', type: 'json',   hidden: true,       default: [] }
     ],
+
+    // Logique visuelle
     hooks: {
+        // Générateur de couleur stable basé sur le texte
         getColor: (str) => {
-            const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+            const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
             let hash = 0; for (let i=0; i<str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
             return colors[Math.abs(hash) % colors.length];
         }
@@ -88,87 +131,125 @@ const APP_DEF = {
 };
 </script>
 
-<div id="app" style="height: 100%; display: flex; flex-direction: column;">
+<div id="app-root" style="height: 100%; display: flex; flex-direction: column;">
     </div>
 
 <script>
+// --- ÉTAT GLOBAL ---
 let data = [];
 let lists = JSON.parse(JSON.stringify(APP_DEF.lists));
-let currentView = 'list'; // 'list' ou 'graph'
-let network = null; // Vis.js instance
+let currentView = 'list'; // 'list' | 'graph'
+let network = null; // Instance Vis.js
 
+// --- INITIALISATION ---
 function init() {
+    // Chargement LocalStorage
     const savedData = localStorage.getItem(APP_DEF.storageKey + '_data');
     if (savedData) data = JSON.parse(savedData);
+    else {
+        // Données de démo si vide
+        data = [
+            {id:1, niveau:"RDC", fonction:"Accueil / Public", local:"Hall d'accueil", surfUnite:30, relations:[{targetId:2, weight:6}]},
+            {id:2, niveau:"RDC", fonction:"Accueil / Public", local:"Banque réception", surfUnite:12, relations:[]},
+            {id:3, niveau:"RDC", fonction:"Réunion", local:"Salle de Réunion A", surfUnite:25, relations:[{targetId:1, weight:3}]},
+            {id:4, niveau:"R+1", fonction:"Bureaux", local:"Bureau Direction", surfUnite:18, relations:[{targetId:3, weight:1}]}
+        ];
+    }
+    
     renderLayout();
 }
 
+// --- RENDU PRINCIPAL ---
 function renderLayout() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
+    const root = document.getElementById('app-root');
+    
+    root.innerHTML = `
         <div class="header">
-            <div class="app-title">${APP_DEF.title}</div>
+            <div style="display:flex; align-items:center; gap:15px">
+                <div class="app-title">${APP_DEF.title}</div>
+                <div class="nav-group">
+                    <button class="btn btn-nav ${currentView==='list'?'active':''}" onclick="switchView('list')">📋 Liste</button>
+                    <button class="btn btn-nav ${currentView==='graph'?'active':''}" onclick="switchView('graph')">🕸️ Graphique</button>
+                </div>
+            </div>
             <div style="display:flex; gap:10px">
-                <button class="btn ${currentView==='list'?'btn-primary':''}" onclick="switchView('list')">📋 Liste</button>
-                <button class="btn ${currentView==='graph'?'btn-primary':''}" onclick="switchView('graph')">🕸️ Graphique</button>
                 <button class="btn" onclick="toggleTheme()">🌗</button>
+                <button class="btn btn-primary" onclick="openEditModal()">➕ Nouveau</button>
             </div>
         </div>
 
-        <div id="view-list" class="view-container ${currentView==='list'?'active':''}">
-            <div class="toolbar">
-                <button class="btn btn-primary" onclick="openEditModal()">➕ Nouveau Local</button>
-                <button class="btn" onclick="exportCSV()">📄 Export CSV</button>
-            </div>
-            <div class="table-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            ${APP_DEF.fields.filter(f => !f.hidden).map(f => `<th style="width:${f.width}; text-align:${f.align||'left'}">${f.label}</th>`).join('')}
-                            <th style="width:120px; text-align:right">Relations</th>
-                            <th style="width:50px">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.map(row => {
-                            const linkCount = (row.relations || []).length;
-                            return `
+        <div class="main-container">
+            <div class="view-section ${currentView==='list'?'active':''}" style="padding-bottom:80px">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                ${APP_DEF.fields.filter(f => !f.hidden).map(f => {
-                                    let val = row[f.key] || '-';
-                                    let style = f.align ? `text-align:${f.align}` : '';
-                                    if(f.badge && row[f.key]) {
-                                        const color = APP_DEF.hooks.getColor(row[f.key]);
-                                        val = `<span class="badge" style="background:${color}20; color:${color}">${val}</span>`;
-                                    }
-                                    return `<td style="${style}">${val}</td>`;
-                                }).join('')}
-                                <td style="text-align:right">
-                                    <button class="btn btn-xs" onclick="openRelationsModal(${row.id})" title="Gérer les liens">
-                                        🔗 ${linkCount > 0 ? linkCount : '+'}
-                                    </button>
+                                ${APP_DEF.fields.filter(f => !f.hidden).map(f => 
+                                    `<th style="width:${f.width}; text-align:${f.align||'left'}">${f.label}</th>`
+                                ).join('')}
+                                <th style="width:100px; text-align:center">Liens</th>
+                                <th style="width:80px; text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(row => {
+                                const relCount = (row.relations || []).length;
+                                const relBtnClass = relCount > 0 ? 'btn-primary' : '';
+                                const relBtnStyle = relCount > 0 ? 'padding:2px 8px; height:24px; font-size:11px' : 'background:transparent; border:1px dashed var(--border); color:var(--muted); padding:2px 8px; height:24px; font-size:11px';
+                                
+                                return `
+                                <tr>
+                                    ${APP_DEF.fields.filter(f => !f.hidden).map(f => {
+                                        let val = row[f.key] || '-';
+                                        let style = f.align ? `text-align:${f.align}` : '';
+                                        
+                                        if(f.badge && row[f.key]) {
+                                            const color = APP_DEF.hooks.getColor(row[f.key]);
+                                            val = `<span class="badge" style="background:${color}20; color:${color}">${val}</span>`;
+                                        }
+                                        return `<td style="${style}">${val}</td>`;
+                                    }).join('')}
+                                    
+                                    <td style="text-align:center">
+                                        <button class="btn ${relBtnClass}" style="${relBtnStyle}" onclick="openRelationsModal(${row.id})" title="Gérer les relations">
+                                            ${relCount > 0 ? '🔗 '+relCount : '+ Lier'}
+                                        </button>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <button class="btn btn-xs" onclick="openEditModal(${row.id})">✎</button>
+                                        <button class="btn btn-xs btn-danger" onclick="deleteItem(${row.id})">×</button>
+                                    </td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                        <tfoot>
+                             <tr>
+                                <td colspan="100%" style="text-align:center; color:var(--muted); font-size:12px; padding:15px">
+                                    ${data.length} locaux programmés
                                 </td>
-                                <td>
-                                    <button class="btn btn-xs btn-danger" onclick="deleteItem(${row.id})">×</button>
-                                    <button class="btn btn-xs" onclick="openEditModal(${row.id})">✎</button>
-                                </td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
+                             </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <div id="view-graph" class="view-container ${currentView==='graph'?'active':''}">
-            <div id="mynetwork"></div>
-            <div style="position:absolute; bottom:20px; left:20px; background:var(--card); padding:10px; border-radius:8px; border:1px solid var(--border); font-size:12px">
-                ℹ️ Double-cliquez sur un nœud pour éditer.<br>
-                Utilisez la molette pour zoomer.
+            <div class="view-section ${currentView==='graph'?'active':''}">
+                <div id="mynetwork"></div>
+                <div class="graph-legend">
+                    <strong>Légende :</strong><br>
+                    Taille du rond = Surface<br>
+                    Couleur = Fonction<br>
+                    Épaisseur du trait = Force du lien<br>
+                    <em style="opacity:0.7; margin-top:5px; display:block">(Double-clic pour éditer)</em>
+                </div>
             </div>
         </div>
     `;
-    
-    if(currentView === 'graph') drawGraph();
+
+    // Si on est en mode graphique, on lance le moteur de rendu Vis.js
+    if(currentView === 'graph') {
+        setTimeout(drawGraph, 50); // Petit délai pour s'assurer que le DOM est prêt
+    }
 }
 
 function switchView(view) {
@@ -176,154 +257,200 @@ function switchView(view) {
     renderLayout();
 }
 
-// --- MODAL EDITION CLASSIQUE ---
+// --- MODAL EDITION LOCAUX ---
 function openEditModal(id = null) {
     const item = id ? data.find(d => d.id === id) : {};
     
-    const inputs = APP_DEF.fields.filter(f => !f.hidden).map(f => {
+    // Génération automatique du formulaire
+    const formHtml = APP_DEF.fields.filter(f => !f.hidden).map(f => {
         let val = item[f.key] !== undefined ? item[f.key] : '';
+        let inputHtml = '';
+        
         if (f.type === 'select') {
             const opts = (lists[f.list]||[]).map(o => `<option value="${o.nom}" ${val===o.nom?'selected':''}>${o.nom}</option>`).join('');
-            return `<div class="form-group"><label class="form-label">${f.label}</label><select id="inp-${f.key}" class="form-control"><option value="">-</option>${opts}</select></div>`;
+            inputHtml = `<select id="inp-${f.key}" class="form-control"><option value="">Selectionner...</option>${opts}</select>`;
+        } else {
+            inputHtml = `<input type="${f.type}" id="inp-${f.key}" class="form-control" value="${val}">`;
         }
-        return `<div class="form-group"><label class="form-label">${f.label}</label><input type="${f.type}" id="inp-${f.key}" class="form-control" value="${val}"></div>`;
+        
+        return `<div class="form-group"><label class="form-label">${f.label}</label>${inputHtml}</div>`;
     }).join('');
 
-    showModal("Éditer Local", inputs, () => {
-        const newItem = id ? data.find(d => d.id === id) : { id: Date.now(), relations: [] };
+    showModal(id ? "Modifier Local" : "Nouveau Local", formHtml, () => {
+        const newItem = id ? item : { id: Date.now(), relations: [] };
+        
         APP_DEF.fields.filter(f => !f.hidden).forEach(f => {
-            newItem[f.key] = document.getElementById(`inp-${f.key}`).value;
+            const el = document.getElementById(`inp-${f.key}`);
+            if(el) newItem[f.key] = el.value;
         });
+
         if(!id) data.push(newItem);
         saveAndRefresh();
     });
 }
 
-// --- MODAL RELATIONS (Le cœur du sujet) ---
+// --- MODAL GESTION RELATIONS (LE CŒUR DE LA V8) ---
 function openRelationsModal(id) {
     const sourceItem = data.find(d => d.id === id);
-    if(!sourceItem.relations) sourceItem.relations = [];
+    if (!sourceItem.relations) sourceItem.relations = [];
 
-    const renderRelList = () => {
-        if(sourceItem.relations.length === 0) return '<div style="color:var(--muted); font-style:italic; padding:10px">Aucune relation définie.</div>';
-        return sourceItem.relations.map((rel, idx) => {
+    // Fonction interne pour rafraîchir la liste dans la modale
+    const renderInnerList = () => {
+        const listContainer = document.getElementById('rel-list-inner');
+        if(!listContainer) return;
+        
+        if(sourceItem.relations.length === 0) {
+            listContainer.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted); border:2px dashed var(--border); border-radius:8px">Aucun lien défini.<br>Ajoutez-en un ci-dessous.</div>`;
+            return;
+        }
+
+        listContainer.innerHTML = sourceItem.relations.map((rel, idx) => {
             const target = data.find(d => d.id === rel.targetId);
-            const wLabel = APP_DEF.lists.weights.find(w => w.val == rel.weight)?.label || rel.weight;
-            if(!target) return ''; // Nettoyage si cible supprimée
+            if(!target) return ''; // Protection si cible supprimée
+            
+            const wObj = APP_DEF.lists.weights.find(w => w.val == rel.weight);
+            const wLabel = wObj ? wObj.label : rel.weight;
+            const wColor = wObj ? wObj.color : '#ccc';
+
             return `
             <div class="rel-item">
-                <div>
-                    <span class="rel-weight">⚡ ${wLabel}</span>
-                    <span>${target.local}</span>
+                <div style="display:flex; align-items:center">
+                    <span class="rel-tag" style="background:${wColor}">${wLabel}</span>
+                    <span style="font-weight:600"> ↔ ${target.local}</span>
+                    <span style="color:var(--muted); font-size:12px; margin-left:5px">(${target.niveau})</span>
                 </div>
-                <button class="btn btn-xs btn-danger" onclick="removeRelation(${id}, ${idx})">×</button>
+                <button class="btn btn-xs btn-danger" onclick="removeRel(${idx})">×</button>
             </div>`;
         }).join('');
     };
 
-    const modalContent = `
-        <div style="flex:1; overflow:auto; margin-bottom:20px" id="rel-list-container">
-            ${renderRelList()}
+    // HTML de la modale Relations
+    const content = `
+        <div style="background:var(--bg); border-radius:8px; padding:10px; margin-bottom:20px">
+            <h3 style="font-size:12px; color:var(--muted); margin-bottom:10px; text-transform:uppercase">Liens existants</h3>
+            <div id="rel-list-inner" style="max-height:200px; overflow-y:auto"></div>
         </div>
-        <div style="border-top:1px solid var(--border); padding-top:20px; display:grid; grid-template-columns: 2fr 2fr 1fr; gap:10px; align-items:end;">
-            <div class="form-group" style="margin:0">
-                <label class="form-label">Lier avec...</label>
-                <select id="new-rel-target" class="form-control">
-                    <option value="">Choisir un local...</option>
-                    ${data.filter(d => d.id !== id).map(d => `<option value="${d.id}">${d.local} (${d.niveau})</option>`).join('')}
-                </select>
-            </div>
-            <div class="form-group" style="margin:0">
-                <label class="form-label">Importance</label>
-                <select id="new-rel-weight" class="form-control">
-                    ${APP_DEF.lists.weights.map(w => `<option value="${w.val}">${w.label}</option>`).join('')}
-                </select>
-            </div>
-            <button class="btn btn-primary" onclick="addRelation(${id})">Ajouter</button>
+
+        <div style="border-top:1px solid var(--border); padding-top:15px">
+             <h3 style="font-size:12px; color:var(--primary); margin-bottom:10px; text-transform:uppercase">Ajouter un lien</h3>
+             <div style="display:grid; grid-template-columns: 2fr 2fr auto; gap:10px; align-items:end">
+                <div class="form-group" style="margin:0">
+                    <label class="form-label">Lier avec...</label>
+                    <select id="new-rel-target" class="form-control">
+                        <option value="">Choisir...</option>
+                        ${data.filter(d => d.id !== id).map(d => `<option value="${d.id}">${d.local} (${d.niveau})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0">
+                    <label class="form-label">Type de lien</label>
+                    <select id="new-rel-weight" class="form-control">
+                        ${APP_DEF.lists.weights.map(w => `<option value="${w.val}">${w.label}</option>`).join('')}
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="addRel()">Ajouter</button>
+             </div>
         </div>
     `;
 
-    // Hack pour rendre les fonctions accessibles globalement pour le HTML string
-    window.addRelation = (sourceId) => {
+    // Fonctions globales temporaires pour l'interaction dans la modale
+    window.addRel = () => {
         const targetId = parseInt(document.getElementById('new-rel-target').value);
         const weight = parseInt(document.getElementById('new-rel-weight').value);
         if(!targetId) return;
-        
-        const item = data.find(d => d.id === sourceId);
-        // Éviter doublons
-        if(!item.relations.find(r => r.targetId === targetId)) {
-            item.relations.push({ targetId, weight });
-            saveData();
-            document.getElementById('rel-list-container').innerHTML = renderRelList(); // Refresh local
+
+        // Vérifier doublon
+        if(!sourceItem.relations.find(r => r.targetId === targetId)) {
+            sourceItem.relations.push({ targetId, weight });
+            saveData(); // Sauvegarde immédiate
+            renderInnerList();
         }
     };
 
-    window.removeRelation = (sourceId, idx) => {
-        const item = data.find(d => d.id === sourceId);
-        item.relations.splice(idx, 1);
+    window.removeRel = (idx) => {
+        sourceItem.relations.splice(idx, 1);
         saveData();
-        document.getElementById('rel-list-container').innerHTML = renderRelList();
+        renderInnerList();
     };
 
-    showModal(`Relations pour : ${sourceItem.local}`, modalContent, null, true); // true = hide footer buttons
+    showModal(`Relations : ${sourceItem.local}`, content, () => {
+        // Au clic sur Fermer/Enregistrer global
+        renderLayout(); // Rafraîchir le compteur dans la liste principale
+    }, true); // true = bouton fermer simple
+
+    // Premier rendu de la liste
+    setTimeout(renderInnerList, 0);
 }
 
-// --- VIS.JS GRAPH ENGINE ---
+// --- MOTEUR GRAPHIQUE (VIS.JS) ---
 function drawGraph() {
     const container = document.getElementById('mynetwork');
-    const nodes = new vis.DataSet(data.map(d => ({
-        id: d.id,
-        label: d.local + (d.surfUnite ? `\n(${d.surfUnite}m²)` : ''),
-        group: d.fonction || 'Autre',
-        value: parseFloat(d.surfUnite) || 10, // Taille du nœud selon surface
-        title: `Niveau: ${d.niveau}`
-    })));
+    if(!container) return;
 
+    // 1. Préparer les Noeuds (Locaux)
+    const nodesArr = data.map(d => {
+        const color = APP_DEF.hooks.getColor(d.fonction || 'Autre');
+        const size = Math.max(15, Math.sqrt(parseFloat(d.surfUnite || 20)) * 5); // Taille relative à la surface
+        
+        return {
+            id: d.id,
+            label: d.local,
+            title: `Fonction: ${d.fonction}\nSurface: ${d.surfUnite} m²\nNiveau: ${d.niveau}`,
+            value: size,
+            group: d.fonction,
+            color: { background: color, border: color, highlight: { background: color, border: '#FFF' } }
+        };
+    });
+
+    // 2. Préparer les Liens (Relations)
     const edgesArr = [];
     data.forEach(source => {
         if(source.relations) {
             source.relations.forEach(rel => {
-                // On vérifie que la cible existe encore
-                if(data.find(d => d.id === rel.targetId)) {
+                const targetExists = data.find(t => t.id === rel.targetId);
+                if(targetExists) {
+                    const wObj = APP_DEF.lists.weights.find(w => w.val == rel.weight);
+                    const color = wObj ? wObj.color : '#94A3B8';
+                    
                     edgesArr.push({
                         from: source.id,
                         to: rel.targetId,
-                        width: rel.weight, // Épaisseur du trait
-                        length: 300 / rel.weight, // Plus c'est fort, plus c'est court
-                        color: { color: 'var(--muted)', opacity: 0.6 }
+                        width: rel.weight, // Épaisseur
+                        color: { color: color, opacity: 0.6 },
+                        length: 200 / rel.weight // Plus le lien est fort, plus ils sont proches
                     });
                 }
             });
         }
     });
-    const edges = new vis.DataSet(edgesArr);
 
+    // 3. Configuration Physique
     const options = {
         nodes: {
             shape: 'dot',
-            font: { color: getComputedStyle(document.body).getPropertyValue('--text') },
-            scaling: { min: 10, max: 30 }
+            font: { color: getComputedStyle(document.body).getPropertyValue('--text'), size: 14, face: 'Segoe UI' },
+            borderWidth: 2,
+            shadow: true
+        },
+        edges: {
+            smooth: { type: 'continuous' }
         },
         physics: {
             forceAtlas2Based: {
-                gravitationalConstant: -50,
-                centralGravity: 0.01,
-                springConstant: 0.08,
-                springLength: 100,
-                damping: 0.4,
-                avoidOverlap: 0.5
+                gravitationalConstant: -60,
+                centralGravity: 0.005,
+                springLength: 150,
+                springConstant: 0.08
             },
             solver: 'forceAtlas2Based',
-            stabilization: { iterations: 150 }
+            stabilization: { iterations: 100 } // Pré-calcul pour éviter que ça bouge trop au début
         },
-        groups: {
-            // Auto-colors based on group names (fonctions)
-            useDefaultGroups: true 
-        }
+        interaction: { hover: true, tooltipDelay: 200 }
     };
 
-    network = new vis.Network(container, { nodes, edges }, options);
+    // 4. Lancement
+    network = new vis.Network(container, { nodes: nodesArr, edges: edgesArr }, options);
     
+    // Interaction: Double clic pour ouvrir les relations
     network.on("doubleClick", function (params) {
         if (params.nodes.length === 1) {
             openRelationsModal(params.nodes[0]);
@@ -331,52 +458,65 @@ function drawGraph() {
     });
 }
 
-// --- SYSTEM UTILS ---
-function showModal(title, content, onSave, hideFooter = false) {
-    const existing = document.getElementById('active-modal');
-    if(existing) existing.remove();
+// --- UTILITAIRES SYSTÈME ---
+function showModal(title, contentHtml, onSave, simpleClose = false) {
+    // Nettoyage ancienne modale
+    const old = document.getElementById('active-modal');
+    if(old) old.remove();
 
     const html = `
-    <div class="modal-overlay" id="active-modal" onclick="if(event.target===this) this.remove()">
+    <div class="modal-overlay" id="active-modal">
         <div class="modal">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-                <h2 style="font-size:18px; margin:0">${title}</h2>
-                <button class="btn btn-xs" onclick="document.getElementById('active-modal').remove()">✕</button>
+            <div class="modal-header">
+                <div class="modal-title">${title}</div>
+                <button class="btn btn-xs" onclick="closeActiveModal()">✕</button>
             </div>
-            <div style="flex:1; overflow:auto;">${content}</div>
-            ${!hideFooter ? `
+            <div class="modal-body">${contentHtml}</div>
             <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px">
-                <button class="btn" onclick="document.getElementById('active-modal').remove()">Annuler</button>
-                <button class="btn btn-primary" id="modal-save-btn">Enregistrer</button>
-            </div>` : ''}
+                ${simpleClose 
+                    ? `<button class="btn btn-primary" onclick="confirmModal()">Terminé</button>`
+                    : `<button class="btn" onclick="closeActiveModal()">Annuler</button>
+                       <button class="btn btn-primary" onclick="confirmModal()">Enregistrer</button>`
+                }
+            </div>
         </div>
     </div>`;
-    document.body.insertAdjacentHTML('beforeend', html);
     
-    if(onSave) {
-        document.getElementById('modal-save-btn').onclick = () => {
-            onSave();
-            document.getElementById('active-modal').remove();
-        };
-    }
+    document.body.insertAdjacentHTML('beforeend', html);
+
+    // Injection fonction de confirmation
+    window.confirmModal = () => {
+        if(onSave) onSave();
+        closeActiveModal();
+    };
+    window.closeActiveModal = () => {
+        document.getElementById('active-modal').remove();
+    };
 }
 
-function saveData() { localStorage.setItem(APP_DEF.storageKey+'_data', JSON.stringify(data)); }
+function saveData() { localStorage.setItem(APP_DEF.storageKey + '_data', JSON.stringify(data)); }
 function saveAndRefresh() { saveData(); renderLayout(); }
+
 function deleteItem(id) {
-    if(confirm("Supprimer ?")) {
+    if(confirm("Supprimer ce local ?")) {
         data = data.filter(d => d.id !== id);
-        // Nettoyer les relations orphelines
+        // Nettoyage des relations orphelines (si quelqu'un pointait vers ce local)
         data.forEach(d => {
             if(d.relations) d.relations = d.relations.filter(r => r.targetId !== id);
         });
         saveAndRefresh();
     }
 }
-function toggleTheme() { document.documentElement.classList.toggle('light'); if(network) drawGraph(); }
-function exportCSV() { alert("Export CSV simplifié pour démo."); }
 
-// BOOT
+function toggleTheme() { 
+    document.documentElement.classList.toggle('light'); 
+    // Si on est sur le graphe, il faut redessiner pour changer la couleur du texte
+    if(currentView === 'graph' && network) drawGraph(); 
+}
+
+// Démarrage
 init();
+
 </script>
-</body></html>
+</body>
+</html>
