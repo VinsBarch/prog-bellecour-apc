@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7</title>
+  <title>PROGRAMMATION V7.6 (Refined)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.7 --- */
+    /* --- DESIGN SYSTEM V7.6 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -68,7 +68,7 @@
     .legend-item { display: flex; justify-content: space-between; align-items: center; }
     .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* SEGMENTED CONTROL (TABS - LEFT ALIGNED) */
+    /* SEGMENTED CONTROL (TABS) */
     .segmented-control { 
         display: inline-flex; 
         background: var(--bg-card); 
@@ -97,7 +97,7 @@
     .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
     .input:focus { outline: none; border-color: var(--primary); }
     
-    /* MULTI-SELECT */
+    /* MULTI-SELECT DROPDOWNS */
     .ms-container { position: relative; width: 100%; }
     .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
@@ -123,7 +123,8 @@
     tbody tr:hover { background: var(--bg-hover) !important; cursor: pointer; }
     tbody tr:last-child td { border-bottom: none; }
 
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; border: 1px solid transparent; }
+    /* BADGES (Updated for Readability) */
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; }
     
     /* ACTIONS GRID */
     .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
@@ -149,9 +150,6 @@
     .btn-action-sm { height: 28px; width:28px; padding: 0; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
     .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
     .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
-    
-    .color-picker-wrap { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); padding: 0; position: relative; }
-    .color-picker-wrap input[type=color] { position: absolute; inset: -5px; width: 50px; height: 50px; cursor: pointer; }
 
     .text-right { text-align: right; }
     .text-center { text-align: center; }
@@ -164,7 +162,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.6</div>
       </div>
     </div>
     <div class="flex">
@@ -192,6 +190,13 @@
 
   <div class="stats-grid" id="stats-area"></div>
 
+  <div style="text-align:center;">
+    <div class="segmented-control">
+        <button class="seg-btn active" onclick="App.methods.switchView('list')" id="tab-list">📋 Liste complète</button>
+        <button class="seg-btn" onclick="App.methods.switchView('actions')" id="tab-actions">⚠️ Actions requises</button>
+    </div>
+  </div>
+
   <div class="filters-box">
     <div class="search-row">
        <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
@@ -207,13 +212,6 @@
        <div class="spacer"></div>
        <button class="btn btn-success" id="btn-add-item" style="background:var(--success);color:white;">➕ Ajouter Local</button>
        <button class="btn btn-secondary" id="btn-settings">⚙ Types</button>
-    </div>
-  </div>
-
-  <div style="text-align:left;">
-    <div class="segmented-control">
-        <button class="seg-btn active" onclick="App.methods.switchView('list')" id="tab-list">📋 Liste complète</button>
-        <button class="seg-btn" onclick="App.methods.switchView('actions')" id="tab-actions">⚠️ Actions requises</button>
     </div>
   </div>
 
@@ -279,17 +277,10 @@
             </select>
         </div>
         <div id="settings-list" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:12px;"></div>
-        
-        <label class="text-muted" style="font-size:11px; margin-bottom:4px; display:block">Ajouter un élément :</label>
         <div class="flex">
-            <input type="text" id="set-new-name" class="input" placeholder="Nom..." style="flex:1">
-            <div class="color-picker-wrap" title="Couleur de FOND">
-               <input type="color" id="set-new-bg" value="#F1F5F9">
-            </div>
-            <div class="color-picker-wrap" title="Couleur de TEXTE">
-               <input type="color" id="set-new-txt" value="#334155">
-            </div>
-            <button class="btn btn-success" onclick="App.methods.addType()">+</button>
+            <input type="text" id="set-new-name" class="input" placeholder="Nouveau..." style="flex:1">
+            <input type="color" id="set-new-color" value="#3B82F6" style="height:40px; border:none; background:none; cursor:pointer">
+            <button class="btn btn-success" onclick="App.methods.addType()">Ajouter</button>
         </div>
         <div class="flex" style="margin-top:20px; justify-content:end">
             <button class="btn btn-secondary" onclick="App.ui.closeModal('modal-settings')">Fermer</button>
@@ -302,11 +293,11 @@
   <script>
     const CONFIG = {
       types: {
-        programmes: [ { id:1, nom: "BUREAUX", bg: "#3B82F6", txt:"#FFFFFF" }, { id:2, nom: "LOGEMENTS", bg: "#10B981", txt:"#FFFFFF" }, { id:3, nom: "COMMERCES", bg: "#F59E0B", txt:"#FFFFFF" } ],
+        programmes: [ { id:1, nom: "BUREAUX", couleur: "#3B82F6" }, { id:2, nom: "LOGEMENTS", couleur: "#10B981" }, { id:3, nom: "COMMERCES", couleur: "#F59E0B" } ],
         niveaux: [ { id:1, nom:"RDC", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"R+1", bg:"#F1F5F9", txt:"#334155"} ],
         fonctions: [ { id:1, nom:"Circulation", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"Travail", bg:"#F1F5F9", txt:"#334155"} ],
         statuts: [ { id:1, nom: "À CONFIRMER", bg: "#FFFBEB", txt: "#B45309" }, { id:2, nom: "VALIDÉ", bg: "#ECFDF5", txt: "#047857" }, { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" } ],
-        priorites: [ { id:1, nom:"HAUTE", bg:"#EF4444", txt:"#FFFFFF"}, { id:2, nom:"MOYENNE", bg:"#F59E0B", txt:"#FFFFFF"}, { id:3, nom:"BASSE", bg:"#10B981", txt:"#FFFFFF"} ]
+        priorites: [ { id:1, nom:"HAUTE", couleur:"#EF4444"}, { id:2, nom:"MOYENNE", couleur:"#F59E0B"}, { id:3, nom:"BASSE", couleur:"#10B981"} ]
       }
     };
 
@@ -352,16 +343,6 @@
       },
 
       methods: {
-        getExportName: () => {
-           const d = new Date();
-           const yy = d.getFullYear().toString().slice(-2);
-           const mm = String(d.getMonth()+1).padStart(2,'0');
-           const dd = String(d.getDate()).padStart(2,'0');
-           const hh = String(d.getHours()).padStart(2,'0');
-           const min = String(d.getMinutes()).padStart(2,'0');
-           const cleanTitle = App.state.title.replace(/[^a-z0-9]/gi, '_').toUpperCase();
-           return `SBA-${cleanTitle}-PROG-${yy}${mm}${dd}-${hh}${min}`;
-        },
         saveLocal: () => {
           localStorage.setItem('v7-data', JSON.stringify(App.state.data));
           localStorage.setItem('v7-title', App.state.title);
@@ -374,12 +355,12 @@
                 title: App.state.title,
                 data: App.state.data,
                 types: App.state.types,
-                version: "7.7"
+                version: "7.6"
             };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${App.methods.getExportName()}.json`;
+            link.download = `projet-${new Date().toISOString().slice(0,10)}.json`;
             link.click();
             App.ui.toast("Fichier JSON généré");
         },
@@ -525,17 +506,15 @@
         addType: () => {
             const cat = document.getElementById('set-type-select').value;
             const nom = document.getElementById('set-new-name').value;
-            const bg = document.getElementById('set-new-bg').value;
-            const txt = document.getElementById('set-new-txt').value;
+            const col = document.getElementById('set-new-color').value;
             if(!nom) return;
-            // Fix V7.7: Dual color support
-            const newItem = { id: Date.now(), nom, bg, txt };
+            // Fix: Create correct color keys for all types to ensure badges work
+            const newItem = { id: Date.now(), nom, couleur: col, bg: col+"20", txt: col };
             App.state.types[cat].push(newItem);
             App.methods.saveLocal();
             App.render.settingsList();
             App.render.modalSelects();
             App.render.filtersUI();
-            App.render.all();
         },
         deleteType: (cat, id) => {
              App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id);
@@ -543,7 +522,6 @@
              App.render.settingsList();
              App.render.modalSelects();
              App.render.filtersUI();
-             App.render.all();
         },
         moveType: (cat, id, dir) => {
              const arr = App.state.types[cat];
@@ -555,7 +533,6 @@
              App.methods.saveLocal();
              App.render.settingsList();
              App.render.modalSelects();
-             App.render.all(); // Re-render all to update charts order
         },
         editType: (cat, id) => {
              const val = prompt("Nouveau nom :");
@@ -579,9 +556,7 @@
              const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, `"${d.local}"`, d.surfUnite, d.nombre, (d.sueInt+d.sueExt), d.statut, d.priorite, `"${d.remarque||''}"`]);
              const csvContent = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
              const blob = new Blob(['\ufeff'+csvContent], {type: 'text/csv;charset=utf-8'});
-             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); 
-             link.download = `${App.methods.getExportName()}.csv`; 
-             link.click();
+             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'projet.csv'; link.click();
         },
         exportPdf: () => {
             const { jsPDF } = window.jspdf;
@@ -589,7 +564,7 @@
             doc.text(App.state.title, 14, 15);
             const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]);
             doc.autoTable({ head:[['Prog','Niv','Fct','Local','SU','Nb','Tot','Statut']], body: rows, startY: 20 });
-            doc.save(`${App.methods.getExportName()}.pdf`);
+            doc.save('projet.pdf');
         },
         import: () => {
              const input = document.createElement('input'); input.type='file'; input.accept='.json';
@@ -634,9 +609,14 @@
              if(!str) return '';
              return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
          },
+         // NEW: Get style for level/function
          getStyle: (cat, name) => {
              const t = App.state.types[cat].find(i => i.nom === name);
-             if(t) return `background:${t.bg}; color:${t.txt}`;
+             if(t && (t.bg || t.couleur)) {
+                 const bg = t.bg || (t.couleur + '20');
+                 const txt = t.txt || t.couleur;
+                 return `background:${bg}; color:${txt}`;
+             }
              return `background:var(--bg-input); color:var(--text-muted)`;
          }
       },
@@ -698,8 +678,8 @@
             App.state.types.programmes.forEach(p => {
                 const active = App.state.filters.programme.includes(p.nom);
                 const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
-                btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
-                if(active) btn.style.background = p.bg;
+                btn.style.borderColor = p.couleur; btn.style.color = active ? 'white' : p.couleur;
+                if(active) btn.style.background = p.couleur;
                 btn.innerText = p.nom;
                 btn.onclick = () => {
                     const idx = App.state.filters.programme.indexOf(p.nom);
@@ -731,31 +711,16 @@
                 data.forEach(i => { 
                     if(i.sueInt>0) groups[i[groupKey]] = (groups[i[groupKey]]||0) + i.sueInt; 
                 });
-                
                 let conic = [], deg=0, listHTML='';
                 const total = totInt || 1; 
-
-                // Fix 7.7: Use palette order
-                palette.forEach(type => {
-                     const v = groups[type.nom] || 0;
-                     if(v > 0) {
-                         const col = type.bg || '#888';
-                         const pct = (v/total)*100;
-                         conic.push(`${col} ${deg}% ${deg+pct}%`);
-                         deg += pct;
-                         listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
-                     }
+                Object.entries(groups).forEach(([k, v]) => {
+                    const conf = palette.find(p=>p.nom===k) || {couleur:'#888'};
+                    const col = conf.couleur || conf.bg || '#888';
+                    const pct = (v/total)*100;
+                    conic.push(`${col} ${deg}% ${deg+pct}%`);
+                    deg += pct;
+                    listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${k}</div><div>${Math.round(v)}m²</div></div>`;
                 });
-                // Handle unknowns (optional, but good practice)
-                const knowns = palette.map(p=>p.nom);
-                let unknownSum = 0;
-                Object.keys(groups).forEach(k => { if(!knowns.includes(k)) unknownSum += groups[k]; });
-                if(unknownSum > 0) {
-                     const pct = (unknownSum/total)*100;
-                     conic.push(`#888 ${deg}% ${deg+pct}%`);
-                     listHTML += `<div class="legend-item"><div><span class="dot" style="background:#888"></span>Autre</div><div>${Math.round(unknownSum)}m²</div></div>`;
-                }
-
                 const grad = conic.length ? `conic-gradient(${conic.join(', ')})` : 'var(--bg-input)';
                 return `<div class="card"><div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px">${title}</div><div class="chart-row"><div class="donut" style="background:${grad}"></div><div class="legend">${listHTML||'Aucune donnée'}</div></div></div>`;
             };
@@ -770,7 +735,7 @@
                   <div style="font-size:24px;font-weight:800;color:var(--success)">${totExt.toLocaleString('fr-FR')} <span style="font-size:14px">m²</span></div>
                </div>
                ${mkChart('PAR PROGRAMME', 'programme', App.state.types.programmes)}
-               ${mkChart('PAR NIVEAU', 'niveau', App.state.types.niveaux)}
+               ${mkChart('PAR NIVEAU', 'niveau', App.state.types.niveaux.map(n=>({nom:n.nom, couleur:n.bgColor==='#F1F5F9'?'#94A3B8':n.bgColor})))}
             `;
             document.getElementById('stats-area').innerHTML = html;
         },
@@ -802,6 +767,7 @@
                     const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
                     const st = App.state.types.statuts.find(s=>s.nom===i.statut);
                     
+                    // Styles dynamiques pour Niveau et Fonction
                     const nivStyle = App.helpers.getStyle('niveaux', i.niveau);
                     const fnStyle = App.helpers.getStyle('fonctions', i.fonction);
 
@@ -809,7 +775,7 @@
                     if(sel) tr.style.background = "rgba(59, 130, 246, 0.1)";
                     tr.innerHTML = `
                       <td class="text-center" onclick="event.stopPropagation()"><input type="checkbox" ${sel?'checked':''} onchange="App.methods.toggleSelect(${i.id})"></td>
-                      <td style="color:${prog?prog.bg:'inherit'};font-weight:700">${i.programme}</td>
+                      <td style="color:${prog?prog.couleur:'inherit'};font-weight:700">${i.programme}</td>
                       <td><span class="badge" style="${nivStyle}">${i.niveau}</span></td>
                       <td><span class="badge" style="${fnStyle}">${i.fonction||'-'}</span></td>
                       <td><b>${i.local}</b></td>
@@ -833,7 +799,7 @@
                 const ag = document.getElementById('ag');
                 actions.forEach(i => {
                     const prio = App.state.types.priorites.find(p=>p.nom===i.priorite);
-                    const col = prio ? prio.bg : 'var(--border-color)';
+                    const col = prio ? prio.couleur : 'var(--border-color)';
                     const card = document.createElement('div');
                     card.className = 'action-card';
                     card.style.borderLeftColor = col;
@@ -876,7 +842,7 @@
              list.forEach(item => {
                  const row = document.createElement('div');
                  row.className = "settings-list-item";
-                 const colorBox = (item.bg||item.couleur) ? `<span class="badge-preview" style="background:${item.bg||item.couleur};color:${item.txt||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
+                 const colorBox = (item.couleur||item.bg) ? `<span class="badge-preview" style="background:${item.bg||item.couleur};color:${item.txt||item.couleur||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
                  
                  row.innerHTML = `
                    <div>${colorBox}</div>
@@ -956,7 +922,7 @@
                 document.getElementById('btn-clear-all').disabled = App.state.locked;
                 document.getElementById('btn-import').disabled = App.state.locked;
                 document.getElementById('btn-add-item').disabled = App.state.locked;
-                document.getElementById('btn-undo').disabled = App.state.locked;
+                document.getElementById('btn-undo').disabled = App.state.locked; // Undo also blocked
 
                 App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
                 if(App.state.locked) App.methods.cancelBatch();
