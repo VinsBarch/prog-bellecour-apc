@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.3 (Corrective)</title>
+  <title>PROGRAMMATION V7.4 (Fixed)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.3 --- */
+    /* --- DESIGN SYSTEM V7.4 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -140,7 +140,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.3</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.4</div>
       </div>
     </div>
     <div class="flex">
@@ -175,7 +175,9 @@
   <div class="filters-box">
     <div class="search-row">
        <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
-       <div id="dropdown-niveau-container"></div>   <div id="dropdown-fonction-container"></div> </div>
+       <div id="dropdown-niveau-container"></div>
+       <div id="dropdown-fonction-container"></div>
+    </div>
     
     <div class="chip-container" id="prog-chips">
       </div>
@@ -201,13 +203,20 @@
   <div class="batch-bar" id="batch-bar">
       <span style="font-weight:800; color:var(--primary)" id="batch-count">0 sélectionné(s)</span>
       <div style="width:1px; height:20px; background:var(--border-color);"></div>
-      <select id="batch-field" class="input" style="height:32px; width:120px;">
+      
+      <select id="batch-field" class="input" style="height:32px; width:120px;" onchange="App.ui.updateBatchInput()">
           <option value="statut">Statut</option>
           <option value="niveau">Niveau</option>
           <option value="programme">Programme</option>
           <option value="priorite">Priorité</option>
+          <option value="fonction">Fonction</option>
+          <option value="local">Renommer (Local)</option>
       </select>
-      <input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">
+      
+      <div id="batch-input-container">
+          <input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">
+      </div>
+
       <button class="btn btn-primary" style="height:32px" onclick="App.methods.applyBatch()">Appliquer</button>
       <button class="btn btn-secondary" style="height:32px" onclick="App.methods.cancelBatch()">Annuler</button>
   </div>
@@ -305,19 +314,17 @@
         if(savedTypes) App.state.types = JSON.parse(savedTypes);
 
         document.getElementById('app-title').innerText = App.state.title;
-        if(localStorage.getItem('v7-theme') === 'light') document.body.classList.add('light');
+        if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
 
         // Close dropdowns on click outside
         window.addEventListener('click', (e) => {
             if(!e.target.closest('.ms-container')) {
                 App.state.openDropdown = null;
-                App.render.filtersUI(); // Only rerender the dropdowns container
+                App.render.filtersUI();
             }
         });
 
-        // Initialize Form Options (only once/when types change)
         App.render.modalSelects();
-
         App.render.all();
         App.events.bindAll();
       },
@@ -362,8 +369,8 @@
              const idx = arr.indexOf(val);
              if(idx >= 0) arr.splice(idx, 1); else arr.push(val);
              App.render.filtersUI();
-             App.render.content(); // Refresh table
-             App.render.charts();  // Refresh charts
+             App.render.content();
+             App.render.charts();
         },
 
         // --- SELECTION & BATCH ---
@@ -387,7 +394,9 @@
         },
         applyBatch: () => {
             const field = document.getElementById('batch-field').value;
-            const val = document.getElementById('batch-value').value;
+            const valEl = document.getElementById('batch-value-select') || document.getElementById('batch-value');
+            const val = valEl.value;
+            
             if(!val && !confirm('Valeur vide. Continuer ?')) return;
             App.methods.pushHistory();
             let count = 0;
@@ -477,12 +486,13 @@
             const nom = document.getElementById('set-new-name').value;
             const col = document.getElementById('set-new-color').value;
             if(!nom) return;
-            const newItem = { id: Date.now(), nom, couleur: col, bg:col+"20", txt:col };
+            // Correction V7.4 : Uniformisation des clés de couleurs (bg/bgColor) pour éviter les bugs
+            const newItem = { id: Date.now(), nom, couleur: col, bg: col+"20", bgColor: col+"20", txt: col, textColor: col };
             App.state.types[cat].push(newItem);
             App.methods.save();
             App.render.settingsList();
-            App.render.modalSelects(); // Update modal dropdowns
-            App.render.filtersUI(); // Update filter dropdowns
+            App.render.modalSelects();
+            App.render.filtersUI();
         },
         deleteType: (cat, id) => {
              App.state.types[cat] = App.state.types[cat].filter(t => t.id !== id);
@@ -507,13 +517,10 @@
              if(val) {
                  const t = App.state.types[cat].find(i=>i.id===id);
                  if(t) {
-                     // Update existing data references first
+                     // Update existing data
                      const oldName = t.nom;
-                     App.state.data.forEach(d => {
-                        // Very basic mapping check based on category name matching data key
-                        const key = cat.slice(0,-1); // programmes -> programme
-                        if(d[key] === oldName) d[key] = val;
-                     });
+                     const key = cat.endsWith('s') ? cat.slice(0,-1) : cat; // naive plural removal
+                     App.state.data.forEach(d => { if(d[key] === oldName) d[key] = val; });
                      t.nom = val;
                      App.methods.save();
                      App.render.settingsList();
@@ -608,7 +615,7 @@
         },
         
         filtersUI: () => {
-            // Generate Dropdowns (inject into separate containers to keep Search Input static)
+            // Dropdowns (dans des conteneurs séparés pour ne pas redessiner l'input search)
             const mkDropdown = (key, label, list) => {
                 const selected = App.state.filters[key];
                 const isOpen = App.state.openDropdown === key;
@@ -748,6 +755,11 @@
 
             } else {
                 const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ');
+                
+                // FORCE SORT BY PRIORITY FOR ACTIONS VIEW
+                const prioMap = { 'HAUTE':1, 'MOYENNE':2, 'BASSE':3 };
+                actions.sort((a,b) => (prioMap[a.priorite]||9) - (prioMap[b.priorite]||9));
+
                 if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise.</div>'; return; }
                 
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
@@ -784,6 +796,8 @@
              if(count > 0 && !App.state.locked) {
                  bar.classList.add('visible');
                  document.getElementById('batch-count').innerText = `${count} sélectionné(s)`;
+                 // Init input state
+                 App.ui.updateBatchInput();
              } else {
                  bar.classList.remove('visible');
              }
@@ -820,6 +834,22 @@
             document.getElementById('toast-container').appendChild(t);
             setTimeout(()=>t.remove(), 3000);
         },
+        // NEW : Intelligent Batch Input
+        updateBatchInput: () => {
+            const field = document.getElementById('batch-field').value;
+            const container = document.getElementById('batch-input-container');
+            
+            // Map field to types
+            const typeMap = { 'programme':'programmes', 'niveau':'niveaux', 'fonction':'fonctions', 'statut':'statuts', 'priorite':'priorites' };
+            
+            if(typeMap[field]) {
+                const list = App.state.types[typeMap[field]];
+                let opts = list.map(i => `<option value="${i.nom}">${i.nom}</option>`).join('');
+                container.innerHTML = `<select id="batch-value-select" class="input" style="height:32px; width:150px;">${opts}</select>`;
+            } else {
+                container.innerHTML = `<input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">`;
+            }
+        },
         openModalItem: (item=null) => {
             const form = document.getElementById('form-item');
             form.reset();
@@ -855,17 +885,20 @@
 
       events: {
         bindAll: () => {
-            document.getElementById('btn-theme').onclick = () => { document.body.classList.toggle('light'); localStorage.setItem('v7-theme', document.body.classList.contains('light')?'light':'dark'); };
+            // FIX THEME (cible HTML au lieu de BODY pour correspondre au CSS :root.light)
+            document.getElementById('btn-theme').onclick = () => { 
+                document.documentElement.classList.toggle('light'); 
+                localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); 
+            };
+            
             document.getElementById('btn-lock').onclick = () => { 
                 App.state.locked = !App.state.locked; 
                 document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
                 document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
                 App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
-                // Close batch if open
                 if(App.state.locked) App.methods.cancelBatch();
             };
             
-            // Search Input Binding (Static, so bind once)
             document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
             
             document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
