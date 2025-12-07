@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
+<html lang="fr">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CLIENT - PROJET">
-  <title>PROGRAMMATION V6.3</title>
+  <title>PROGRAMMATION V6.3.1</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -153,6 +154,12 @@
     .view-chip:hover { background: var(--accent); color: white; }
     .view-chip-delete { font-size: 14px; opacity: 0.6; cursor: pointer; width: 18px; height: 18px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
     .view-chip-delete:hover { background: rgba(0,0,0,0.2); opacity: 1; }
+
+    .tabs { display: inline-flex; gap: 6px; margin-bottom: 24px; padding: 4px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 14px; }
+    .tab { padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow-sm); }
+    .tab.inactive { background: transparent; color: var(--text-muted); }
+    .tab.inactive:hover { color: var(--text-main); }
 
     .ms-container { flex: 1; position: relative; }
     .ms-btn { width: 100%; height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -577,6 +584,12 @@
         return `<div class="batch-bar visible"><div class="batch-count">${selectedIds.size} sélectionné(s)</div><div class="batch-sep"></div><select class="batch-select" onchange="setBatchField(this.value)">${fields.map(f => `<option value="${f.v}" ${batchField === f.v ? 'selected' : ''}>${f.l}</option>`).join('')}</select><div class="batch-sep"></div>${inputHtml}<button class="btn btn-primary" style="height:32px; padding:0 12px;" onclick="applyBatch()">OK</button><button class="btn btn-secondary" style="height:32px; padding:0 12px;" onclick="cancelBatch()">Annuler</button></div>`;
     }
 
+    // FONCTION CORRIGEE POUR BASCULER LES VUES
+    window.setView = (v) => { 
+        currentView = v; 
+        render(); 
+    };
+
     function render() {
       const activeEl = document.activeElement;
       const focusedId = activeEl ? activeEl.id : null;
@@ -621,7 +634,7 @@
       const sumSueExt = filtered.reduce((a, b) => a + (b.sueExt || 0), 0);
 
       const renderActionsView = () => {
-          if (actions.length === 0) return '<div class="empty-state">Aucune action requise</div>';
+          if (actions.length === 0) return '<div class="empty-state">Aucune action requise pour la sélection actuelle.</div>';
           
           const groups = {};
           types.priorites.forEach(p => groups[p.nom] = []);
