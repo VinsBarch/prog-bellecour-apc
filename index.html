@@ -5,13 +5,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CLIENT - PROJET">
-  <title>PROGRAMMATION V6.3</title>
+  <title>PROGRAMMATION V6.2</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V6.3 --- */
+    /* --- DESIGN SYSTEM V6.2 --- */
     :root {
       /* Palette Dark (Défaut) */
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
@@ -20,7 +20,6 @@
       
       --primary: #3B82F6; --primary-hover: #2563EB;
       --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
-      --accent: #8B5CF6; --accent-hover: #7C3AED; /* Pour les Vues */
       
       --radius: 16px;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -142,17 +141,17 @@
     @media (max-width: 600px) { .search-row { grid-template-columns: 1fr; gap: 16px; } }
     .search-box { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 15px; transition: border-color 0.2s; height: 48px; }
     .search-box:focus { outline: none; border-color: var(--primary); }
-    .filter-actions-row { display: flex; align-items: flex-start; gap: 10px; padding-top: 4px; flex-wrap: wrap; }
-    .chips-container { display: flex; flex-wrap: wrap; gap: 10px; flex: 1; }
+    .filter-actions-row { display: flex; align-items: center; gap: 10px; padding-top: 4px; flex-wrap: wrap; }
+    .chips-container { display: flex; flex-wrap: wrap; gap: 10px; }
     .filter-chip { padding: 8px 16px; border-radius: 24px; font-size: 13px; font-weight: 600; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; background: var(--bg-card); color: var(--text-muted); border-color: var(--border-color); }
     .filter-buttons-group { margin-left: auto; display: flex; gap: 10px; }
     @media (max-width: 768px) { .filter-buttons-group { margin-left: 0; width: 100%; } .filter-buttons-group .btn { flex: 1; } }
 
-    /* SAVED VIEWS CHIPS */
-    .view-chip { padding: 8px 12px 8px 16px; border-radius: 24px; font-size: 13px; font-weight: 600; border: 1px solid var(--accent); cursor: pointer; transition: all 0.2s; background: rgba(139, 92, 246, 0.1); color: var(--accent); display: inline-flex; align-items: center; gap: 8px; }
-    .view-chip:hover { background: var(--accent); color: white; }
-    .view-chip-delete { font-size: 14px; opacity: 0.6; cursor: pointer; width: 18px; height: 18px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
-    .view-chip-delete:hover { background: rgba(0,0,0,0.2); opacity: 1; }
+    .tabs { display: inline-flex; gap: 4px; margin-bottom: 24px; padding: 5px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 14px; }
+    .tab { padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow-sm); }
+    .tab.inactive { background: transparent; color: var(--text-muted); }
+    .tab.inactive:hover { color: var(--text-main); }
 
     .ms-container { flex: 1; position: relative; }
     .ms-btn { width: 100%; height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -167,7 +166,7 @@
     /* TABLE CONTAINER - Sticky & Highlight */
     .table-card { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow-x: auto; overflow-y: auto; max-height: 70vh; -webkit-overflow-scrolling: touch; }
     .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; border: none; box-shadow: none; border-radius: 0; background: transparent; }
-    .data-table thead { background: var(--bg-input); position: sticky; top: 0; z-index: 10; } 
+    .data-table thead { background: var(--bg-input); position: sticky; top: 0; z-index: 10; } /* OPTION A: STICKY */
     .data-table th { padding: 14px 10px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border-color); cursor: pointer; user-select: none; white-space: nowrap; background: var(--bg-input); }
     .data-table th:first-child, .data-table td:first-child { padding-left: 28px !important; }
     .data-table th:last-child, .data-table td:last-child { padding-right: 28px !important; }
@@ -186,7 +185,7 @@
     .checkbox-col { width: 40px; text-align: center !important; padding-right: 0 !important; }
     .row-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; border-radius: 4px; }
     
-    /* ACTIONS VIEW STYLES */
+    /* ACTIONS VIEW STYLES (KANBAN) */
     .action-group { margin-bottom: 40px; }
     .action-group-title { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; padding-left: 4px; }
     .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -200,6 +199,7 @@
     .action-local { font-size: 13px; font-weight: 700; color: var(--text-main); }
     .action-prog { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
     
+    /* OPTION B: QUICK EDIT BUTTONS */
     .action-tools { display: flex; gap: 8px; margin-left: auto; }
     .btn-quick { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; cursor: pointer; }
     .btn-quick:hover { background: var(--bg-hover); color: var(--text-main); transform: scale(1.05); }
@@ -307,7 +307,6 @@
     let pageTitle = safeGetItem('coffim-page-title-v6') || "PROJET (Importer données)";
     let data = JSON.parse(safeGetItem('coffim-alve-data-v6')) || JSON.parse(JSON.stringify(initialData));
     let types = JSON.parse(safeGetItem('coffim-alve-types-v6')) || JSON.parse(JSON.stringify(initialTypes));
-    let savedViews = JSON.parse(safeGetItem('coffim-alve-views')) || []; // OPTION: SAVED VIEWS
     
     // --- HISTORY ---
     let historyStack = [];
@@ -340,7 +339,6 @@
     let settingsModal = false;
     let clearModal = false;
     let confirmModal = null; 
-    let saveViewModal = false; // New Modal for Saving Views
     let editingType = null;
     let editingTypeItem = null;
     let sortCol = null;
@@ -367,7 +365,6 @@
 
     const saveData = () => { try { localStorage.setItem('coffim-alve-data-v6', JSON.stringify(data)); } catch(e) {} };
     const saveTypes = () => { try { localStorage.setItem('coffim-alve-types-v6', JSON.stringify(types)); } catch(e) {} };
-    const saveViews = () => { try { localStorage.setItem('coffim-alve-views', JSON.stringify(savedViews)); } catch(e) {} };
     
     const showToast = (msg, type = 'success') => {
         const id = Date.now();
@@ -389,10 +386,11 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     };
     
+    // --- OPTION A: HIGHLIGHT HELPER ---
     const highlight = (text, term) => {
         const s = safe(text);
         if(!term) return s;
-        const escapedTerm = safe(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const escapedTerm = safe(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex chars
         const regex = new RegExp(`(${escapedTerm})`, 'gi');
         return s.replace(regex, '<span class="highlight">$1</span>');
     };
@@ -515,6 +513,7 @@
     
     window.cancelBatch = () => { selectedIds.clear(); batchValue = ''; render(); };
 
+    // --- OPTION B: QUICK EDIT STATUS ---
     window.quickStatus = (id, newStatus, event) => {
         if(event) event.stopPropagation();
         pushHistory();
@@ -524,35 +523,6 @@
             saveData();
             render();
             showToast(`Statut passé à ${newStatus}`);
-        }
-    };
-    
-    // --- SAVED VIEWS FUNCTIONS ---
-    window.openSaveView = () => { saveViewModal = true; render(); };
-    window.closeSaveView = () => { saveViewModal = false; render(); };
-    window.doSaveView = () => {
-        const name = document.getElementById('view-name').value.trim();
-        if(!name) return;
-        savedViews.push({ id: Date.now(), name: name, filters: JSON.parse(JSON.stringify(filters)) });
-        saveViews();
-        saveViewModal = false;
-        render();
-        showToast('Vue enregistrée');
-    };
-    window.loadView = (id) => {
-        const view = savedViews.find(v => v.id === id);
-        if(view) {
-            filters = JSON.parse(JSON.stringify(view.filters));
-            render();
-            showToast(`Vue "${view.name}" chargée`);
-        }
-    };
-    window.deleteView = (id, event) => {
-        if(event) event.stopPropagation();
-        if(confirm('Supprimer cette vue ?')) {
-            savedViews = savedViews.filter(v => v.id !== id);
-            saveViews();
-            render();
         }
     };
 
@@ -707,9 +677,6 @@
                       return `<button class="filter-chip" style="${style}" onclick="toggleProgramme('${safe(p.nom)}')">${safe(p.nom)}</button>`;
                   }).join('')}
                   ${(filters.programme.length || filters.niveau.length || filters.fonction.length || filters.search) ? `<button class="btn btn-clear" onclick="clearFilters()">✕</button>` : ''}
-                  <div style="width:1px;height:24px;background:var(--border-color);margin:0 8px;"></div>
-                  <button class="filter-chip" style="border-color:var(--accent); color:var(--accent);" onclick="openSaveView()">💾 Sauver filtre</button>
-                  ${savedViews.map(v => `<div class="view-chip" onclick="loadView(${v.id})"><span>${safe(v.name)}</span><span class="view-chip-delete" onclick="deleteView(${v.id}, event)">×</span></div>`).join('')}
                 </div>
                 ${!isLocked ? `<div class="filter-buttons-group"><button class="btn btn-add" style="height:36px; font-size:13px;" onclick="openModal('add')">➕ Ajouter local</button><button class="btn btn-secondary" style="height:36px; font-size:13px;" onclick="openSettings()">🎨 Gérer Types</button></div>` : ''}
             </div>
@@ -808,16 +775,11 @@
         ${settingsModal ? renderSettingsModal() : ''}
         ${clearModal ? renderClearModal() : ''}
         ${confirmModal ? renderConfirmModal() : ''}
-        ${saveViewModal ? renderSaveViewModal() : ''}
       `;
       if (focusedId) { const el = document.getElementById(focusedId); if (el) { el.focus(); if (selectionStart !== null) el.setSelectionRange(selectionStart, selectionEnd); } }
     }
 
     // --- RENDER MODALS ---
-
-    function renderSaveViewModal() {
-        return `<div class="modal-overlay" onclick="closeSaveView()"><div class="modal" style="max-width: 400px;" onclick="event.stopPropagation()"><div class="modal-header"><span class="modal-title">Enregistrer la vue</span><button class="modal-close" onclick="closeSaveView()">×</button></div><div class="modal-body"><div class="form-group"><label class="form-label">Nom de la vue</label><input type="text" class="form-input" id="view-name" placeholder="Ex: Bureaux R+1" onkeydown="if(event.key==='Enter') doSaveView()"></div><div class="form-actions"><button class="btn btn-secondary" onclick="closeSaveView()">Annuler</button><button class="btn btn-primary" onclick="doSaveView()">Enregistrer</button></div></div></div></div>`;
-    }
 
     function renderConfirmModal() {
         return `<div class="modal-overlay" onclick="closeConfirm()"><div class="modal" style="max-width: 400px;" onclick="event.stopPropagation()"><div class="modal-header"><span class="modal-title">${safe(confirmModal.title)}</span><button class="modal-close" onclick="closeConfirm()">×</button></div><div class="modal-body"><p style="margin-bottom:24px; font-size:15px; color:var(--text-main);">${safe(confirmModal.message)}</p><div class="form-actions"><button class="btn btn-secondary" onclick="closeConfirm()">Annuler</button><button class="btn btn-primary" onclick="doConfirm()">Confirmer</button></div></div></div></div>`;
@@ -914,6 +876,8 @@
     const getFileName = (extension) => { const now = new Date(); const year = now.getFullYear().toString().slice(-2); const month = (now.getMonth() + 1).toString().padStart(2, '0'); const day = now.getDate().toString().padStart(2, '0'); const hour = now.getHours().toString().padStart(2, '0'); const minute = now.getMinutes().toString().padStart(2, '0'); const cleanTitle = (pageTitle || 'PROJET').trim().replace(/[^a-z0-9àâçéèêëîïôûùüÿñæœ]/gi, '-').toUpperCase(); return `SBA-${cleanTitle}-${year}${month}${day}-${hour}${minute}.${extension}`; };
     window.downloadJson = () => { const payload = { author: "BELLECOUR architectes", data, types, pageTitle }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('json'); a.click(); showToast("Sauvegarde téléchargée"); };
     window.exportCsv = () => { const headers = ['ID', 'Programme', 'Niveau', 'Fonction', 'Local', 'Surface Unitaire', 'Extérieur', 'Nombre', 'Surface Utile Int.', 'Surface Utile Ext.', 'Détails', 'Statut', 'Priorité', 'Action']; const csvContent = [ headers.join(';'), ...data.map(d => [ d.id, d.programme, d.niveau, d.fonction, '"' + String(d.local || '').replace(/"/g, '""') + '"', d.surfUnite, d.isExt ? '1' : '0', d.nombre, d.sueInt, d.sueExt, '"' + String(d.details || '').replace(/"/g, '""') + '"', d.statut, d.priorite, '"' + String(d.action || '').replace(/"/g, '""') + '"' ].join(';')) ].join('\n'); const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('csv'); a.click(); };
+    
+    // --- OPTION C: ENHANCED PDF EXPORT ---
     window.exportPdf = () => { 
         const { jsPDF } = window.jspdf; 
         const doc = new jsPDF('l', 'mm', 'a4'); 
@@ -968,7 +932,7 @@
             showToast("Importation réussie");
         });
     } else { showToast('Format non reconnu', 'error'); } } catch(e) { console.error(e); showToast('Erreur Import : ' + e.message, 'error'); } }; reader.readAsText(file); }; input.click(); };
-    window.saveHtml = () => { const html = document.documentElement.outerHTML; const typesJson = JSON.stringify(types, null, 2); const dataJson = JSON.stringify(data, null, 2); const titleJson = JSON.stringify(pageTitle); const viewsJson = JSON.stringify(savedViews, null, 2); const r = (src, start, end, newContent) => { const s = src.indexOf(start); const e = src.indexOf(end); return (s > -1 && e > -1) ? src.slice(0, s) + newContent + src.slice(e + end.length) : src; }; let out = html; out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`); out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`); out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title-v6\') || "PROJET (Importer données)";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types-v6\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data-v6')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types-v6')) || JSON.parse(JSON.stringify(initialTypes));\n    let savedViews = JSON.parse(safeGetItem('coffim-alve-views')) || ${viewsJson};`); const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click(); };
+    window.saveHtml = () => { const html = document.documentElement.outerHTML; const typesJson = JSON.stringify(types, null, 2); const dataJson = JSON.stringify(data, null, 2); const titleJson = JSON.stringify(pageTitle); const r = (src, start, end, newContent) => { const s = src.indexOf(start); const e = src.indexOf(end); return (s > -1 && e > -1) ? src.slice(0, s) + newContent + src.slice(e + end.length) : src; }; let out = html; out = r(out, '// __TYPES_START__', '// __TYPES_END__', `// __TYPES_START__\n    const initialTypes = ${typesJson};\n// __TYPES_END__`); out = r(out, '// __DATA_START__', '// __DATA_END__', `// __DATA_START__\n    const initialData = ${dataJson};\n// __DATA_END__`); out = r(out, '    let pageTitle = safeGetItem(\'coffim-page-title-v6\') || "PROJET (Importer données)";', '    let types = JSON.parse(safeGetItem(\'coffim-alve-types-v6\')) || JSON.parse(JSON.stringify(initialTypes));', `    let pageTitle = ${titleJson};\n    let data = JSON.parse(safeGetItem('coffim-alve-data-v6')) || JSON.parse(JSON.stringify(initialData));\n    let types = JSON.parse(safeGetItem('coffim-alve-types-v6')) || JSON.parse(JSON.stringify(initialTypes));`); const blob = new Blob(['<!DOCTYPE html>\n' + out], { type: 'text/html;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = getFileName('html'); a.click(); };
     window.resetData = () => { 
         showConfirm("Réinitialiser", "Réinitialiser toutes les données ?", () => {
             pushHistory();
