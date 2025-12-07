@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.2 (Complete)</title>
+  <title>PROGRAMMATION V7.3 (Corrective)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.2 --- */
+    /* --- DESIGN SYSTEM V7.3 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -35,7 +35,7 @@
     .flex { display: flex; align-items: center; gap: 10px; }
     .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
     .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { background: var(--bg-hover); }
@@ -43,13 +43,14 @@
     .btn-accent:hover { background: var(--accent); color: white; }
     .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border-color: transparent; }
     .btn-icon { width: 40px; padding: 0; font-size: 18px; }
+    .btn-lock { width: 40px; padding: 0; font-size: 18px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
 
     /* LAYOUT */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
     .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
     .header-title:hover { border-color: var(--border-color); }
     
-    /* TOOLBAR GROUPÉE */
     .toolbar { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
     .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
     .spacer { flex: 1; }
@@ -72,15 +73,18 @@
     .tab-btn { background: transparent; border: none; padding: 10px 20px; color: var(--text-muted); font-weight: 700; cursor: pointer; border-radius: 8px; }
     .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow); }
 
-    /* FILTERS & MULTI-SELECT */
+    /* FILTERS */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
     .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     
-    .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); }
-    
+    /* INPUTS */
+    .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
+    .input:focus { outline: none; border-color: var(--primary); }
+    .input:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-hover); }
+
     /* Multi-select Styles */
     .ms-container { position: relative; width: 100%; }
-    .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
     .ms-dropdown.show { display: block; }
     .ms-option { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.1s; }
@@ -120,6 +124,11 @@
     .modal { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(20px); transition: transform 0.2s; max-height: 90vh; overflow-y: auto;}
     .modal-overlay.open .modal { transform: translateY(0); }
 
+    /* SETTINGS STYLES */
+    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border-color); background: var(--bg-card); }
+    .btn-action-sm { height: 28px; width:28px; padding: 0; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
+    .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
+
     .text-right { text-align: right; }
     .text-center { text-align: center; }
   </style>
@@ -131,7 +140,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.2</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.3</div>
       </div>
     </div>
     <div class="flex">
@@ -156,7 +165,7 @@
 
     <div class="tool-group" style="border-color: rgba(239,68,68,0.3);">
         <button class="btn btn-danger" id="btn-clear-all">Effacer</button>
-        <button class="btn btn-secondary" id="btn-lock">🔓</button>
+        <button class="btn btn-lock" id="btn-lock" title="Verrouiller / Déverrouiller">🔓</button>
     </div>
   </div>
 
@@ -164,9 +173,10 @@
     </div>
 
   <div class="filters-box">
-    <div class="search-row" id="filters-container">
-      <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
-      </div>
+    <div class="search-row">
+       <input type="text" id="inp-search" class="input" placeholder="Rechercher un local...">
+       <div id="dropdown-niveau-container"></div>   <div id="dropdown-fonction-container"></div> </div>
+    
     <div class="chip-container" id="prog-chips">
       </div>
     <div class="flex" style="margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border-color);">
@@ -221,11 +231,11 @@
           <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">STATUT</label><select id="f-statut" class="input"></select></div>
           <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">PRIORITÉ</label><select id="f-priorite" class="input"></select></div>
           <div style="margin-bottom:20px"><label class="text-muted" style="font-size:11px">REMARQUES / ACTIONS</label><textarea id="f-remarque" class="input" style="height:60px; padding-top:8px"></textarea></div>
-          <div class="flex" style="justify-content:end">
+          <div class="flex" style="justify-content:end" id="modal-actions-row">
              <button type="button" class="btn btn-danger" id="btn-del-item">Supprimer</button>
              <div class="spacer"></div>
              <button type="button" class="btn btn-secondary" onclick="App.ui.closeModal('modal-item')">Annuler</button>
-             <button type="submit" class="btn btn-primary">Enregistrer</button>
+             <button type="submit" class="btn btn-primary" id="btn-save-item">Enregistrer</button>
           </div>
       </form>
     </div>
@@ -272,7 +282,7 @@
       state: {
         data: [],
         title: "PROJET",
-        filters: { search: "", programme: [], niveau: [], fonction: [] }, // Arrays for multi-select
+        filters: { search: "", programme: [], niveau: [], fonction: [] },
         sort: { col: "programme", asc: true },
         locked: false,
         history: [],
@@ -301,9 +311,12 @@
         window.addEventListener('click', (e) => {
             if(!e.target.closest('.ms-container')) {
                 App.state.openDropdown = null;
-                App.render.filtersUI();
+                App.render.filtersUI(); // Only rerender the dropdowns container
             }
         });
+
+        // Initialize Form Options (only once/when types change)
+        App.render.modalSelects();
 
         App.render.all();
         App.events.bindAll();
@@ -478,6 +491,37 @@
              App.render.modalSelects();
              App.render.filtersUI();
         },
+        moveType: (cat, id, dir) => {
+             const arr = App.state.types[cat];
+             const idx = arr.findIndex(i=>i.id===id);
+             if(idx<0) return;
+             const newIdx = idx+dir;
+             if(newIdx<0 || newIdx>=arr.length) return;
+             [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+             App.methods.save();
+             App.render.settingsList();
+             App.render.modalSelects();
+        },
+        editType: (cat, id) => {
+             const val = prompt("Nouveau nom :");
+             if(val) {
+                 const t = App.state.types[cat].find(i=>i.id===id);
+                 if(t) {
+                     // Update existing data references first
+                     const oldName = t.nom;
+                     App.state.data.forEach(d => {
+                        // Very basic mapping check based on category name matching data key
+                        const key = cat.slice(0,-1); // programmes -> programme
+                        if(d[key] === oldName) d[key] = val;
+                     });
+                     t.nom = val;
+                     App.methods.save();
+                     App.render.settingsList();
+                     App.render.modalSelects();
+                     App.render.all();
+                 }
+             }
+        },
 
         // --- IMPORTS / EXPORTS ---
         exportCsv: () => {
@@ -526,8 +570,8 @@
              return App.state.data.filter(d => {
                  if(f.search && !d.local.toLowerCase().includes(f.search.toLowerCase())) return false;
                  if(f.programme.length && !f.programme.includes(d.programme)) return false;
-                 if(f.niveau.length && !f.niveau.includes(d.niveau)) return false; // Multi-select support
-                 if(f.fonction.length && !f.fonction.includes(d.fonction)) return false; // Multi-select support
+                 if(f.niveau.length && !f.niveau.includes(d.niveau)) return false; 
+                 if(f.fonction.length && !f.fonction.includes(d.fonction)) return false; 
                  return true;
              });
          },
@@ -539,8 +583,7 @@
 
       render: {
         all: () => {
-            App.render.modalSelects(); // For modal forms
-            App.render.filtersUI();    // For main filters
+            App.render.filtersUI();
             App.render.charts();
             App.render.content();
             App.render.batchBar();
@@ -548,6 +591,7 @@
         modalSelects: () => {
            const fill = (id, list, key='nom') => {
                const el = document.getElementById(id);
+               if(!el) return;
                const val = el.value;
                el.innerHTML = el.id.startsWith('f-') ? '' : `<option value="">${el.options[0]?.text || ''}</option>`;
                list.forEach(i => {
@@ -556,7 +600,6 @@
                });
                el.value = val;
            };
-           // Only fill form selects, not filters (handled by filtersUI)
            fill('f-programme', App.state.types.programmes);
            fill('f-niveau', App.state.types.niveaux);
            fill('f-fonction', App.state.types.fonctions);
@@ -564,13 +607,8 @@
            fill('f-priorite', App.state.types.priorites);
         },
         
-        // --- MULTI SELECT RENDERER ---
         filtersUI: () => {
-            // 1. Generate Dropdowns for Niveau & Fonction
-            const container = document.getElementById('filters-container');
-            // Preserve search input, regenerate dropdowns
-            const searchVal = document.getElementById('inp-search').value;
-            
+            // Generate Dropdowns (inject into separate containers to keep Search Input static)
             const mkDropdown = (key, label, list) => {
                 const selected = App.state.filters[key];
                 const isOpen = App.state.openDropdown === key;
@@ -594,19 +632,10 @@
                 </div>`;
             };
 
-            container.innerHTML = `
-                <input type="text" id="inp-search" class="input" placeholder="Rechercher..." value="${searchVal}">
-                ${mkDropdown('niveau', 'Niveaux', App.state.types.niveaux)}
-                ${mkDropdown('fonction', 'Fonctions', App.state.types.fonctions)}
-            `;
+            document.getElementById('dropdown-niveau-container').innerHTML = mkDropdown('niveau', 'Niveaux', App.state.types.niveaux);
+            document.getElementById('dropdown-fonction-container').innerHTML = mkDropdown('fonction', 'Fonctions', App.state.types.fonctions);
             
-            // Re-bind search event because innerHTML cleared it
-            document.getElementById('inp-search').oninput = (e) => { 
-                App.state.filters.search = e.target.value; App.render.content(); 
-            };
-            document.getElementById('inp-search').focus(); // Keep focus
-
-            // 2. Generate Prog Chips
+            // Chips
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
             App.state.types.programmes.forEach(p => {
                 const active = App.state.filters.programme.includes(p.nom);
@@ -624,7 +653,7 @@
                 pc.appendChild(btn);
             });
             
-            // 3. Saved Views
+            // Views
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
             App.state.savedViews.forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
@@ -713,7 +742,7 @@
                       <td class="text-right" style="font-weight:700; color:${i.sueInt?'var(--primary)':'var(--success)'}">${(i.sueInt||i.sueExt)}</td>
                       <td>${i.statut ? `<span class="badge" style="background:${st?st.bg:'#eee'}; color:${st?st.txt:'#333'}">${i.statut}</span>`:''}</td>
                     `;
-                    tr.onclick = () => !App.state.locked && App.ui.openModalItem(i);
+                    tr.onclick = () => App.ui.openModalItem(i);
                     tb.appendChild(tr);
                 });
 
@@ -766,9 +795,18 @@
              div.innerHTML = '';
              list.forEach(item => {
                  const row = document.createElement('div');
-                 row.style.cssText = "display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-color); align-items:center";
+                 row.className = "settings-list-item";
                  const colorBox = (item.couleur||item.bg) ? `<span style="width:12px;height:12px;background:${item.couleur||item.bg};display:inline-block;margin-right:8px;border-radius:2px"></span>` : '';
-                 row.innerHTML = `<div>${colorBox}${item.nom}</div><button class="btn btn-danger" style="height:24px; padding:0 8px" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>`;
+                 
+                 row.innerHTML = `
+                   <div>${colorBox}${item.nom}</div>
+                   <div>
+                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
+                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
+                     <button class="btn-action-sm" onclick="App.methods.editType('${cat}', ${item.id})">✎</button>
+                     <button class="btn-action-sm" style="color:var(--danger)" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>
+                   </div>
+                 `;
                  div.appendChild(row);
              });
         }
@@ -789,6 +827,7 @@
             document.getElementById('btn-del-item').classList.add('hidden');
             document.getElementById('modal-title').innerText = item ? "Modifier Local" : "Nouveau Local";
             
+            // Fill Data
             if(item) {
                 document.getElementById('f-id').value = item.id;
                 document.getElementById('f-programme').value = item.programme;
@@ -804,6 +843,11 @@
                 document.getElementById('btn-del-item').classList.remove('hidden');
                 document.getElementById('btn-del-item').onclick = () => App.methods.deleteItem(item.id);
             }
+            
+            // Handle Locked State
+            const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"], #btn-del-item');
+            inputs.forEach(el => el.disabled = App.state.locked);
+            
             document.getElementById('modal-item').classList.add('open');
         },
         closeModal: (id) => document.getElementById(id).classList.remove('open')
@@ -815,15 +859,21 @@
             document.getElementById('btn-lock').onclick = () => { 
                 App.state.locked = !App.state.locked; 
                 document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; 
+                document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
                 App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); 
+                // Close batch if open
+                if(App.state.locked) App.methods.cancelBatch();
             };
             
-            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; App.render.filtersUI(); App.render.all(); };
+            // Search Input Binding (Static, so bind once)
+            document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
+            
+            document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
             
             document.getElementById('btn-save').onclick = App.methods.save;
             document.getElementById('btn-undo').onclick = App.methods.undo;
             document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.save(); App.render.all(); }};
-            document.getElementById('btn-add-item').onclick = () => App.ui.openModalItem();
+            document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
             document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.save(); };
             
             document.getElementById('btn-save-view').onclick = App.methods.saveView;
