@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.9 (Stable)</title>
+  <title>PROGRAMMATION V8.0 (Repair)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.9 --- */
+    /* --- DESIGN SYSTEM V8.0 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -47,11 +47,12 @@
     .btn-lock { width: 40px; padding: 0; font-size: 18px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
     .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
 
-    /* LAYOUT */
+    /* HEADER */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
     .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
     .header-title:hover { border-color: var(--border-color); }
-    
+
+    /* TOOLBAR */
     .toolbar { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
     .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
     .spacer { flex: 1; }
@@ -68,19 +69,18 @@
     .legend-item { display: flex; justify-content: space-between; align-items: center; }
     .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* SEGMENTED CONTROL */
+    /* TABS */
     .segmented-control { display: inline-flex; background: var(--bg-card); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; }
     .seg-btn { padding: 8px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; border: none; background: transparent; }
     .seg-btn:hover { color: var(--text-main); }
     .seg-btn.active { background: var(--bg-hover); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-    /* FILTERS */
+    /* FILTERS & INPUTS */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
     .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
     .input:focus { outline: none; border-color: var(--primary); }
     
-    /* MULTI-SELECT */
     .ms-container { position: relative; width: 100%; }
     .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
@@ -147,12 +147,13 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V8.0</div>
       </div>
     </div>
     <div class="flex">
         <span style="font-size:12px; color:var(--text-muted);" id="firm-label">BELLECOUR architectes</span>
         <button class="btn btn-secondary btn-icon" id="btn-theme">☼</button>
+        <button class="btn btn-danger" style="font-size:10px; padding:0 8px" onclick="if(confirm('Ceci va effacer toutes les données locales pour réparer le blocage. Continuer ?')){localStorage.clear();location.reload();}">🛑 Hard Reset</button>
     </div>
   </div>
 
@@ -284,7 +285,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    // --- V7.9 DEFAULT CONFIG ---
+    // --- V8.0 CONFIGURATION ROBUSTE ---
     const CONFIG = {
       types: {
         programmes: [ 
@@ -337,8 +338,14 @@
       },
 
       init: () => {
-        // 1. Bind Events FIRST (Critical Fix)
-        App.events.bindAll();
+        // 1. Activation PRIORITAIRE des boutons (Bind Events)
+        // Ceci garantit que les boutons fonctionnent même si le chargement des données échoue plus tard.
+        try {
+            App.events.bindAll();
+        } catch (err) {
+            console.error("Erreur critique binding:", err);
+            // On ne s'arrête pas, on essaie quand même de charger l'UI
+        }
 
         try {
             const savedData = localStorage.getItem('v7-data');
@@ -346,24 +353,26 @@
             const savedViews = localStorage.getItem('v7-views');
             const savedTypes = localStorage.getItem('v7-types');
 
-            if(savedData) App.state.data = JSON.parse(savedData);
+            if(savedData && savedData !== "undefined") App.state.data = JSON.parse(savedData);
             if(savedTitle) App.state.title = savedTitle;
-            if(savedViews) App.state.savedViews = JSON.parse(savedViews);
+            if(savedViews && savedViews !== "undefined") App.state.savedViews = JSON.parse(savedViews);
             
-            // 2. Data Sanitization (Fix Colors)
-            if(savedTypes) {
-                 const t = JSON.parse(savedTypes);
-                 for(let key in t) {
-                     if(Array.isArray(t[key])) {
-                         t[key].forEach(i => {
-                             // Normalize Colors (V6 -> V7 Migration)
-                             if(!i.bg && i.couleur) i.bg = i.couleur;
-                             if(!i.bg) i.bg = "#94A3B8"; // Default Grey
-                             if(!i.txt) i.txt = "#FFFFFF"; // Default White
-                         });
+            // 2. Réparation et Normalisation des Données (Types & Couleurs)
+            if(savedTypes && savedTypes !== "undefined") {
+                 let t = JSON.parse(savedTypes);
+                 // On parcourt chaque catégorie attendue (programmes, niveaux, etc.)
+                 for(let key in CONFIG.types) {
+                     if(!Array.isArray(t[key])) {
+                        // Si la catégorie est manquante ou corrompue dans la sauvegarde, on remet celle par défaut
+                        console.warn(`Catégorie ${key} corrompue, restauration par défaut.`);
+                        t[key] = JSON.parse(JSON.stringify(CONFIG.types[key]));
                      } else {
-                        // Reset corrupt type category
-                        t[key] = JSON.parse(JSON.stringify(CONFIG.types[key] || []));
+                         // Vérification des champs de couleur pour chaque élément
+                         t[key].forEach(i => {
+                             if(!i.bg && i.couleur) i.bg = i.couleur; // Migration V6->V7
+                             if(!i.bg) i.bg = "#94A3B8"; // Valeur par défaut si manquante
+                             if(!i.txt) i.txt = "#FFFFFF"; // Valeur par défaut
+                         });
                      }
                  }
                  App.state.types = t;
@@ -372,6 +381,7 @@
             document.getElementById('app-title').innerText = App.state.title;
             if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
 
+            // Fermeture dropdowns au clic extérieur
             window.addEventListener('click', (e) => {
                 if(!e.target.closest('.ms-container')) {
                     App.state.openDropdown = null;
@@ -379,14 +389,14 @@
                 }
             });
 
-            // 3. Render
+            // 3. Rendu de l'interface
             App.render.modalSelects();
             App.render.all();
 
         } catch (e) {
-            console.error("Initialization Error:", e);
-            alert("Une erreur de données a été détectée. L'application a activé le mode sans échec. Veuillez cliquer sur 'Effacer' si le problème persiste.");
-            // Render basic UI anyway
+            console.error("Erreur Initialisation:", e);
+            alert("Une incohérence de données a été détectée. L'application a démarré en mode sans échec. Si l'affichage est vide, utilisez le bouton rouge 'Hard Reset' en haut à droite.");
+            // On tente quand même d'afficher les filtres vides pour ne pas avoir une page blanche
             App.render.filtersUI();
         }
       },
@@ -408,11 +418,11 @@
             localStorage.setItem('v7-title', App.state.title);
             localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
             localStorage.setItem('v7-types', JSON.stringify(App.state.types));
-          } catch(e) { console.error("Save failed", e); alert("Erreur sauvegarde locale (Quota ?)"); }
+          } catch(e) { console.error("Save failed", e); alert("Erreur de sauvegarde locale (Quota dépassé ?)"); }
         },
         saveJson: () => {
             App.methods.saveLocal();
-            const exportObj = { title: App.state.title, data: App.state.data, types: App.state.types, version: "7.9" };
+            const exportObj = { title: App.state.title, data: App.state.data, types: App.state.types, version: "8.0" };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${App.methods.getExportName()}.json`; link.click();
             App.ui.toast("Fichier JSON généré");
@@ -525,6 +535,8 @@
              const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${App.methods.getExportName()}.csv`; link.click();
         },
         exportPdf: () => {
+            // Sécurité : Vérifier si jsPDF est chargé
+            if(!window.jspdf) { alert("Le module PDF n'est pas chargé (pas de connexion internet ?)"); return; }
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l','mm','a4');
             doc.text(App.state.title, 14, 15);
             const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]);
@@ -545,7 +557,7 @@
                              if(Array.isArray(json)) App.state.data = json;
                              else if(json.data) { App.state.data = json.data; if(json.types) App.state.types = json.types; }
                              
-                             // Re-sanitize on import
+                             // Re-Sanitization après import
                              if(App.state.types) {
                                  for(let key in App.state.types) {
                                      if(Array.isArray(App.state.types[key])) {
@@ -589,7 +601,7 @@
       },
 
       render: {
-        all: () => { App.render.filtersUI(); App.render.charts(); App.render.content(); App.render.batchBar(); },
+        all: () => { try { App.render.filtersUI(); App.render.charts(); App.render.content(); App.render.batchBar(); } catch(e) { console.error("Erreur Rendu", e); } },
         modalSelects: () => {
            const fill = (id, list, key='nom') => {
                const el = document.getElementById(id); if(!el) return;
@@ -604,7 +616,7 @@
         
         filtersUI: () => {
             const mkDropdown = (key, label, list) => {
-                const selected = App.state.filters[key]; const isOpen = App.state.openDropdown === key;
+                const selected = App.state.filters[key] || []; const isOpen = App.state.openDropdown === key;
                 let btnText = `${label} (Tous)`;
                 if(selected.length === 1) btnText = selected[0]; else if(selected.length > 1) btnText = `${label} (${selected.length})`;
                 return `<div class="ms-container" onclick="App.methods.toggleDropdown(event, '${key}')">
@@ -619,7 +631,7 @@
             const pc = document.getElementById('prog-chips'); pc.innerHTML = '';
             if(App.state.types.programmes) {
                 App.state.types.programmes.forEach(p => {
-                    const active = App.state.filters.programme.includes(p.nom);
+                    const active = (App.state.filters.programme||[]).includes(p.nom);
                     const btn = document.createElement('div'); btn.className = `chip ${active?'active':''}`;
                     btn.style.borderColor = p.bg; btn.style.color = active ? p.txt : p.bg;
                     if(active) btn.style.background = p.bg;
@@ -629,7 +641,7 @@
                 });
             }
             const vc = document.getElementById('views-container'); vc.innerHTML = '';
-            App.state.savedViews.forEach(v => {
+            (App.state.savedViews||[]).forEach(v => {
                 const d = document.createElement('div'); d.className = 'chip view-chip';
                 d.innerHTML = `<span>${v.name}</span><span class="chip-del">×</span>`;
                 d.querySelector('span').onclick = () => App.methods.loadView(v.id);
@@ -755,7 +767,6 @@
              div.innerHTML = '';
              list.forEach(item => {
                  const row = document.createElement('div'); row.className = "settings-list-item";
-                 // Inline Editing Blocks
                  row.innerHTML = `
                    <div style="display:grid; grid-template-columns: 40px 40px 1fr 100px; gap:8px; width:100%; align-items:center;">
                        <input type="color" class="color-input" value="${item.bg||'#888888'}" onchange="App.methods.updateType('${cat}', ${item.id}, 'bg', this.value)">
@@ -805,24 +816,27 @@
         },
         events: {
             bindAll: () => {
-                document.getElementById('btn-theme').onclick = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); };
-                document.getElementById('btn-lock').onclick = () => { 
+                // Binding sécurisé : Chaque bouton est testé avant d'être lié
+                const bind = (id, event, handler) => { const el = document.getElementById(id); if(el) el[event] = handler; else console.warn('Bouton manquant:', id); };
+                
+                bind('btn-theme', 'onclick', () => { document.documentElement.classList.toggle('light'); localStorage.setItem('v7-theme', document.documentElement.classList.contains('light')?'light':'dark'); });
+                bind('btn-lock', 'onclick', () => { 
                     App.state.locked = !App.state.locked; document.getElementById('btn-lock').innerText = App.state.locked ? '🔒' : '🔓'; document.getElementById('btn-lock').classList.toggle('locked', App.state.locked);
                     document.getElementById('btn-clear-all').disabled = App.state.locked; document.getElementById('btn-import').disabled = App.state.locked; document.getElementById('btn-add-item').disabled = App.state.locked; document.getElementById('btn-undo').disabled = App.state.locked;
                     App.ui.toast(App.state.locked ? "Lecture seule" : "Édition activée"); if(App.state.locked) App.methods.cancelBatch();
-                };
-                document.getElementById('inp-search').oninput = (e) => { App.state.filters.search = e.target.value; App.render.content(); };
-                document.getElementById('btn-reset-filters').onclick = () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); };
-                document.getElementById('btn-save-json').onclick = App.methods.saveJson;
-                document.getElementById('btn-undo').onclick = App.methods.undo;
-                document.getElementById('btn-clear-all').onclick = () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }};
-                document.getElementById('btn-add-item').onclick = () => !App.state.locked && App.ui.openModalItem();
-                document.getElementById('app-title').onblur = (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); };
-                document.getElementById('btn-save-view').onclick = App.methods.saveView;
-                document.getElementById('btn-settings').onclick = () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); };
-                document.getElementById('btn-export-csv').onclick = App.methods.exportCsv;
-                document.getElementById('btn-export-pdf').onclick = App.methods.exportPdf;
-                document.getElementById('btn-import').onclick = App.methods.import;
+                });
+                bind('inp-search', 'oninput', (e) => { App.state.filters.search = e.target.value; App.render.content(); });
+                bind('btn-reset-filters', 'onclick', () => { App.state.filters = {search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.filtersUI(); App.render.all(); });
+                bind('btn-save-json', 'onclick', App.methods.saveJson);
+                bind('btn-undo', 'onclick', App.methods.undo);
+                bind('btn-clear-all', 'onclick', () => { if(confirm("Tout effacer ?")) { App.methods.pushHistory(); App.state.data=[]; App.methods.saveLocal(); App.render.all(); }});
+                bind('btn-add-item', 'onclick', () => !App.state.locked && App.ui.openModalItem());
+                bind('app-title', 'onblur', (e) => { App.state.title = e.target.innerText; App.methods.saveLocal(); });
+                bind('btn-save-view', 'onclick', App.methods.saveView);
+                bind('btn-settings', 'onclick', () => { document.getElementById('modal-settings').classList.add('open'); App.render.settingsList(); });
+                bind('btn-export-csv', 'onclick', App.methods.exportCsv);
+                bind('btn-export-pdf', 'onclick', App.methods.exportPdf);
+                bind('btn-import', 'onclick', App.methods.import);
             }
         }
       }
