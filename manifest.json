@@ -1,7 +1,7 @@
 {
-  "name": "PROG V7.9.1 (Bellecour)",
-  "short_name": "ProgV7.9.1",
-  "description": "Outil de programmation V7.9.1 - Interface harmonisée",
+  "name": "PROG V7.9.2 (Bellecour)",
+  "short_name": "ProgV7.9.2",
+  "description": "Outil de programmation V7.9.2 - Interface harmonisée",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "landscape",
@@ -20,3 +20,4 @@
     }
   ]
 }
+
