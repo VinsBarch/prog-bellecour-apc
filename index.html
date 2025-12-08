@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7</title>
+  <title>PROGRAMMATION V7.7.1</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -150,6 +150,9 @@
     .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
     .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
     
+    /* MODIF POUR EDITION COULEUR DIRECTE */
+    .color-picker-mini { width: 30px; height: 30px; border:none; background:none; cursor:pointer; padding:0; border-radius:4px; }
+
     .color-picker-wrap { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); padding: 0; position: relative; }
     .color-picker-wrap input[type=color] { position: absolute; inset: -5px; width: 50px; height: 50px; cursor: pointer; }
 
@@ -164,7 +167,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7.1</div>
       </div>
     </div>
     <div class="flex">
@@ -278,6 +281,14 @@
                 <option value="priorites">Priorités</option>
             </select>
         </div>
+        
+        <div style="display:flex; justify-content:space-between; padding:0 12px; margin-bottom:5px; font-size:10px; color:var(--text-muted); font-weight:700">
+             <div style="width:30px">FOND</div>
+             <div style="width:30px">TXT</div>
+             <div style="flex:1; padding-left:10px">NOM</div>
+             <div style="width:80px; text-align:right">ACTIONS</div>
+        </div>
+        
         <div id="settings-list" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:12px;"></div>
         
         <label class="text-muted" style="font-size:11px; margin-bottom:4px; display:block">Ajouter un élément :</label>
@@ -572,6 +583,15 @@
                      App.render.all();
                  }
              }
+        },
+        // --- NOUVEAU V7.7.1 : Edition couleur en direct ---
+        updateTypeColor: (cat, id, prop, val) => {
+            const t = App.state.types[cat].find(i=>i.id===id);
+            if(t) {
+                t[prop] = val;
+                App.methods.saveLocal();
+                App.render.all(); // Met à jour le fond si nécessaire
+            }
         },
 
         exportCsv: () => {
@@ -868,6 +888,7 @@
                  bar.classList.remove('visible');
              }
         },
+        // --- MISE A JOUR V7.7.1 POUR EDITION COULEURS ---
         settingsList: () => {
              const cat = document.getElementById('set-type-select').value;
              const list = App.state.types[cat];
@@ -876,10 +897,13 @@
              list.forEach(item => {
                  const row = document.createElement('div');
                  row.className = "settings-list-item";
-                 const colorBox = (item.bg||item.couleur) ? `<span class="badge-preview" style="background:${item.bg||item.couleur};color:${item.txt||'white'}">${item.nom}</span>` : `<span>${item.nom}</span>`;
-                 
+                 // Remplacement des spans fixes par des inputs
                  row.innerHTML = `
-                   <div>${colorBox}</div>
+                   <div style="display:flex; align-items:center; gap:5px;">
+                      <input type="color" class="color-picker-mini" value="${item.bg||'#000000'}" onchange="App.methods.updateTypeColor('${cat}', ${item.id}, 'bg', this.value)" title="Fond">
+                      <input type="color" class="color-picker-mini" value="${item.txt||'#ffffff'}" onchange="App.methods.updateTypeColor('${cat}', ${item.id}, 'txt', this.value)" title="Texte">
+                   </div>
+                   <div style="flex:1; margin-left:10px; font-weight:600; font-size:13px">${item.nom}</div>
                    <div>
                      <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
                      <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
