@@ -7,13 +7,13 @@
   <meta name="apple-mobile-web-app-title" content="PROJET">
   <meta name="theme-color" content="#0F172A">
   <link rel="manifest" href="manifest.json">
-  <title>PROGRAMMATION V7.8</title>
+  <title>PROGRAMMATION V7.9</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.8 --- */
+    /* --- DESIGN SYSTEM V7.9 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -21,6 +21,7 @@
       --primary: #3B82F6; --success: #10B981; --danger: #EF4444; --warning: #F59E0B; --accent: #8B5CF6;
       --radius: 12px;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
     :root.light {
       --bg-body: #F8FAFC; --bg-card: #FFFFFF; --bg-input: #F1F5F9;
@@ -35,32 +36,63 @@
     /* UTILS */
     .hidden { display: none !important; }
     .flex { display: flex; align-items: center; gap: 10px; }
-    .btn { height: 40px; padding: 0 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
-    .btn:active { transform: scale(0.98); }
+    .spacer { flex: 1; }
+    
+    /* --- BUTTONS SYSTEM (HARMONISED) --- */
+    .btn { 
+        height: 40px; 
+        padding: 0 18px; 
+        border-radius: 10px; 
+        font-weight: 600; 
+        font-size: 13px; 
+        cursor: pointer; 
+        border: 1px solid transparent; 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; 
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        white-space: nowrap; 
+        user-select: none;
+    }
+    .btn:active { transform: scale(0.96); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: grayscale(1); }
     
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
-    .btn-secondary:hover { background: var(--bg-hover); }
-    .btn-accent { background: rgba(139, 92, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); }
-    .btn-accent:hover { background: var(--accent); color: white; }
+    /* Variants Colors */
+    .btn-primary { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+    
+    .btn-secondary { background: var(--bg-card); border-color: var(--border-color); color: var(--text-muted); }
+    .btn-secondary:hover { background: var(--bg-hover); color: var(--text-main); border-color: var(--text-muted); }
+    
+    .btn-accent { background: rgba(139, 92, 246, 0.1); color: var(--accent); border-color: rgba(139, 92, 246, 0.3); }
+    .btn-accent:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    
+    .btn-success { background: var(--success); color: white; border-color: var(--success); }
+    .btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    
     .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border-color: transparent; }
-    .btn-icon { width: 40px; padding: 0; font-size: 18px; }
-    .btn-lock { width: 40px; padding: 0; font-size: 18px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+
+    .btn-lock { width: 40px; padding: 0; font-size: 16px; background: var(--bg-input); border-color: var(--border-color); color: var(--text-muted); }
     .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
+    
+    /* Size Variants */
+    .btn-sm { height: 32px; padding: 0 14px; font-size: 12px; border-radius: 8px; }
+    .btn-xs { height: 28px; width: 28px; padding: 0; font-size: 14px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-xs:hover { background: var(--bg-hover); color: var(--text-main); }
+    
+    .btn-icon { width: 40px; padding: 0; font-size: 18px; }
 
     /* LAYOUT & HEADER */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
     .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
     .header-title:hover { border-color: var(--border-color); }
-    
-    /* SAVE INDICATOR (NEW V7.8) */
     .save-indicator { font-size: 11px; color: var(--success); font-weight: 700; opacity: 0; transition: opacity 0.5s; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
     .save-indicator.show { opacity: 1; }
 
     .toolbar { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
-    .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
-    .spacer { flex: 1; }
+    .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 6px; border-radius: 14px; border: 1px solid var(--border-color); }
 
     /* STATS */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
@@ -78,13 +110,13 @@
     .segmented-control { display: inline-flex; background: var(--bg-card); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; }
     .seg-btn { padding: 8px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; border: none; background: transparent; }
     .seg-btn:hover { color: var(--text-main); }
-    .seg-btn.active { background: var(--bg-hover); color: var(--text-main); shadow: var(--shadow-sm); }
+    .seg-btn.active { background: var(--bg-hover); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
     /* FILTERS */
     .filters-box { background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 24px; }
     .search-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
-    .input:focus { outline: none; border-color: var(--primary); }
+    .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; transition: border-color 0.2s; }
+    .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
     
     .ms-container { position: relative; width: 100%; }
     .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
@@ -95,8 +127,8 @@
     .ms-checkbox { pointer-events: none; accent-color: var(--primary); width: 16px; height: 16px; }
 
     .chip-container { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .chip { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted); display:flex; align-items:center; gap:6px; }
-    .chip.active { color: white; border-color: transparent; }
+    .chip { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted); display:flex; align-items:center; gap:6px; transition: all 0.2s; }
+    .chip.active { color: white; border-color: transparent; transform: scale(1.05); }
     .view-chip { border-color: var(--accent); color: var(--accent); background: rgba(139, 92, 246, 0.05); }
     .view-chip:hover { background: var(--accent); color: white; }
     .chip-del { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.2); }
@@ -115,14 +147,14 @@
     
     /* ACTIONS GRID */
     .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
-    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column; }
-    .action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; flex-direction: column; }
+    .action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
     .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; flex: 1; }
     .ac-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 12px; color: var(--text-muted); margin-top: auto; }
 
     /* BATCH BAR */
-    .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 12px 24px; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 16px; z-index: 100; transition: transform 0.3s; color: var(--text-main); }
+    .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 8px 16px; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; z-index: 100; transition: transform 0.3s; color: var(--text-main); }
     .batch-bar.visible { transform: translateX(-50%) translateY(0); }
     
     /* MODAL */
@@ -132,13 +164,10 @@
     .modal-overlay.open .modal { transform: translateY(0); }
 
     /* SETTINGS STYLES */
-    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border-color); background: var(--bg-card); transition: background 0.1s; }
+    .settings-list-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border-color); background: var(--bg-card); transition: background 0.1s; }
     .settings-list-item:hover { background: var(--bg-hover); }
-    .btn-action-sm { height: 28px; width:28px; padding: 0; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-muted); cursor:pointer; margin-left:4px;}
-    .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
-    .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
     
-    .color-picker-mini { width: 30px; height: 30px; border:none; background:none; cursor:pointer; padding:0; border-radius:4px; }
+    .color-picker-mini { width: 24px; height: 24px; border:none; background:none; cursor:pointer; padding:0; border-radius:4px; }
     .color-picker-wrap { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); padding: 0; position: relative; }
     .color-picker-wrap input[type=color] { position: absolute; inset: -5px; width: 50px; height: 50px; cursor: pointer; }
 
@@ -156,7 +185,7 @@
             <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
             <span id="save-indicator" class="save-indicator">Enregistré ✔</span>
         </div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.8</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9</div>
       </div>
     </div>
     <div class="flex">
@@ -167,7 +196,7 @@
 
   <div class="toolbar">
     <div class="tool-group">
-        <button class="btn btn-primary" id="btn-save-json">💾 Sauvegarder (JSON)</button>
+        <button class="btn btn-primary" id="btn-save-json">💾 Sauver JSON</button>
         <button class="btn btn-secondary" id="btn-export-csv">CSV</button>
         <button class="btn btn-secondary" id="btn-export-pdf">PDF</button>
     </div>
@@ -194,10 +223,10 @@
     <div class="flex" style="margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border-color);">
        <button class="btn btn-secondary btn-icon" id="btn-reset-filters" title="Reset">✕</button>
        <div style="width:1px; height:20px; background:var(--border-color);"></div>
-       <button class="btn btn-accent" id="btn-save-view">💾 Sauver Vue</button>
+       <button class="btn btn-accent btn-sm" id="btn-save-view">💾 Sauver Vue</button>
        <div id="views-container" class="chip-container"></div>
        <div class="spacer"></div>
-       <button class="btn btn-success" id="btn-add-item" style="background:var(--success);color:white;">➕ Ajouter Local</button>
+       <button class="btn btn-success" id="btn-add-item">➕ Ajouter Local</button>
        <button class="btn btn-secondary" id="btn-settings">⚙ Types</button>
     </div>
   </div>
@@ -212,9 +241,9 @@
   <div id="main-content"></div>
 
   <div class="batch-bar" id="batch-bar">
-      <span style="font-weight:800; color:var(--primary)" id="batch-count">0 sélectionné(s)</span>
+      <span style="font-weight:800; color:var(--primary); font-size:13px;" id="batch-count">0 sélectionné(s)</span>
       <div style="width:1px; height:20px; background:var(--border-color);"></div>
-      <select id="batch-field" class="input" style="height:32px; width:120px;" onchange="App.ui.updateBatchInput()">
+      <select id="batch-field" class="input" style="height:32px; width:120px; font-size:12px;" onchange="App.ui.updateBatchInput()">
           <option value="statut">Statut</option>
           <option value="niveau">Niveau</option>
           <option value="programme">Programme</option>
@@ -223,10 +252,10 @@
           <option value="local">Renommer (Local)</option>
       </select>
       <div id="batch-input-container">
-          <input type="text" id="batch-value" class="input" style="height:32px; width:150px;" placeholder="Valeur...">
+          <input type="text" id="batch-value" class="input" style="height:32px; width:150px; font-size:12px;" placeholder="Valeur...">
       </div>
-      <button class="btn btn-primary" style="height:32px" onclick="App.methods.applyBatch()">Appliquer</button>
-      <button class="btn btn-secondary" style="height:32px" onclick="App.methods.cancelBatch()">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="App.methods.applyBatch()">Appliquer</button>
+      <button class="btn btn-secondary btn-sm" onclick="App.methods.cancelBatch()">Annuler</button>
   </div>
 
   <div class="modal-overlay" id="modal-item">
@@ -249,7 +278,7 @@
           <div style="margin-bottom:12px"><label class="text-muted" style="font-size:11px">PRIORITÉ</label><select id="f-priorite" class="input"></select></div>
           <div style="margin-bottom:20px"><label class="text-muted" style="font-size:11px">REMARQUES / ACTIONS</label><textarea id="f-remarque" class="input" style="height:60px; padding-top:8px"></textarea></div>
           <div class="flex" style="justify-content:end" id="modal-actions-row">
-             <button type="button" class="btn btn-danger" id="btn-del-item">Supprimer</button>
+             <button type="button" class="btn btn-danger btn-sm" id="btn-del-item">Supprimer</button>
              <div class="spacer"></div>
              <button type="button" class="btn btn-secondary" onclick="App.ui.closeModal('modal-item')">Annuler</button>
              <button type="submit" class="btn btn-primary" id="btn-save-item">Enregistrer</button>
@@ -289,7 +318,7 @@
             <div class="color-picker-wrap" title="Couleur de TEXTE">
                <input type="color" id="set-new-txt" value="#FFFFFF">
             </div>
-            <button class="btn btn-success" onclick="App.methods.addType()">+</button>
+            <button class="btn btn-success btn-icon" onclick="App.methods.addType()">+</button>
         </div>
         <div class="flex" style="margin-top:20px; justify-content:end">
             <button class="btn btn-secondary" onclick="App.ui.closeModal('modal-settings')">Fermer</button>
@@ -300,7 +329,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    const APP_VERSION = "7.8";
+    const APP_VERSION = "7.9";
 
     const CONFIG = {
       types: {
@@ -408,7 +437,6 @@
           localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
           localStorage.setItem('v7-types', JSON.stringify(App.state.types));
           
-          // --- AUTO-SAVE FEEDBACK (V7.8) ---
           const indicator = document.getElementById('save-indicator');
           indicator.classList.add('show');
           if(App.state.saveTimeout) clearTimeout(App.state.saveTimeout);
@@ -422,7 +450,7 @@
                 title: App.state.title,
                 data: App.state.data,
                 types: App.state.types,
-                version: APP_VERSION // --- VERSIONING (V7.8) ---
+                version: APP_VERSION
             };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a');
@@ -903,7 +931,7 @@
                       </div>
                       <div class="ac-footer">
                          <span>Action requise</span>
-                         <button class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:11px">Modifier</button>
+                         <button class="btn btn-secondary btn-sm" style="height:28px; padding:0 10px; font-size:11px">Modifier</button>
                       </div>
                     `;
                     ag.appendChild(card);
@@ -936,10 +964,10 @@
                    </div>
                    <div style="flex:1; margin-left:10px; font-weight:600; font-size:13px">${item.nom}</div>
                    <div>
-                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
-                     <button class="btn-action-sm" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
-                     <button class="btn-action-sm" onclick="App.methods.editType('${cat}', ${item.id})">✎</button>
-                     <button class="btn-action-sm" style="color:var(--danger)" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>
+                     <button class="btn-xs" onclick="App.methods.moveType('${cat}', ${item.id}, -1)">▲</button>
+                     <button class="btn-xs" onclick="App.methods.moveType('${cat}', ${item.id}, 1)">▼</button>
+                     <button class="btn-xs" onclick="App.methods.editType('${cat}', ${item.id})">✎</button>
+                     <button class="btn-xs" style="color:var(--danger); border-color:var(--danger);" onclick="App.methods.deleteType('${cat}', ${item.id})">×</button>
                    </div>
                  `;
                  div.appendChild(row);
@@ -1036,11 +1064,8 @@
       }
     };
 
-    // --- SERVICE WORKER REGISTRATION (V7.8 - PWA) ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-             // On tente d'enregistrer le SW si le fichier existe
-             // Note: Cela échouera silencieusement si le fichier n'est pas présent (mode simple)
              navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('SW non trouvé (mode local simple)'));
         });
     }
