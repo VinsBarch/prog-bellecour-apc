@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7.1</title>
+  <title>PROGRAMMATION V7.7.2 (Design)</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.7 --- */
+    /* --- DESIGN SYSTEM V7.7.2 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -68,26 +68,9 @@
     .legend-item { display: flex; justify-content: space-between; align-items: center; }
     .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
 
-    /* SEGMENTED CONTROL (TABS - LEFT ALIGNED) */
-    .segmented-control { 
-        display: inline-flex; 
-        background: var(--bg-card); 
-        padding: 4px; 
-        border-radius: 12px; 
-        border: 1px solid var(--border-color);
-        margin-bottom: 20px;
-    }
-    .seg-btn { 
-        padding: 8px 24px; 
-        border-radius: 8px; 
-        font-weight: 600; 
-        font-size: 13px; 
-        cursor: pointer; 
-        color: var(--text-muted); 
-        transition: all 0.2s;
-        border: none;
-        background: transparent;
-    }
+    /* SEGMENTED CONTROL */
+    .segmented-control { display: inline-flex; background: var(--bg-card); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+    .seg-btn { padding: 8px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; border: none; background: transparent; }
     .seg-btn:hover { color: var(--text-main); }
     .seg-btn.active { background: var(--bg-hover); color: var(--text-main); shadow: var(--shadow-sm); }
 
@@ -97,7 +80,6 @@
     .input { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); font-size: 14px; }
     .input:focus { outline: none; border-color: var(--primary); }
     
-    /* MULTI-SELECT */
     .ms-container { position: relative; width: 100%; }
     .ms-btn { width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-size: 14px;}
     .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 6px; max-height: 300px; overflow-y: auto; z-index: 50; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; }
@@ -150,9 +132,7 @@
     .btn-action-sm:hover { background: var(--bg-hover); color: var(--text-main); }
     .badge-preview { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
     
-    /* MODIF POUR EDITION COULEUR DIRECTE */
     .color-picker-mini { width: 30px; height: 30px; border:none; background:none; cursor:pointer; padding:0; border-radius:4px; }
-
     .color-picker-wrap { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); padding: 0; position: relative; }
     .color-picker-wrap input[type=color] { position: absolute; inset: -5px; width: 50px; height: 50px; cursor: pointer; }
 
@@ -167,7 +147,7 @@
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
         <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7.1</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7.2</div>
       </div>
     </div>
     <div class="flex">
@@ -295,10 +275,10 @@
         <div class="flex">
             <input type="text" id="set-new-name" class="input" placeholder="Nom..." style="flex:1">
             <div class="color-picker-wrap" title="Couleur de FOND">
-               <input type="color" id="set-new-bg" value="#F1F5F9">
+               <input type="color" id="set-new-bg" value="#3B82F6">
             </div>
             <div class="color-picker-wrap" title="Couleur de TEXTE">
-               <input type="color" id="set-new-txt" value="#334155">
+               <input type="color" id="set-new-txt" value="#FFFFFF">
             </div>
             <button class="btn btn-success" onclick="App.methods.addType()">+</button>
         </div>
@@ -311,13 +291,40 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
+    // --- DESIGN SYSTEM CONFIGURATION ---
     const CONFIG = {
       types: {
-        programmes: [ { id:1, nom: "BUREAUX", bg: "#3B82F6", txt:"#FFFFFF" }, { id:2, nom: "LOGEMENTS", bg: "#10B981", txt:"#FFFFFF" }, { id:3, nom: "COMMERCES", bg: "#F59E0B", txt:"#FFFFFF" } ],
-        niveaux: [ { id:1, nom:"RDC", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"R+1", bg:"#F1F5F9", txt:"#334155"} ],
-        fonctions: [ { id:1, nom:"Circulation", bg:"#F1F5F9", txt:"#334155"}, { id:2, nom:"Travail", bg:"#F1F5F9", txt:"#334155"} ],
-        statuts: [ { id:1, nom: "À CONFIRMER", bg: "#FFFBEB", txt: "#B45309" }, { id:2, nom: "VALIDÉ", bg: "#ECFDF5", txt: "#047857" }, { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" } ],
-        priorites: [ { id:1, nom:"HAUTE", bg:"#EF4444", txt:"#FFFFFF"}, { id:2, nom:"MOYENNE", bg:"#F59E0B", txt:"#FFFFFF"}, { id:3, nom:"BASSE", bg:"#10B981", txt:"#FFFFFF"} ]
+        programmes: [ 
+            { id:1, nom: "BUREAUX", bg: "#3B82F6", txt:"#FFFFFF" }, 
+            { id:2, nom: "LOGEMENTS", bg: "#10B981", txt:"#FFFFFF" }, 
+            { id:3, nom: "COMMERCES", bg: "#F59E0B", txt:"#FFFFFF" },
+            { id:4, nom: "ACTIVITÉS", bg: "#8B5CF6", txt:"#FFFFFF" },
+            { id:5, nom: "PARKING", bg: "#64748B", txt:"#FFFFFF" }
+        ],
+        niveaux: [ 
+            { id:1, nom:"S-1", bg:"#334155", txt:"#F8FAFC"},
+            { id:2, nom:"RDC", bg:"#475569", txt:"#FFFFFF"},
+            { id:3, nom:"R+1", bg:"#94A3B8", txt:"#FFFFFF"},
+            { id:4, nom:"R+2", bg:"#CBD5E1", txt:"#1E293B"},
+            { id:5, nom:"R+3", bg:"#E2E8F0", txt:"#0F172A"}
+        ],
+        fonctions: [ 
+            { id:1, nom:"Circulation", bg:"#1E293B", txt:"#94A3B8"},
+            { id:2, nom:"Travail", bg:"#1E293B", txt:"#F1F5F9"},
+            { id:3, nom:"Sanitaire", bg:"#334155", txt:"#F1F5F9"},
+            { id:4, nom:"Technique", bg:"#0F172A", txt:"#64748B"}
+        ],
+        statuts: [ 
+            { id:1, nom: "À CONFIRMER", bg: "#FFF7ED", txt: "#C2410C" }, 
+            { id:2, nom: "VALIDÉ", bg: "#F0FDF4", txt: "#15803D" }, 
+            { id:3, nom: "MANQUANT", bg: "#FEF2F2", txt: "#B91C1C" },
+            { id:4, nom: "EN ÉTUDE", bg: "#EFF6FF", txt: "#1D4ED8" }
+        ],
+        priorites: [ 
+            { id:1, nom:"HAUTE", bg:"#EF4444", txt:"#FFFFFF"}, 
+            { id:2, nom:"MOYENNE", bg:"#F59E0B", txt:"#FFFFFF"}, 
+            { id:3, nom:"BASSE", bg:"#10B981", txt:"#FFFFFF"} 
+        ]
       }
     };
 
@@ -337,29 +344,41 @@
       },
 
       init: () => {
-        const savedData = localStorage.getItem('v7-data');
-        const savedTitle = localStorage.getItem('v7-title');
-        const savedViews = localStorage.getItem('v7-views');
-        const savedTypes = localStorage.getItem('v7-types');
+        try {
+            const savedData = localStorage.getItem('v7-data');
+            const savedTitle = localStorage.getItem('v7-title');
+            const savedViews = localStorage.getItem('v7-views');
+            const savedTypes = localStorage.getItem('v7-types');
 
-        if(savedData) App.state.data = JSON.parse(savedData);
-        if(savedTitle) App.state.title = savedTitle;
-        if(savedViews) App.state.savedViews = JSON.parse(savedViews);
-        if(savedTypes) App.state.types = JSON.parse(savedTypes);
-
-        document.getElementById('app-title').innerText = App.state.title;
-        if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
-
-        window.addEventListener('click', (e) => {
-            if(!e.target.closest('.ms-container')) {
-                App.state.openDropdown = null;
-                App.render.filtersUI();
+            if(savedData && savedData !== "undefined") App.state.data = JSON.parse(savedData);
+            if(savedTitle) App.state.title = savedTitle;
+            if(savedViews && savedViews !== "undefined") App.state.savedViews = JSON.parse(savedViews);
+            if(savedTypes && savedTypes !== "undefined") {
+                try {
+                    App.state.types = JSON.parse(savedTypes);
+                } catch(e) {
+                    // Fallback si types corrompus
+                    App.state.types = JSON.parse(JSON.stringify(CONFIG.types));
+                }
             }
-        });
 
-        App.render.modalSelects();
-        App.render.all();
-        App.events.bindAll();
+            document.getElementById('app-title').innerText = App.state.title;
+            if(localStorage.getItem('v7-theme') === 'light') document.documentElement.classList.add('light');
+
+            window.addEventListener('click', (e) => {
+                if(!e.target.closest('.ms-container')) {
+                    App.state.openDropdown = null;
+                    App.render.filtersUI();
+                }
+            });
+
+            App.render.modalSelects();
+            App.render.all();
+            App.events.bindAll();
+        } catch(e) {
+            console.error("FATAL ERROR INIT:", e);
+            alert("Erreur critique. Cliquez sur 'Effacer' pour réinitialiser.");
+        }
       },
 
       methods: {
@@ -385,7 +404,7 @@
                 title: App.state.title,
                 data: App.state.data,
                 types: App.state.types,
-                version: "7.7"
+                version: "7.7.2"
             };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a');
@@ -539,7 +558,6 @@
             const bg = document.getElementById('set-new-bg').value;
             const txt = document.getElementById('set-new-txt').value;
             if(!nom) return;
-            // Fix V7.7: Dual color support
             const newItem = { id: Date.now(), nom, bg, txt };
             App.state.types[cat].push(newItem);
             App.methods.saveLocal();
@@ -566,7 +584,7 @@
              App.methods.saveLocal();
              App.render.settingsList();
              App.render.modalSelects();
-             App.render.all(); // Re-render all to update charts order
+             App.render.all();
         },
         editType: (cat, id) => {
              const val = prompt("Nouveau nom :");
@@ -584,13 +602,12 @@
                  }
              }
         },
-        // --- NOUVEAU V7.7.1 : Edition couleur en direct ---
         updateTypeColor: (cat, id, prop, val) => {
             const t = App.state.types[cat].find(i=>i.id===id);
             if(t) {
                 t[prop] = val;
                 App.methods.saveLocal();
-                App.render.all(); // Met à jour le fond si nécessaire
+                App.render.all(); 
             }
         },
 
@@ -755,7 +772,6 @@
                 let conic = [], deg=0, listHTML='';
                 const total = totInt || 1; 
 
-                // Fix 7.7: Use palette order
                 palette.forEach(type => {
                      const v = groups[type.nom] || 0;
                      if(v > 0) {
@@ -766,7 +782,6 @@
                          listHTML += `<div class="legend-item"><div><span class="dot" style="background:${col}"></span>${type.nom}</div><div>${Math.round(v)}m²</div></div>`;
                      }
                 });
-                // Handle unknowns (optional, but good practice)
                 const knowns = palette.map(p=>p.nom);
                 let unknownSum = 0;
                 Object.keys(groups).forEach(k => { if(!knowns.includes(k)) unknownSum += groups[k]; });
@@ -888,7 +903,6 @@
                  bar.classList.remove('visible');
              }
         },
-        // --- MISE A JOUR V7.7.1 POUR EDITION COULEURS ---
         settingsList: () => {
              const cat = document.getElementById('set-type-select').value;
              const list = App.state.types[cat];
@@ -897,7 +911,6 @@
              list.forEach(item => {
                  const row = document.createElement('div');
                  row.className = "settings-list-item";
-                 // Remplacement des spans fixes par des inputs
                  row.innerHTML = `
                    <div style="display:flex; align-items:center; gap:5px;">
                       <input type="color" class="color-picker-mini" value="${item.bg||'#000000'}" onchange="App.methods.updateTypeColor('${cat}', ${item.id}, 'bg', this.value)" title="Fond">
