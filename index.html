@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-title" content="PROJET">
   <meta name="theme-color" content="#0F172A">
   <link rel="manifest" href="manifest.json">
-  <title>OUTIL DE PROGRAMMATION - V7.9</title>
+  <title>OUTIL DE PROGRAMMATION - V7.9.1</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -185,7 +185,7 @@
             <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
             <span id="save-indicator" class="save-indicator">Enregistré ✔</span>
         </div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9.1</div>
       </div>
     </div>
     <div class="flex">
@@ -329,7 +329,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    const APP_VERSION = "7.9";
+    const APP_VERSION = "7.9.1";
 
     const CONFIG = {
       types: {
@@ -917,7 +917,7 @@
                     const col = prio ? prio.bg : 'var(--border-color)';
                     const card = document.createElement('div');
                     card.className = 'action-card';
-                    card.style.borderLeftColor = col;
+                    card.style.borderLeft = `4px solid ${col}`; // CORRECTIF ICI
                     card.onclick = () => App.ui.openModalItem(i);
                     card.innerHTML = `
                       <div class="ac-header">
