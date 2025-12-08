@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.9 --- */
+    /* --- DESIGN SYSTEM V7.9.2 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -146,8 +146,18 @@
     .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; border: 1px solid transparent; }
     
     /* ACTIONS GRID */
-    .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
-    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; }
+    /* V7.9.2 : Suppression de border-left ici pour éviter les conflits CSS/JS */
+    .action-card { 
+        background: var(--bg-card); 
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        padding: 16px; 
+        transition: transform 0.2s, box-shadow 0.2s; 
+        cursor: pointer; 
+        display: flex; 
+        flex-direction: column; 
+    }
+    
     .action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
     .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; flex: 1; }
@@ -329,7 +339,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    const APP_VERSION = "7.9.1";
+    const APP_VERSION = "7.9.2";
 
     const CONFIG = {
       types: {
@@ -912,7 +922,7 @@
                 
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
-               actions.forEach(i => {
+                actions.forEach(i => {
                     const prio = App.state.types.priorites.find(p => p.nom === i.priorite);
                     // Si pas de priorité trouvée, on met gris (border-color), sinon la couleur de la prio
                     const col = prio ? prio.bg : 'var(--border-color)';
@@ -920,10 +930,11 @@
                     const card = document.createElement('div');
                     card.className = 'action-card';
                     
-                    // --- CORRECTION FIABLE ---
-                    // On applique la bordure complète directement sur l'élément
+                    // --- CORRECTION FIABLE (V7.9.2) ---
+                    // On applique la bordure complète directement sur l'élément en JS
+                    // Cela permet de contourner les spécificités CSS
                     card.style.borderLeft = `4px solid ${col}`;
-                    // -------------------------
+                    // ----------------------------------
 
                     card.onclick = () => App.ui.openModalItem(i);
                     card.innerHTML = `
