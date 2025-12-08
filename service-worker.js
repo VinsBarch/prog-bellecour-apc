@@ -1,6 +1,6 @@
 // --- CONFIGURATION V7.9.3 ---
 // Changement de nom de cache pour forcer la mise à jour immédiate chez les clients
-const CACHE_NAME = 'prog-bellecour-v7-9-3'; 
+const CACHE_NAME = 'prog-bellecour-v7-9-4'; 
 
 const urlsToCache = [
   './',
@@ -23,7 +23,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Ouverture du cache version 7.9.3');
+        console.log('Ouverture du cache version 7.9.4');
         return cache.addAll(urlsToCache);
       })
   );
