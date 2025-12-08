@@ -147,7 +147,7 @@
     
     /* ACTIONS GRID */
     .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
-    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; border-left: 4px solid var(--text-muted); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; flex-direction: column; }
+    .action-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; }
     .action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
     .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; flex: 1; }
@@ -913,22 +913,19 @@
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
                actions.forEach(i => {
-                    // 1. On récupère la couleur associée à la priorité
                     const prio = App.state.types.priorites.find(p => p.nom === i.priorite);
+                    // Si pas de priorité trouvée, on met gris (border-color), sinon la couleur de la prio
                     const col = prio ? prio.bg : 'var(--border-color)';
                     
-                    // 2. Création de la carte
                     const card = document.createElement('div');
                     card.className = 'action-card';
                     
-                    // --- CORRECTION "NUCLÉAIRE" ICI ---
-                    // On force la couleur de la bordure gauche avec "important" pour écraser le CSS
-                    card.style.setProperty('border-left-color', col, 'important');
-                    // ----------------------------------
+                    // --- CORRECTION FIABLE ---
+                    // On applique la bordure complète directement sur l'élément
+                    card.style.borderLeft = `4px solid ${col}`;
+                    // -------------------------
 
                     card.onclick = () => App.ui.openModalItem(i);
-                    
-                    // 3. Contenu de la carte
                     card.innerHTML = `
                       <div class="ac-header">
                         <span style="font-size:11px; font-weight:700; color:${col}">${i.priorite || 'SANS PRIORITÉ'}</span>
