@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PROJET">
-  <title>PROGRAMMATION V7.7.2 (Design)</title>
+  <meta name="theme-color" content="#0F172A">
+  <link rel="manifest" href="manifest.json">
+  <title>PROGRAMMATION V7.8</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.7.2 --- */
+    /* --- DESIGN SYSTEM V7.8 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -47,11 +49,15 @@
     .btn-lock { width: 40px; padding: 0; font-size: 18px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
     .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
 
-    /* LAYOUT */
+    /* LAYOUT & HEADER */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
     .header-title { font-size: 24px; font-weight: 800; border: 1px dashed transparent; padding: 0 5px; border-radius: 6px; }
     .header-title:hover { border-color: var(--border-color); }
     
+    /* SAVE INDICATOR (NEW V7.8) */
+    .save-indicator { font-size: 11px; color: var(--success); font-weight: 700; opacity: 0; transition: opacity 0.5s; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+    .save-indicator.show { opacity: 1; }
+
     .toolbar { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
     .tool-group { display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
     .spacer { flex: 1; }
@@ -146,8 +152,11 @@
     <div class="flex">
       <div class="logo" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),#8B5CF6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">B</div>
       <div>
-        <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.7.2</div>
+        <div class="flex">
+            <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
+            <span id="save-indicator" class="save-indicator">Enregistré ✔</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.8</div>
       </div>
     </div>
     <div class="flex">
@@ -291,7 +300,8 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    // --- DESIGN SYSTEM CONFIGURATION ---
+    const APP_VERSION = "7.8";
+
     const CONFIG = {
       types: {
         programmes: [ 
@@ -340,7 +350,8 @@
         types: JSON.parse(JSON.stringify(CONFIG.types)),
         currentView: 'list',
         selectedIds: new Set(),
-        openDropdown: null
+        openDropdown: null,
+        saveTimeout: null
       },
 
       init: () => {
@@ -357,7 +368,6 @@
                 try {
                     App.state.types = JSON.parse(savedTypes);
                 } catch(e) {
-                    // Fallback si types corrompus
                     App.state.types = JSON.parse(JSON.stringify(CONFIG.types));
                 }
             }
@@ -397,6 +407,14 @@
           localStorage.setItem('v7-title', App.state.title);
           localStorage.setItem('v7-views', JSON.stringify(App.state.savedViews));
           localStorage.setItem('v7-types', JSON.stringify(App.state.types));
+          
+          // --- AUTO-SAVE FEEDBACK (V7.8) ---
+          const indicator = document.getElementById('save-indicator');
+          indicator.classList.add('show');
+          if(App.state.saveTimeout) clearTimeout(App.state.saveTimeout);
+          App.state.saveTimeout = setTimeout(() => {
+              indicator.classList.remove('show');
+          }, 2000);
         },
         saveJson: () => {
             App.methods.saveLocal();
@@ -404,7 +422,7 @@
                 title: App.state.title,
                 data: App.state.data,
                 types: App.state.types,
-                version: "7.7.2"
+                version: APP_VERSION // --- VERSIONING (V7.8) ---
             };
             const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type: 'application/json'});
             const link = document.createElement('a');
@@ -1017,6 +1035,15 @@
         }
       }
     };
+
+    // --- SERVICE WORKER REGISTRATION (V7.8 - PWA) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+             // On tente d'enregistrer le SW si le fichier existe
+             // Note: Cela échouera silencieusement si le fichier n'est pas présent (mode simple)
+             navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('SW non trouvé (mode local simple)'));
+        });
+    }
 
     window.addEventListener('DOMContentLoaded', App.init);
   </script>
