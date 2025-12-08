@@ -1,8 +1,8 @@
 {
-  "name": "Programmation COFFIM-ALVÉ",
-  "short_name": "ProgAPC",
-  "description": "Outil de programmation Bellecour architectes",
-  "start_url": "/index.html",
+  "name": "PROG V7.9 (Bellecour)",
+  "short_name": "ProgV7.9",
+  "description": "Outil de programmation V7.9 - Interface harmonisée",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "landscape",
   "background_color": "#0F172A",
