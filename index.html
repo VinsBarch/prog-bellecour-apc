@@ -912,22 +912,32 @@
                 
                 container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
                 const ag = document.getElementById('ag');
-                actions.forEach(i => {
-                    const prio = App.state.types.priorites.find(p=>p.nom===i.priorite);
+               actions.forEach(i => {
+                    // 1. On récupère la couleur associée à la priorité
+                    const prio = App.state.types.priorites.find(p => p.nom === i.priorite);
                     const col = prio ? prio.bg : 'var(--border-color)';
+                    
+                    // 2. Création de la carte
                     const card = document.createElement('div');
                     card.className = 'action-card';
-                    card.style.borderLeft = `4px solid ${col}`; // CORRECTIF ICI
+                    
+                    // --- CORRECTION "NUCLÉAIRE" ICI ---
+                    // On force la couleur de la bordure gauche avec "important" pour écraser le CSS
+                    card.style.setProperty('border-left-color', col, 'important');
+                    // ----------------------------------
+
                     card.onclick = () => App.ui.openModalItem(i);
+                    
+                    // 3. Contenu de la carte
                     card.innerHTML = `
                       <div class="ac-header">
                         <span style="font-size:11px; font-weight:700; color:${col}">${i.priorite || 'SANS PRIORITÉ'}</span>
                         <span class="badge" style="background:var(--bg-input)">${i.statut}</span>
                       </div>
                       <div class="ac-body">
-                         <div style="font-size:16px; margin-bottom:4px">${i.local}</div>
-                         <div style="color:var(--text-muted); font-size:12px">${i.programme} - ${i.niveau}</div>
-                         ${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${i.remarque}"</div>` : ''}
+                         <div style="font-size:16px; margin-bottom:4px">${App.helpers.safe(i.local)}</div>
+                         <div style="color:var(--text-muted); font-size:12px">${App.helpers.safe(i.programme)} - ${App.helpers.safe(i.niveau)}</div>
+                         ${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${App.helpers.safe(i.remarque)}"</div>` : ''}
                       </div>
                       <div class="ac-footer">
                          <span>Action requise</span>
