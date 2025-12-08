@@ -7,13 +7,13 @@
   <meta name="apple-mobile-web-app-title" content="PROJET">
   <meta name="theme-color" content="#0F172A">
   <link rel="manifest" href="manifest.json">
-  <title>OUTIL DE PROGRAMMATION - V7.9.3</title>
+  <title>OUTIL DE PROGRAMMATION - V7.9.4</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- DESIGN SYSTEM V7.9.3 --- */
+    /* --- DESIGN SYSTEM V7.9.4 --- */
     :root {
       --bg-body: #0F172A; --bg-card: #1E293B; --bg-input: #0F172A;
       --bg-hover: #334155; --border-color: #334155;
@@ -38,27 +38,14 @@
     .flex { display: flex; align-items: center; gap: 10px; }
     .spacer { flex: 1; }
     
-    /* --- BUTTONS SYSTEM (HARMONISED) --- */
+    /* --- BUTTONS SYSTEM --- */
     .btn { 
-        height: 40px; 
-        padding: 0 18px; 
-        border-radius: 10px; 
-        font-weight: 600; 
-        font-size: 13px; 
-        cursor: pointer; 
-        border: 1px solid transparent; 
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 8px; 
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        white-space: nowrap; 
-        user-select: none;
+        height: 40px; padding: 0 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: 1px solid transparent; 
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; user-select: none;
     }
     .btn:active { transform: scale(0.96); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: grayscale(1); }
     
-    /* Variants Colors */
     .btn-primary { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
     
@@ -77,11 +64,9 @@
     .btn-lock { width: 40px; padding: 0; font-size: 16px; background: var(--bg-input); border-color: var(--border-color); color: var(--text-muted); }
     .btn-lock.locked { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
     
-    /* Size Variants */
     .btn-sm { height: 32px; padding: 0 14px; font-size: 12px; border-radius: 8px; }
     .btn-xs { height: 28px; width: 28px; padding: 0; font-size: 14px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); }
     .btn-xs:hover { background: var(--bg-hover); color: var(--text-main); }
-    
     .btn-icon { width: 40px; padding: 0; font-size: 18px; }
 
     /* LAYOUT & HEADER */
@@ -145,24 +130,6 @@
 
     .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; border: 1px solid transparent; }
     
-    /* ACTIONS GRID */
-    /* V7.9.3 : Suppression de border-left ici pour éviter les conflits CSS/JS */
-    .action-card { 
-        background: var(--bg-card); 
-        border: 1px solid var(--border-color); 
-        border-radius: 12px; 
-        padding: 16px; 
-        transition: transform 0.2s, box-shadow 0.2s; 
-        cursor: pointer; 
-        display: flex; 
-        flex-direction: column; 
-    }
-    
-    .action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-    .ac-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .ac-body { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; flex: 1; }
-    .ac-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 12px; color: var(--text-muted); margin-top: auto; }
-
     /* BATCH BAR */
     .batch-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--bg-card); border: 1px solid var(--primary); padding: 8px 16px; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; z-index: 100; transition: transform 0.3s; color: var(--text-main); }
     .batch-bar.visible { transform: translateX(-50%) translateY(0); }
@@ -195,7 +162,7 @@
             <div id="app-title" class="header-title" contenteditable="true">PROJET</div>
             <span id="save-indicator" class="save-indicator">Enregistré ✔</span>
         </div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Programmation V7.9.3</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Outil Programmation V7.9.4</div>
       </div>
     </div>
     <div class="flex">
@@ -339,7 +306,7 @@
   <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9000; display:flex; flex-direction:column; gap:10px;"></div>
 
   <script>
-    const APP_VERSION = "7.9.2";
+    const APP_VERSION = "7.9.4";
 
     const CONFIG = {
       types: {
@@ -914,53 +881,57 @@
                 });
 
             } else {
+                // --- VUE ACTIONS REQUISES EN MODE TABLEAU ---
                 const actions = sorted.filter(i => i.statut && i.statut !== 'VALIDÉ');
                 const prioMap = { 'HAUTE':1, 'MOYENNE':2, 'BASSE':3 };
                 actions.sort((a,b) => (prioMap[a.priorite]||9) - (prioMap[b.priorite]||9));
 
                 if(!actions.length) { container.innerHTML = '<div class="text-center" style="padding:40px; color:var(--text-muted)">Aucune action requise.</div>'; return; }
                 
-                container.innerHTML = `<div class="actions-grid" id="ag"></div>`;
-                const ag = document.getElementById('ag');
-            actions.forEach(i => {
-                    // --- CORRECTIF V7.9.3 : SÉCURISATION DES COULEURS ---
-                    
-                    // 1. Nettoyage des chaînes pour éviter les erreurs d'espaces ou de majuscules
+                container.innerHTML = `
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="width:80px">Prio</th>
+                        <th>Prog</th>
+                        <th>Niv</th>
+                        <th>Local</th>
+                        <th>Statut</th>
+                        <th>Remarque</th>
+                        <th style="width:80px" class="text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tb-actions"></tbody>
+                  </table>
+                </div>`;
+
+                const tb = document.getElementById('tb-actions');
+                
+                actions.forEach(i => {
+                    // Logique couleur V7.9.3 (Sécurisée)
                     const pNameItem = (i.priorite || '').trim().toUpperCase();
+                    const prioType = (App.state.types.priorites || []).find(p => (p.nom || '').trim().toUpperCase() === pNameItem);
+                    const col = (prioType && prioType.bg) ? prioType.bg : 'var(--text-muted)';
                     
-                    // 2. Recherche tolérante dans la configuration
-                    const prioType = (App.state.types.priorites || []).find(p => 
-                        (p.nom || '').trim().toUpperCase() === pNameItem
-                    );
+                    const prog = App.state.types.programmes.find(p=>p.nom===i.programme);
+                    const st = App.state.types.statuts.find(s=>s.nom===i.statut);
+                    const nivStyle = App.helpers.getStyle('niveaux', i.niveau);
 
-                    // 3. Définition de la couleur avec une valeur de secours (Gris Slate) si introuvable
-                    const col = (prioType && prioType.bg) ? prioType.bg : '#64748B'; 
-                    // ----------------------------------------------------
-
-                    const card = document.createElement('div');
-                    card.className = 'action-card';
-                    
-                    // Application FORCEE de la bordure
-                    card.style.setProperty('border-left', `4px solid ${col}`, 'important');
-
-                    card.onclick = () => App.ui.openModalItem(i);
-                    
-                    card.innerHTML = `
-                      <div class="ac-header">
-                        <span style="font-size:11px; font-weight:700; color:${col}">${App.helpers.safe(i.priorite || 'SANS PRIORITÉ')}</span>
-                        <span class="badge" style="background:var(--bg-input)">${i.statut}</span>
-                      </div>
-                      <div class="ac-body">
-                         <div style="font-size:16px; margin-bottom:4px">${App.helpers.safe(i.local)}</div>
-                         <div style="color:var(--text-muted); font-size:12px">${App.helpers.safe(i.programme)} - ${App.helpers.safe(i.niveau)}</div>
-                         ${i.remarque ? `<div style="margin-top:8px; padding:8px; background:var(--bg-input); border-radius:6px; font-size:13px">"${App.helpers.safe(i.remarque)}"</div>` : ''}
-                      </div>
-                      <div class="ac-footer">
-                         <span>Action requise</span>
-                         <button class="btn btn-secondary btn-sm" style="height:28px; padding:0 10px; font-size:11px">Modifier</button>
-                      </div>
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                      <td style="font-weight:700; color:${col}">${App.helpers.safe(i.priorite || '-')}</td>
+                      <td style="color:${prog?prog.bg:'inherit'};font-weight:700">${App.helpers.safe(i.programme)}</td>
+                      <td><span class="badge" style="${nivStyle}">${App.helpers.safe(i.niveau)}</span></td>
+                      <td><b>${App.helpers.safe(i.local)}</b></td>
+                      <td><span class="badge" style="background:${st?st.bg:'#eee'}; color:${st?st.txt:'#333'}">${App.helpers.safe(i.statut)}</span></td>
+                      <td style="font-size:12px; color:var(--text-muted)">${App.helpers.safe(i.remarque || '')}</td>
+                      <td class="text-right">
+                        <button class="btn btn-secondary btn-sm" style="padding:2px 8px; font-size:11px">Editer</button>
+                      </td>
                     `;
-                    ag.appendChild(card);
+                    tr.onclick = () => App.ui.openModalItem(i);
+                    tb.appendChild(tr);
                 });
             }
         },
