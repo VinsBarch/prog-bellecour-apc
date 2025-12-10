@@ -1,61 +1,98 @@
-// --- CONFIGURATION V7.9.3 ---
-// Changement de nom de cache pour forcer la mise à jour immédiate chez les clients
-const CACHE_NAME = 'prog-bellecour-v7-9-4'; 
+const CACHE_NAME = 'v8-outil-prog-cache-v2'; // Mettre à jour la version à chaque changement majeur (ex: V8.11 -> v3)
 
-const urlsToCache = [
-  './',
+// Ressources locales à mettre en cache
+const APP_FILES = [
   './index.html',
   './manifest.json',
-  // Si vous utilisez des icônes, assurez-vous qu'elles sont présentes sur Github
-  // Sinon, commentez les lignes suivantes avec //
-  './icon-192x192.png',
-  './icon-512x512.png',
-  // Librairies externes (indispensables pour le mode hors-ligne)
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js'
+  // Ajoutez ici les chemins vers vos fichiers icons/
+  // 'icons/icon-192.png',
+  // 'icons/icon-512.png',
+  // etc.
+  './', // Chemin pour la racine
 ];
 
-// 1. Installation : On met en cache les fichiers vitaux
-self.addEventListener('install', event => {
-  // Force l'activation immédiate du nouveau Service Worker sans attendre la fermeture des onglets
-  self.skipWaiting(); 
-  
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Ouverture du cache version 7.9.4');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
+// URLs des librairies externes (CDN) utilisées dans l'application
+const CDN_URLS = [
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js',
+  'https://unpkg.com/vis-network/standalone/umd/vis-network.min.js',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
+];
 
-// 2. Activation : On supprime les anciens caches (V7.8, V7.9, etc.) pour faire de la place
-self.addEventListener('activate', event => {
+
+// Événement d'installation : met en cache les fichiers statiques de l'application
+self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Installation et mise en cache des ressources.');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Nettoyage ancien cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    caches.open(CACHE_NAME).then((cache) => {
+      // Pré-mise en cache des fichiers de l'application + CDN
+      return cache.addAll([...APP_FILES, ...CDN_URLS]);
     })
   );
 });
 
-// 3. Interception Réseau : Stratégie "Cache, puis Réseau"
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Si le fichier est dans le cache, on le sert
-        if (response) {
-          return response;
+// Événement d'activation : supprime les anciens caches
+self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activation en cours...');
+  event.waitUntil(
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          console.log('[Service Worker] Suppression de l\'ancien cache :', key);
+          return caches.delete(key);
         }
-        // Sinon, on le télécharge sur internet
-        return fetch(event.request);
-      })
+      }));
+    })
   );
+  // Assure que le Service Worker prend le contrôle immédiatement
+  return self.clients.claim();
+});
+
+
+// Événement fetch : gestion des requêtes
+self.addEventListener('fetch', (event) => {
+  // Ignorer les requêtes non GET
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  const requestUrl = new URL(event.request.url);
+
+  // 1. Stratégie Cache-First pour les fichiers de l'application (pour le mode hors ligne)
+  const isAppFile = APP_FILES.some(file => event.request.url.includes(file.substring(1))) || event.request.url.includes(requestUrl.origin);
+
+  if (isAppFile) {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+    return;
+  }
+  
+  // 2. Stratégie Stale-While-Revalidate pour les CDN (si besoin de mise à jour)
+  const isCdn = CDN_URLS.some(url => event.request.url.startsWith(url.substring(0, url.indexOf('/', 8)))); 
+  if (isCdn) {
+     event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+            const fetchPromise = fetch(event.request).then(networkResponse => {
+                // Mettre à jour le cache avec la nouvelle version
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, networkResponse.clone());
+                });
+                return networkResponse;
+            }).catch(() => {
+                // En cas d'échec du réseau, on compte sur le cache initial.
+                return cachedResponse; 
+            });
+
+            // Retourne immédiatement la version en cache, ou lance la requête réseau
+            return cachedResponse || fetchPromise;
+        })
+    );
+    return;
+  }
+  
+  // 3. Toutes les autres requêtes (ex: images, ressources non identifiées)
+  event.respondWith(fetch(event.request));
 });
