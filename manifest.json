@@ -1,28 +1,21 @@
 {
-  "name": "OUTIL DE PROGRAMMATION",
-  "short_name": "PROJET",
-  "description": "Outil de programmation et de gestion des locaux avec vue relationnelle (graphique).",
+  "name": "Outil de Programmation",
+  "short_name": "PROJET V8",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#1E293B",
+  "background_color": "#0F172A",
   "theme_color": "#0F172A",
+  "orientation": "any",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
