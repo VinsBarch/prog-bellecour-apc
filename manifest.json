@@ -1,23 +1,28 @@
 {
-  "name": "PROG V7.9.2 (Bellecour)",
-  "short_name": "ProgV7.9.2",
-  "description": "Outil de programmation V7.9.2 - Interface harmonisée",
+  "name": "OUTIL DE PROGRAMMATION",
+  "short_name": "PROJET",
+  "description": "Outil de programmation et de gestion des locaux avec vue relationnelle (graphique).",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "landscape",
-  "background_color": "#0F172A",
-  "theme_color": "#3B82F6",
+  "orientation": "any",
+  "background_color": "#1E293B",
+  "theme_color": "#0F172A",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "icons/icon-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
-
