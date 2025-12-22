@@ -1,50 +1,110 @@
-const CACHE_NAME = 'prog-tool-v8.36';
-const FILES_TO_CACHE = [
+const CACHE_VERSION = 'v8.36';
+const PRECACHE = `prog-tool-precache-${CACHE_VERSION}`;
+const RUNTIME = `prog-tool-runtime-${CACHE_VERSION}`;
+
+// Precache only same-origin assets (cross-origin precache can break install).
+const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.json',
-  // On cache aussi les icônes si elles existent
-  './icon-192.png',
-  './icon-512.png',
-  // On cache les librairies externes pour le mode hors ligne complet
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js',
-  'https://unpkg.com/vis-network/standalone/umd/vis-network.min.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
+  './icon.png',
+  './icon-192x192.png',
+  './icon-512x512.png',
 ];
 
-// Installation du Service Worker et mise en cache des ressources
-self.addEventListener('install', (e) => {
-  console.log('[Service Worker] Installation');
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Mise en cache globale');
-      return cache.addAll(FILES_TO_CACHE);
-    })
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches
+      .open(PRECACHE)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activation et nettoyage des anciens caches (V8.35, etc.)
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          console.log('[Service Worker] Suppression ancien cache', key);
-          return caches.delete(key);
-        }
-      }));
-    })
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== PRECACHE && key !== RUNTIME) return caches.delete(key);
+          return undefined;
+        })
+      )
+    )
   );
-  return self.clients.claim();
+  self.clients.claim();
 });
 
-// Interception des requêtes réseau
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
-      // Si la ressource est dans le cache, on la retourne, sinon on va la chercher sur le réseau
-      return res || fetch(e.request);
+function isNavigationRequest(request) {
+  return request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html');
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(RUNTIME);
+  try {
+    const response = await fetch(request);
+    if (response && (response.ok || response.type === 'opaque')) cache.put(request, response.clone());
+    return response;
+  } catch (err) {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    return caches.match('./index.html');
+  }
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const fetchPromise = fetch(request)
+    .then((response) => {
+      if (response && (response.ok || response.type === 'opaque')) cache.put(request, response.clone());
+      return response;
     })
+    .catch(() => undefined);
+  return cached || (await fetchPromise);
+}
+
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response && (response.ok || response.type === 'opaque')) cache.put(request, response.clone());
+  return response;
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+
+  // HTML navigations: prefer fresh content, fall back to cache.
+  if (isNavigationRequest(request)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Same-origin assets: SWR for fast repeat loads + background refresh.
+  if (isSameOrigin) {
+    event.respondWith(staleWhileRevalidate(request, PRECACHE));
+    return;
+  }
+
+  // Cross-origin: cache-first for fonts/libs, to speed up repeat loads.
+  if (
+    url.hostname.includes('cdnjs.cloudflare.com') ||
+    url.hostname.includes('unpkg.com') ||
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com')
+  ) {
+    event.respondWith(cacheFirst(request, RUNTIME));
+    return;
+  }
+
+  // Default: try cache, then network.
+  event.respondWith(
+    caches.match(request).then((cached) => cached || fetch(request).catch(() => cached))
   );
 });

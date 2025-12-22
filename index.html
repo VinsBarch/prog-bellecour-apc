@@ -8,9 +8,14 @@
   <meta name="theme-color" content="#0F172A">
   <title>OUTIL DE PROGRAMMATION - V8.36 (UI Finalisée)</title>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon-192x192.png">
+
+  <!-- Fonts: preconnect + preload to reduce blocking -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -370,6 +375,49 @@
       }
     };
 
+    // Heavy libs: lazy-load on demand to improve first load.
+    const CDN = {
+      JSPDF: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+      JSPDF_AUTOTABLE: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js',
+      VIS: 'https://unpkg.com/vis-network/standalone/umd/vis-network.min.js'
+    };
+
+    const loadScriptOnce = (() => {
+      const inFlight = new Map();
+      const loaded = new Set();
+      return (url) => {
+        if (loaded.has(url)) return Promise.resolve();
+        if (inFlight.has(url)) return inFlight.get(url);
+
+        const p = new Promise((resolve, reject) => {
+          const existing = document.querySelector(`script[src="${url}"]`);
+          if (existing && existing.dataset.loaded === 'true') {
+            loaded.add(url);
+            resolve();
+            return;
+          }
+
+          const s = existing || document.createElement('script');
+          if (!existing) {
+            s.src = url;
+            s.async = true;
+            s.crossOrigin = 'anonymous';
+            s.referrerPolicy = 'no-referrer';
+            document.head.appendChild(s);
+          }
+          s.addEventListener('load', () => {
+            s.dataset.loaded = 'true';
+            loaded.add(url);
+            resolve();
+          }, { once: true });
+          s.addEventListener('error', () => reject(new Error(`Failed to load: ${url}`)), { once: true });
+        }).finally(() => inFlight.delete(url));
+
+        inFlight.set(url, p);
+        return p;
+      };
+    })();
+
     const App = {
       state: {
         data: [], links: [], positions: {}, title: "PROJET",
@@ -404,10 +452,23 @@
 
       /* --- MODULE GRAPHE --- */
       graph: {
-          network: null, nodes: new vis.DataSet(), edges: new vis.DataSet(),
+          network: null, nodes: null, edges: null,
           isLinkMode: false, physics: true, linkSource: null,
 
-          start: () => {
+          ensureLibs: async () => {
+              if (!window.vis?.Network || !window.vis?.DataSet) await loadScriptOnce(CDN.VIS);
+              if (!App.graph.nodes) App.graph.nodes = new vis.DataSet();
+              if (!App.graph.edges) App.graph.edges = new vis.DataSet();
+          },
+
+          start: async () => {
+              try {
+                  await App.graph.ensureLibs();
+              } catch (e) {
+                  App.ui.toast("Lib graphique indisponible (hors ligne ?)");
+                  return;
+              }
+
               if(!App.graph.network) {
                   const container = document.getElementById('mynetwork');
                   if(!container) return;
@@ -471,7 +532,7 @@
           fit: () => App.graph.network && App.graph.network.fit({animation:true}),
           updateColors: () => App.graph.draw(),
           draw: () => {
-              if(!App.graph.network) App.graph.start();
+              if(!App.graph.network || !window.vis?.Network) { void App.graph.start(); return; }
               const filteredData = App.helpers.getFiltered();
               const mode = document.getElementById('g-color-mode').value;
               const isLight = document.documentElement.classList.contains('light');
@@ -527,7 +588,7 @@
         saveJson: () => { App.methods.saveLocal(); const blob = new Blob([JSON.stringify({title: App.state.title, data: App.state.data, types: App.state.types, links: App.state.links, positions: App.state.positions, version: APP_VERSION}, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `PROJET-${Date.now()}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); App.ui.toast("Sauvegarde OK"); },
         pushHistory: () => { if(App.state.history.length > 20) App.state.history.shift(); App.state.history.push(JSON.stringify(App.state.data)); document.getElementById('btn-undo').disabled = false; },
         undo: () => { if (App.state.locked) return; if(App.state.history.length === 0) return; App.state.data = JSON.parse(App.state.history.pop()); if(App.state.history.length === 0) document.getElementById('btn-undo').disabled = true; App.methods.saveLocal(); App.render.all(); },
-        switchView: (v) => { App.state.currentView = v; document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active')); document.getElementById('main-content').style.display = (v === 'graph') ? 'none' : 'block'; document.getElementById('graph-container').classList.toggle('active', v === 'graph'); if(v === 'list') document.getElementById('tab-list').classList.add('active'); else if(v === 'actions') document.getElementById('tab-actions').classList.add('active'); else if(v === 'graph') { document.getElementById('tab-graph').classList.add('active'); setTimeout(() => App.graph.start(), 50); } if(v !== 'graph') App.render.content(); },
+        switchView: (v) => { App.state.currentView = v; document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active')); document.getElementById('main-content').style.display = (v === 'graph') ? 'none' : 'block'; document.getElementById('graph-container').classList.toggle('active', v === 'graph'); if(v === 'list') document.getElementById('tab-list').classList.add('active'); else if(v === 'actions') document.getElementById('tab-actions').classList.add('active'); else if(v === 'graph') { document.getElementById('tab-graph').classList.add('active'); setTimeout(() => void App.graph.start(), 50); } if(v !== 'graph') App.render.content(); },
         toggleDropdown: (e, key) => { e.stopPropagation(); App.state.openDropdown = App.state.openDropdown === key ? null : key; App.render.filtersUI(); },
         toggleFilterVal: (key, val) => { const arr = App.state.filters[key]; const idx = arr.indexOf(val); if(idx >= 0) arr.splice(idx, 1); else arr.push(val); App.render.filtersUI(); App.render.all(); },
         toggleSelect: (id) => { if(App.state.locked)return; if(App.state.selectedIds.has(id)) App.state.selectedIds.delete(id); else App.state.selectedIds.add(id); App.render.batchBar(); },
@@ -551,7 +612,25 @@
         deleteItem: (id) => { if (App.state.locked) return; if(confirm("Supprimer ?")) { App.methods.pushHistory(); App.state.data = App.state.data.filter(i => i.id != id); App.state.links = App.state.links.filter(l => l.from != id && l.to != id); App.methods.saveLocal(); App.ui.closeModal('modal-item'); App.render.all(); } },
         import: () => { if (App.state.locked) return; const input = document.createElement('input'); input.type='file'; input.accept='.json'; input.style.display = 'none'; document.body.appendChild(input); input.onchange = e => { input.remove(); if (e.target.files.length === 0) return; const reader = new FileReader(); reader.onload = () => { try { const json = JSON.parse(reader.result); if(confirm("Importer ?")) { App.methods.pushHistory(); if(json.title) App.state.title = json.title; if(Array.isArray(json)) { App.state.data = json; App.state.links = []; App.state.positions = {}; } else { if(json.data) App.state.data = json.data; if(json.types) App.state.types = json.types; App.state.links = json.links || []; App.state.positions = json.positions || {}; } App.methods.saveLocal(); App.render.all(); } } catch(err) {} }; reader.readAsText(e.target.files[0]); }; input.click(); },
         exportCsv: () => { const headers = ['Programme','Niveau','Fonction','Local','SU','Nbr','Total','Statut']; const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, `"${d.local}"`, d.surfUnite, d.nombre, (d.sueInt+d.sueExt), d.statut]); const csvContent = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n'); const blob = new Blob(['\ufeff'+csvContent], {type: 'text/csv;charset=utf-8'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `export.csv`; document.body.appendChild(a); a.click(); document.body.removeChild(a); },
-        exportPdf: () => { const { jsPDF } = window.jspdf; const doc = new jsPDF('l','mm','a4'); doc.text(App.state.title, 14, 15); const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]); doc.autoTable({ head:[['Prog','Niv','Fct','Local','SU','Nb','Tot','Statut']], body: rows, startY: 20 }); doc.save(`export.pdf`); },
+        exportPdf: async () => {
+          try {
+            if (!window.jspdf?.jsPDF) await loadScriptOnce(CDN.JSPDF);
+            if (!window.jspdf?.jsPDF) throw new Error('jsPDF missing');
+            // AutoTable plugin must load after jsPDF
+            const hasAutoTable = !!(window.jspdf?.jsPDF?.API && window.jspdf.jsPDF.API.autoTable);
+            if (!hasAutoTable) await loadScriptOnce(CDN.JSPDF_AUTOTABLE);
+          } catch (e) {
+            App.ui.toast("Export PDF indisponible (hors ligne ?)");
+            return;
+          }
+
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF('l','mm','a4');
+          doc.text(App.state.title, 14, 15);
+          const rows = App.state.data.map(d => [d.programme, d.niveau, d.fonction, d.local, d.surfUnite, d.nombre, (d.sueInt||d.sueExt), d.statut]);
+          doc.autoTable({ head:[['Prog','Niv','Fct','Local','SU','Nb','Tot','Statut']], body: rows, startY: 20 });
+          doc.save(`export.pdf`);
+        },
         saveView: () => { if(App.state.locked)return; const name = prompt("Nom ?"); if(name){ App.state.savedViews.push({id:Date.now(), name, filters:JSON.parse(JSON.stringify(App.state.filters))}); App.methods.saveLocal(); App.render.filtersUI(); } },
         loadView: (id) => { const v=App.state.savedViews.find(i=>i.id===id); if(v){ App.state.filters=JSON.parse(JSON.stringify(v.filters)); document.getElementById('inp-search').value=App.state.filters.search; App.render.all(); } },
         deleteView: (id, e) => { if(App.state.locked)return; e.stopPropagation(); if(confirm('Sup ?')) { App.state.savedViews=App.state.savedViews.filter(v=>v.id!==id); App.methods.saveLocal(); App.render.filtersUI(); } },
@@ -563,7 +642,18 @@
       },
 
       helpers: {
-         getFiltered: () => { const f = App.state.filters; return App.state.data.filter(d => { if(f.search && !d.local.toLowerCase().includes(f.search.toLowerCase())) return false; if(f.programme.length && !f.programme.includes(d.programme)) return false; if(f.niveau.length && !f.niveau.includes(d.niveau)) return false; if(f.fonction.length && !f.fonction.includes(d.fonction)) return false; return true; }); },
+         debounce: (func, delay) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => func(...args), delay); }; },
+         getFiltered: () => {
+           const f = App.state.filters;
+           const search = (f.search || '').trim().toLowerCase();
+           return App.state.data.filter(d => {
+             if (search && !String(d.local || '').toLowerCase().includes(search)) return false;
+             if (f.programme.length && !f.programme.includes(d.programme)) return false;
+             if (f.niveau.length && !f.niveau.includes(d.niveau)) return false;
+             if (f.fonction.length && !f.fonction.includes(d.fonction)) return false;
+             return true;
+           });
+         },
          safe: (str) => String(str||'').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
          getStyle: (cat, name) => { const t = App.state.types[cat].find(i => i.nom === name); if(t) return `background:${t.bg}; color:${t.txt}`; return `background:var(--bg-input); color:var(--text-muted)`; }
       },
@@ -699,7 +789,8 @@
         bindAll: () => {
             document.getElementById('btn-theme').onclick = () => { document.documentElement.classList.toggle('light'); const isLight = document.documentElement.classList.contains('light'); localStorage.setItem('v7-theme', isLight ? 'light' : 'dark'); document.getElementById('btn-theme').innerText = isLight ? '☾' : '☼'; if(App.state.currentView === 'graph') App.graph.updateColors(); };
             document.getElementById('btn-lock').onclick = () => { App.state.locked=!App.state.locked; document.getElementById('btn-lock').classList.toggle('locked', App.state.locked); document.getElementById('btn-lock').innerText=App.state.locked?'🔒':'🔓'; App.methods.saveLocal(); App.ui.updateLockState(); App.render.all(); };
-            document.getElementById('inp-search').oninput = (e) => { App.state.filters.search=e.target.value; App.render.all(); };
+            const onSearch = App.helpers.debounce((val) => { App.state.filters.search = val; App.render.all(); }, 150);
+            document.getElementById('inp-search').oninput = (e) => onSearch(e.target.value);
             document.getElementById('btn-reset-filters').onclick = () => { App.state.filters={search:"",programme:[],niveau:[],fonction:[]}; document.getElementById('inp-search').value=""; App.render.all(); };
             document.getElementById('btn-save-json').onclick = App.methods.saveJson;
             document.getElementById('btn-undo').onclick = App.methods.undo;
